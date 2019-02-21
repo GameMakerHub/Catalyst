@@ -1,3 +1,3 @@
 # Documentation
 
-[testing](page)
+[testing](page.md)
