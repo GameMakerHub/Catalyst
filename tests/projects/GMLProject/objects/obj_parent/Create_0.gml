@@ -1,0 +1,1 @@
+myvalue = "Parent object";
