@@ -1,4 +1,13 @@
-# Setup
+
+# Table of contents:
+ - [Setup](#setup)
+   - [Windows](#windows)
+   - [Linux and OSX](#linux-and-osx)
+ - [Usage](#usage)
+   - [Arguments](#arguments)
+
+
+## Setup
 
 ### Windows
 You want to install PHP7.3 (older 7 will also work) and you might want to install a tool like Git Bash (that also has 
@@ -25,7 +34,7 @@ extension=php_sockets.dll
 You also need to install composer (or download the .phar file into this directory), and then run `composer install` (or 
 `php ./composer.phar install` if you dont have it installed)
 
-### Linux / OSX(?)
+### Linux and OSX
 
 Make sure you have PHP7.3 and Composer installed.
 
@@ -41,7 +50,3 @@ Run a `composer install` in this directory, and then you can use it.
 | Argument | Options | Explaination | Example |
 |----------|-------------|------|------|
 | -h, --help | | Shows help | `./index.php -h` |
-
-
-
-[testing](page.md)
