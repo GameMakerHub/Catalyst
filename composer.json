@@ -12,5 +12,8 @@
             "email": "rob.quist@dukesoft.nl"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require-dev": {
+        "symfony/phpunit-bridge": "^4.3@dev"
+    }
 }
