@@ -1,0 +1,5 @@
+language: php
+git:
+  submodules: false
+php:
+- 7.3
