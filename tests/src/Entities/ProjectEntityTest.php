@@ -10,6 +10,6 @@ class CalculatorTest extends \PHPUnit\Framework\TestCase
         $projectEntity = new ProjectEntity();
 
         // assert that your calculator added the numbers correctly!
-        $this->assertEquals(124, $projectEntity->testValue());
+        $this->assertEquals(123, $projectEntity->testValue());
     }
 }
