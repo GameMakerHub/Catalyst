@@ -1,5 +1,5 @@
 <?php
-namespace GMM\Entities;
+namespace GMM\Entity;
 
 class ProjectEntity {
 

@@ -1,7 +1,7 @@
 <?php
-namespace GMM\Tests\Entities;
+namespace GMM\Tests\Entity;
 
-use GMM\Entities\ProjectEntity;
+use GMM\Entity\ProjectEntity;
 
 class CalculatorTest extends \PHPUnit\Framework\TestCase
 {
