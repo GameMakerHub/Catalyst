@@ -1,0 +1,16 @@
+{
+    "name": "gamemakerhub/gmmodular",
+    "description": "An extension manager for Game Maker Studio 2",
+    "type": "project",
+    "require": {
+        "symfony/console": "^4.3@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "RobQuistNL",
+            "email": "rob.quist@dukesoft.nl"
+        }
+    ],
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,8 @@
+# Ignore vendor data
+vendor
+
+# Ignore IDE files
+.idea
+
+# Ignore composer binary
+composer.phar
