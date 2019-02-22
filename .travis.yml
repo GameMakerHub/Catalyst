@@ -2,4 +2,9 @@ language: php
 git:
   submodules: false
 php:
-- 7.3
+  - 7.3
+before_script:
+  - composer install
+cache:
+  directories:
+    - $HOME/.composer/cache/files
