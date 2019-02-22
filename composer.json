@@ -7,7 +7,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "^4.3",
-        "phpunit/phpunit": "^8.1"
+        "phpunit/phpunit": "^6.4"
     },
     "license": "MIT",
     "authors": [
@@ -28,6 +28,6 @@
     },
     "minimum-stability": "dev",
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.3@dev"
+        "symfony/phpunit-bridge": "^4.3"
     }
 }
