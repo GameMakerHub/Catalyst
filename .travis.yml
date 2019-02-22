@@ -2,5 +2,5 @@ language: php
 git:
   submodules: false
 php:
-- 7.3
-script: ./bin/phpunit
+- 7.1
+script: php ./bin/phpunit
