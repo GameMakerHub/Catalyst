@@ -2,4 +2,4 @@ language: php
 git:
   submodules: false
 php:
-- 7.1
+- 7.3

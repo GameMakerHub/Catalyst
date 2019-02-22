@@ -21,7 +21,7 @@ class CreateUserCommandTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertContains('Username: Rob', $output);
-        $this->assertContains('Password: secret', $output);
+        $this->assertStringContainsString('Username: Rob', $output);
+        $this->assertStringContainsString('Password: secret', $output);
     }
 }
