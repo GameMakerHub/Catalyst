@@ -30,6 +30,6 @@ class TestProjectCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('Username: '.$input->getArgument('username'));
-        $output->writeln('Password Testing: '.$input->getOption('password'));
+        $output->writeln('Password edited: '.$input->getOption('password'));
     }
 }
