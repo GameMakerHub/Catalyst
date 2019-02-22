@@ -30,5 +30,5 @@
     "require-dev": {
         "symfony/phpunit-bridge": "^4.3@dev"
     },
-    "bin": ["bin/phpunit"]
+    "bin-dir": ["bin"]
 }
