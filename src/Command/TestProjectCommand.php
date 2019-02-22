@@ -30,6 +30,12 @@ class TestProjectCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('Username: '.$input->getArgument('username'));
-        $output->writeln('Password edited: '.$input->getOption('password'));
+        $output->writeln('Password: '.$input->getOption('password'));
+    }
+    
+    public function thisIsNotTested(InputInterface $input, OutputInterface $output)
+    {
+        $a = 430*439;
+        $output->writeln('Password: '.$input->getOption('password'));
     }
 }
