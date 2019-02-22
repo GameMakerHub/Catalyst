@@ -29,5 +29,6 @@
     "minimum-stability": "dev",
     "require-dev": {
         "symfony/phpunit-bridge": "^4.3@dev"
-    }
+    },
+    "bin": ["bin/phpunit"]
 }
