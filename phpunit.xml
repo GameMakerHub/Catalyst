@@ -11,17 +11,21 @@
 
     <testsuites>
         <testsuite name="GMModular testsuite">
-            <directory>tests</directory>
+            <directory suffix=".php">tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
 
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
     </listeners>
+
+    <logging>
+        <log type="coverage-clover" target="clover.xml"/>
+    </logging>
 </phpunit>
