@@ -1,5 +1,5 @@
 <?php
-namespace GMM\Entity;
+namespace GMDepMan\Entity;
 
 class ProjectEntity {
 
@@ -11,5 +11,10 @@ class ProjectEntity {
     public function testValue()
     {
         return 123;
+    }
+
+    public function fromJson(string $json)
+    {
+        var_dump(json_decode($json));
     }
 }

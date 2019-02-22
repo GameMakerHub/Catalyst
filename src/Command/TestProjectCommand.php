@@ -1,7 +1,8 @@
 <?php
 
-namespace GMM\Command;
+namespace GMDepMan\Command;
 
+use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,25 +12,30 @@ class TestProjectCommand extends Command
 {
     protected static $defaultName = 'test-project';
 
+    /** @var StorageService */
+    private $storageService;
+
+    public function __construct(StorageService $storageService)
+    {
+        $this->storageService = $storageService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
-        $this->setDescription('Test a project.')
+        $this
+            ->setDescription('Test a project.')
             ->setHelp('Extended information about testing a project')
             ->addArgument(
-                'username',
+                'yyp',
                 InputArgument::REQUIRED,
-                'The username of the user.'
-            )->addOption(
-                'password',
-                'p',
-                InputArgument::OPTIONAL,
-                'User password'
+                'The .yyp file of the project.'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Username: '.$input->getArgument('username'));
-        $output->writeln('Password: '.$input->getOption('password'));
+        $output->writeln('YYP: '.$input->getArgument('yyp'));
     }
 }

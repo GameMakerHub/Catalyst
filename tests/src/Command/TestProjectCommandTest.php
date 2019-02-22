@@ -1,27 +1,32 @@
 <?php
-namespace GMM\Tests\Command;
+namespace GMDepMan\Tests\Command;
 
-use GMM\Command\TestProjectCommand;
+use GMDepMan\Command\TestProjectCommand;
+use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CreateUserCommandTest extends \PHPUnit\Framework\TestCase
 {
+    /** @var Application */
+    private $application;
+
+    protected function setUp(): void
+    {
+        $this->application = new Application();
+        $this->application->add(new TestProjectCommand(new StorageService()));
+    }
+
     public function testExecute()
     {
-        $application = new Application();
-        $application->add(new TestProjectCommand());
-
-        $command = $application->find('test-project');
+        $command = $this->application->find('test-project');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command'  => $command->getName(),
-            'username' => 'Rob',
-            '--password' => 'secret',
+            'yyp' => 'yypfile',
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Username: Rob', $output);
-        $this->assertStringContainsString('Password: secret', $output);
+        $this->assertStringContainsString('YYP: yypfile', $output);
     }
 }

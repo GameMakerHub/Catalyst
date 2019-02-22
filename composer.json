@@ -1,5 +1,5 @@
 {
-    "name": "gamemakerhub/gmmodular",
+    "name": "gamemakerhub/gmdepman",
     "description": "An extension manager for Game Maker Studio 2",
     "type": "project",
     "require": {
@@ -7,7 +7,11 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "^4.3",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^8.0",
+        "symfony/dependency-injection": "^4.3",
+        "symfony/config": "^4.3",
+        "symfony/yaml": "^4.3",
+        "symfony/http-kernel": "^4.3"
     },
     "license": "MIT",
     "authors": [
@@ -18,12 +22,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "GMM\\": "src/"
+            "GMDepMan\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GMM\\Tests\\": "tests/"
+            "GMDepMan\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",
