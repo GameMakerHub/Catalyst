@@ -7,7 +7,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "^4.3",
-        "symfony/flex": "^1.1"
+        "phpunit/phpunit": "^8.1"
     },
     "license": "MIT",
     "authors": [

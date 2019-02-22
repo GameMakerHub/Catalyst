@@ -7,7 +7,5 @@ composer.phar
 # Ignore vendor directory
 /vendor/
 
-###> symfony/phpunit-bridge ###
-.phpunit
-/phpunit.xml
-###< symfony/phpunit-bridge ###
+# PHPUnit cache
+.phpunit.result.cache
