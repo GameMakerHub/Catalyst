@@ -3,4 +3,3 @@ git:
   submodules: false
 php:
 - 7.1
-script: php ./bin/phpunit
