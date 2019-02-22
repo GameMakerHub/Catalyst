@@ -354,5 +354,10 @@
     "script_order": [
         "e3b52a1a-e925-4144-bd8e-191c7c32e021"
     ],
-    "tutorial": ""
+    "tutorial": "",
+    "GMDepMan": {
+        "testing": true,
+        "some_value": "123456",
+        "array": [1, 4, 6, 8, 9]
+    }
 }
