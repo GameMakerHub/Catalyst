@@ -4,7 +4,8 @@
     "mvc": "1.0",
     "IsDnDProject": false,
     "configs": [
-        
+        "default",
+        "default;newconfig"
     ],
     "option_ecma": false,
     "parentProject": {
@@ -16,7 +17,8 @@
                 "Key": "ed6a955d-5826-4f98-a450-10b414266c27",
                 "Value": {
                     "configDeltas": [
-                        "inherited"
+                        "inherited",
+                        "newconfig"
                     ],
                     "id": "c385e8c0-f27c-4e90-b7ee-f1fc66918e19",
                     "resourcePath": "options\\main\\options_main.yy",
@@ -354,10 +356,5 @@
     "script_order": [
         "e3b52a1a-e925-4144-bd8e-191c7c32e021"
     ],
-    "tutorial": "",
-    "GMDepMan": {
-        "testing": true,
-        "some_value": "123456",
-        "array": [1, 4, 6, 8, 9]
-    }
+    "tutorial": ""
 }

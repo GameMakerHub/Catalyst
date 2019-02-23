@@ -1,20 +1,53 @@
 <?php
 namespace GMDepMan\Entity;
 
+use Assert\Assert;
+use Assert\Assertion;
+use Assert\AssertionFailedException;
+use GMDepMan\Exception\MalformedProjectFileException;
+use Symfony\Component\Console\Output\Output;
+
 class ProjectEntity {
 
-    public function __construct()
-    {
+    /** @var string */
+    private $yypFilename;
 
+    /** @var string */
+    private $originalYyp;
+
+    /**
+     * Load a JSON string in YYP format
+     * @param string $json
+     */
+    public function load(string $yypFilename)
+    {
+        Assertion::file($yypFilename);
+
+        $this->originalYyp = json_decode(file_get_contents($this->yypFilename));
+
+        try {
+            Assertion::notNull($this->originalYyp);
+        } catch (\InvalidArgumentException $e) {
+            throw new MalformedProjectFileException($yypFilename . ' is not a valid GMS2 .yyp file');
+        }
+
+        $this->yypFilename = $yypFilename;
+        return $this;
     }
 
-    public function testValue()
+    /**
+     * Return this project in YYP format
+     */
+    public function getYypJson()
     {
-        return 123;
+        return json_encode([]);
     }
 
-    public function fromJson(string $json)
+    /**
+     * Persist the files and write to disk
+     */
+    public function save()
     {
-        var_dump(json_decode($json));
+        //stub
     }
 }

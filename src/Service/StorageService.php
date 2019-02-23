@@ -2,17 +2,24 @@
 
 namespace GMDepMan\Service;
 
+use Assert\Assertion;
 use GMDepMan\Entity\ProjectEntity;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class StorageService
 {
-    public function loadYyp($filename) {
-        if (!file_exists($filename)) {
-            throw new FileNotFoundException($filename . ' not found');
-        }
+    /**
+     * @param string $filename
+     * @return ProjectEntity
+     */
+    public function loadYyp(string $filename) {
+        Assertion::file($filename);
 
         $project = new ProjectEntity();
         $project->fromJson(file_get_contents($filename));
+        return $project;
+    }
+
+    public function saveYyp(ProjectEntity $projectEntity) {
+        //stub
     }
 }
