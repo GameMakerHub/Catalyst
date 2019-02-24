@@ -46,8 +46,30 @@ class DepManEntity {
     /** @var string */
     private $projectPath;
 
-    public function __construct(string $projectPath)
+    public function initialize(string $projectPath, string $name, string $description, string $license, string $homepage, string $yyp)
     {
+        $this->projectPath = $projectPath;
+        $this->name = $name;
+        $this->description = $description;
+        $this->license = $license;
+        $this->homepage = $homepage;
+        $this->yyp = $yyp;
+
+        $this->depData = new \stdClass();
+
+        $this->save();
+    }
+
+    /**
+     * DepManEntity constructor.
+     * @param string|false $projectPath
+     */
+    public function __construct($projectPath)
+    {
+        if (false === $projectPath) {
+            return;
+        }
+
         Assertion::directory($projectPath);
         $this->projectPath = $projectPath;
 
@@ -87,45 +109,27 @@ class DepManEntity {
     }
 
     /**
-     * Load a JSON string in YYP format
-     * @param string $json
+     * @return string
      */
-    public function load()
+    public function getGdm()
     {
-        Assertion::file($yypFilename);
-
-        $this->originalYyp = json_decode(file_get_contents($this->yypFilename));
-
-        try {
-            Assertion::notNull($this->originalYyp);
-        } catch (\InvalidArgumentException $e) {
-            throw new MalformedProjectFileException($yypFilename . ' is not a valid GMS2 .yyp file');
-        }
-
-        $this->yypFilename = $yypFilename;
-        $this->loadDepMan();
-    }
-
-    private function getDepManFileName()
-    {
-        return dirname($this->yypFilename) . 'gmdepman.json';
-    }
-
-    private function loadDepMan()
-    {
-        try {
-            Assertion::file($this->getDepManFileName());
-        } catch (\InvalidArgumentException $e) {
-
-        }
+        return serialize($this->depData);
     }
 
     /**
-     * Return this project in YYP format
+     * @return string
      */
-    public function getYypJson()
+    public function getJson()
     {
-        return 0;
+        $jsonObj = new \stdClass();
+
+        $jsonObj->name = $this->name;
+        $jsonObj->description = $this->description;
+        $jsonObj->license = $this->license;
+        $jsonObj->homepage = $this->homepage;
+        $jsonObj->yyp = $this->yyp;
+
+        return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -133,6 +137,7 @@ class DepManEntity {
      */
     public function save()
     {
-        //stub
+        file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
+        file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
     }
 }

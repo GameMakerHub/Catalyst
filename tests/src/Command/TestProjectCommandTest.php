@@ -1,7 +1,7 @@
 <?php
 namespace GMDepMan\Tests\Command;
 
-use GMDepMan\Command\TestProjectCommand;
+use GMDepMan\Command\InitCommand;
 use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -14,7 +14,7 @@ class CreateUserCommandTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->application = new Application();
-        $this->application->add(new TestProjectCommand(new StorageService()));
+        $this->application->add(new InitCommand(new StorageService()));
     }
 
     public function testExecute()

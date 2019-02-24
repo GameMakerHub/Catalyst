@@ -7,13 +7,12 @@ use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class TestProjectCommand extends Command
+class InitCommand extends Command
 {
     protected static $defaultName = 'init';
 
@@ -47,7 +46,7 @@ class TestProjectCommand extends Command
         $question = new Question('Please enter the name of your package, in "vendor/package" format: ', '');
         $question->setValidator(function ($answer) {
             try {
-                Assertion::regex($answer, '~[a-z0-9\-]+\/[a-z0-9\-]+~');
+                Assertion::regex($answer, '~^[a-z0-9\-]+\/[a-z0-9\-]+$~');
             } catch (\InvalidArgumentException $e) {
                 throw new \RuntimeException(
                     'Package name must be "vendor/package" in lowercase, and only allows a-z, 0-9 and -'
@@ -112,11 +111,8 @@ class TestProjectCommand extends Command
 
         $yyp = $helper->ask($input, $output, $question);
 
-        $output->writeln('Happy!');
-        $output->writeln($name);
-        $output->writeln($description);
-        $output->writeln($license);
-        $output->writeln($homepage);
-        $output->writeln($yyp);
+        $depmanentity = new DepManEntity(false);
+        $depmanentity->initialize(realpath('.'), $name, $description, $license, $homepage, $yyp);
+        $output->writeln('GMDepMan file initialized.');
     }
 }
