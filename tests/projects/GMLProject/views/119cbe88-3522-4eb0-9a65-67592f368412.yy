@@ -8,8 +8,6 @@
     ],
     "filterType": "GMObject",
     "folderName": "parents",
-    "folderColour": "#FFCCCCCC",
     "isDefaultView": true,
-    "localisedFolderName": "",
-    "colour": "#FFCCCCCC"
+    "localisedFolderName": ""
 }
