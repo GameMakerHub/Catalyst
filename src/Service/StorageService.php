@@ -3,23 +3,23 @@
 namespace GMDepMan\Service;
 
 use Assert\Assertion;
-use GMDepMan\Entity\ProjectEntity;
+use GMDepMan\Entity\YoYoProjectEntity;
 
 class StorageService
 {
     /**
      * @param string $filename
-     * @return ProjectEntity
+     * @return YoYoProjectEntity
      */
     public function loadYyp(string $filename) {
         Assertion::file($filename);
 
-        $project = new ProjectEntity();
+        $project = new YoYoProjectEntity();
         $project->fromJson(file_get_contents($filename));
         return $project;
     }
 
-    public function saveYyp(ProjectEntity $projectEntity) {
+    public function saveYyp(YoYoProjectEntity $projectEntity) {
         //stub
     }
 }

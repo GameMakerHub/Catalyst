@@ -22,7 +22,7 @@ class DepManEntity {
         'proprietary'
     ];
 
-    /** @var ProjectEntity */
+    /** @var YoYoProjectEntity */
     private $projectEntity;
 
     /** @var string */
@@ -87,14 +87,14 @@ class DepManEntity {
         }
 
         // Load config from file
-        $config = json_decode($this->projectPath . '/gmdepman.json');
+        $config = json_decode(file_get_contents($this->projectPath . '/gmdepman.json'));
         if (null === $config) {
             throw new MalformedProjectFileException('gmdepman.json is malformed');
         }
 
         $this->yyp = $config->yyp ?? null;
         $projectFilename = $this->projectPath . '/' . $this->yyp;
-        $this->projectEntity = (new ProjectEntity())->load($projectFilename);
+        $this->projectEntity = (new YoYoProjectEntity())->load(file_get_contents($projectFilename));
 
         try {
             Assertion::file($projectFilename);
@@ -106,6 +106,11 @@ class DepManEntity {
         $this->description = $config->description ?? null;
         $this->license = $config->license ?? null;
         $this->homepage = $config->homepage ?? null;
+    }
+
+    public function projectEntity() : YoYoProjectEntity
+    {
+        return $this->projectEntity;
     }
 
     /**

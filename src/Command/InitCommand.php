@@ -83,6 +83,7 @@ class InitCommand extends Command
         try {
             Assertion::file('./.git/config');
             preg_match('~\[remote[.\s\S]*url = git@(.*)\.git~', file_get_contents('./.git/config'), $matches);
+            \Assert\Assertion::count($matches, 2);
             $madeUrl = 'https://' . str_replace(':', '/', $matches[1]);
             \Assert\Assertion::url($madeUrl);
         } catch (\Exception $e) {
