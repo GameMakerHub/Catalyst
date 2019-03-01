@@ -6,7 +6,7 @@ use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CreateUserCommandTest extends \PHPUnit\Framework\TestCase
+class InitCommandTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Application */
     private $application;
@@ -19,11 +19,15 @@ class CreateUserCommandTest extends \PHPUnit\Framework\TestCase
 
     public function testExecute()
     {
-        $command = $this->application->find('test-project');
+        $command = $this->application->find('init');
         $commandTester = new CommandTester($command);
         $commandTester->execute([
-            'command'  => $command->getName(),
-            'yyp' => 'yypfile',
+            'command'  => $command->getName()
+        ]);
+
+        $commandTester->setInputs([
+            'test/test',
+            ''
         ]);
 
         $output = $commandTester->getDisplay();
