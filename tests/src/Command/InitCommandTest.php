@@ -14,6 +14,7 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->application = new Application();
+        //$this->storageService = new Mockery
         $this->application->add(new InitCommand(new StorageService()));
     }
 
@@ -21,13 +22,17 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
     {
         $command = $this->application->find('init');
         $commandTester = new CommandTester($command);
-        $commandTester->execute([
-            'command'  => $command->getName()
-        ]);
 
         $commandTester->setInputs([
             'test/test',
-            ''
+            'description',
+            0,
+            'http://www.dukesoft.nl/',
+            'GMLProject.yyp'
+        ]);
+
+        $commandTester->execute([
+            'command'  => $command->getName()
         ]);
 
         $output = $commandTester->getDisplay();

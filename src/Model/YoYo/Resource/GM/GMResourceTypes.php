@@ -11,6 +11,9 @@ use GMDepMan\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
 
 class GMResourceTypes {
 
+    const GM_OPTIONS = 'GMOptions';
+    const GM_ROOT = 'root';
+
     const GM_FOLDER = 'GMFolder';
 
     const GM_ROOM = 'GMRoom';

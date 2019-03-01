@@ -35,7 +35,11 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (file_exists('gmdepman.json') || file_exists('gmdepman.gdm')) {
+
+        if (
+            $this->storageService->fileExists('gmdepman.json')
+            || $this->storageService->fileExists('gmdepman.gdm')
+        ) {
             $output->writeln('A GMDepMan file is already present.');
             return;
         }

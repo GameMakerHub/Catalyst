@@ -93,14 +93,7 @@ class DepManEntity {
         }
 
         $this->yyp = $config->yyp ?? null;
-        $projectFilename = $this->projectPath . '/' . $this->yyp;
-        $this->projectEntity = (new YoYoProjectEntity())->load(file_get_contents($projectFilename));
-
-        try {
-            Assertion::file($projectFilename);
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('Project file ' . $projectFilename . ' does not exist');
-        }
+        $this->projectEntity = (new YoYoProjectEntity())->load($this);
 
         $this->name = $config->name;
         $this->description = $config->description ?? null;
@@ -108,23 +101,17 @@ class DepManEntity {
         $this->homepage = $config->homepage ?? null;
     }
 
-    public function projectEntity() : YoYoProjectEntity
+    public function projectEntity():YoYoProjectEntity
     {
         return $this->projectEntity;
     }
 
-    /**
-     * @return string
-     */
-    public function getGdm()
+    public function getGdm():string
     {
         return serialize($this->depData);
     }
 
-    /**
-     * @return string
-     */
-    public function getJson()
+    public function getJson():string
     {
         $jsonObj = new \stdClass();
 
@@ -135,6 +122,16 @@ class DepManEntity {
         $jsonObj->yyp = $this->yyp;
 
         return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    }
+
+    public function getProjectPath():string
+    {
+        return realpath($this->projectPath);
+    }
+
+    public function getYypFilename():string
+    {
+        return realpath($this->projectPath) . '/' . $this->yyp;
     }
 
     /**

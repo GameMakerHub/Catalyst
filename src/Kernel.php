@@ -23,6 +23,7 @@ final class Kernel extends BaseKernel
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/../config/services.yml');
+        //$loader->load(__DIR__ . '/../config/services.php'); //@todo, so we can remove YAML
     }
 
     protected function build(ContainerBuilder $containerBuilder): void

@@ -1,9 +1,11 @@
 <?php
 namespace GMDepMan\Traits;
 
+use GMDepMan\Entity\DepManEntity;
+
 trait JsonUnpacker {
 
-    public function unpack($originalData)
+    public function unpack($originalData, DepManEntity $depmanEntity)
     {
         foreach ($originalData as $key => $data) {
 
@@ -17,7 +19,7 @@ trait JsonUnpacker {
                     foreach ($data as $newItem) {
                         /** @var JsonUnpacker $newValue */
                         $newValue = new $newClass();
-                        $newValue->unpack($newItem);
+                        $newValue->unpack($newItem, $depmanEntity);
                         $this->{$key}[] = $newValue;
                     }
                     continue;
@@ -26,7 +28,7 @@ trait JsonUnpacker {
                     if (!in_array($propertyType, ['bool', 'string'])) {
                         /** @var JsonUnpacker $value */
                         $value = new $propertyType();
-                        $value->unpack($data);
+                        $value->unpack($data, $depmanEntity);
                     }
 
                     $this->{$key} = $value;

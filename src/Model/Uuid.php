@@ -29,4 +29,8 @@ class Uuid implements \JsonSerializable {
     {
         $this->value = \Ramsey\Uuid\Uuid::fromString($value);
     }
+
+    public function equals(\Ramsey\Uuid\Uuid $uuid):bool {
+        return $this->value->equals($uuid);
+    }
 }
