@@ -7,7 +7,38 @@ use GMDepMan\Entity\DepManEntity;
 
 class PackageService
 {
-    public function getPackage(string $identifier):DepManEntity {
+    const REPO_DIRECTORY = 'directory';
+    const REPO_VCS = 'vcs';
+    const REPO_GMDEPMAN = 'gmdepman';
+
+    private $repositories = [
+        [
+            'type' => self::REPO_DIRECTORY,
+            'uri' => 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests\projects'
+        ],
+    ];
+
+    private $repositories_EXAMPLE = [
+        [
+            'type' => self::REPO_DIRECTORY,
+            'uri' => 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests\projects'
+        ],
+        [
+            'type' => self::REPO_VCS,
+            'uri' => 'git@github.com:GameMakerHub/GameMakerStandards.git'
+        ],
+        [
+            'type' => self::REPO_VCS,
+            'uri' => 'https://github.com/GameMakerHub/GameMakerStandards.git'
+        ],
+        [
+            'type' => self::REPO_GMDEPMAN,
+            'uri' => 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json'
+        ],
+    ];
+
+    public function getPackage(string $package, string $version):DepManEntity {
+        throw new \InvalidArgumentException('TODO check repo for package');
         return $this->getPackageByPath($identifier);
     }
 

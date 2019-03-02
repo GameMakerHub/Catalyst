@@ -2,6 +2,7 @@
 
 namespace GMDepMan\Command;
 
+use Composer\Semver\Semver;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Service\PackageService;
 use GMDepMan\Service\StorageService;
@@ -28,7 +29,7 @@ class RequireCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Require a dependency')
+            ->setDescription('Require a dependency (vendor/package@version or vendor/package)')
             ->setHelp('Adds a package as dependency to the current project')
             ->addArgument('package', InputArgument::REQUIRED, 'GDM Package name or URI');
     }
@@ -36,16 +37,29 @@ class RequireCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $thisDepMan = new DepManEntity(realpath('.'));
-        $requiredPackage = $this->packageService->getPackage($input->getArgument('package'));
 
-        $output->writeln('Require version <fg=green>' . $requiredPackage->version() . '</> for <fg=green>' . $requiredPackage->name() . '</>');
-
-        if ($thisDepMan->hasPackage($requiredPackage->name())) {
-            $output->writeln('<bg=red>' . $requiredPackage->name() . ' is already required</>');
+        $version = 'dev-master';
+        preg_match('~^([a-z0-9]+\/[a-z0-9]+)(\@[a-z0-9.\-\*\^]+)?$~', $input->getArgument('package'), $matches);
+        if (!isset($matches[1])) {
+            $output->writeln('<bg=red>Invalid or missing package name (format must be vendor/package or vendor/package@version)</>');
             return 1;
         }
 
-        $thisDepMan->require($requiredPackage);
+        $package = $matches[1];
+        if (isset($matches[2])) {
+            $version = substr($matches[2], 1, strlen($matches[2])-1);
+        }
+
+        $output->writeln('Require version <fg=green>' . $version . '</> for <fg=green>' . $package . '</>');
+
+        if ($thisDepMan->hasPackage($package)) {
+            $output->writeln('<bg=red>' . $package . ' is already required</>');
+            return 1;
+        }
+
+        $this->packageService->getPackage($package, $version);
+
+        $thisDepMan->require($package, $version);
 
         $thisDepMan->save();
         $output->writeln('<fg=green>gmdepman.json has been updated</>');

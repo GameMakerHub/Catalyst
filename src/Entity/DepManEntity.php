@@ -71,8 +71,8 @@ class DepManEntity {
         return array_key_exists($packageName, $this->require);
     }
 
-    public function require(DepManEntity $package) {
-        $this->require[$package->name()] = $package->version();
+    public function require(string $package, string $version) {
+        $this->require[$package] = $version;
     }
 
     /**
@@ -117,7 +117,7 @@ class DepManEntity {
         $this->homepage = $config->homepage ?? null;
         $this->version = $config->version ?? null;
         $this->version = $config->version ?? null;
-        $this->require = $config->require ?? [];
+        $this->require = (array) $config->require ?? [];
         if (empty($this->version)) { throw new MalformedProjectFileException('gmdepman.json missing version'); }
     }
 
