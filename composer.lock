@@ -4,62 +4,69 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf4a85d25a4770f708003a692d4f2284",
+    "content-hash": "310d7f62467964823e0616b6a7683383",
     "packages": [
         {
-            "name": "beberlei/assert",
+            "name": "composer/semver",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/beberlei/assert.git",
-                "reference": "9b8ee759e437a63eefaf76340fc853935d58f3b5"
+                "url": "https://github.com/composer/semver.git",
+                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/9b8ee759e437a63eefaf76340fc853935d58f3b5",
-                "reference": "9b8ee759e437a63eefaf76340fc853935d58f3b5",
+                "url": "https://api.github.com/repos/composer/semver/zipball/e97856ee51b93ba42666de1f1d481d142ec62220",
+                "reference": "e97856ee51b93ba42666de1f1d481d142ec62220",
                 "shasum": ""
             },
             "require": {
-                "php": "^7"
+                "php": "^5.3.2 || ^7.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "*",
-                "phpstan/phpstan-shim": "*",
-                "phpunit/phpunit": ">=6.0.0 <8"
+                "phpunit/phpunit": "^4.5 || ^5.0.5",
+                "phpunit/phpunit-mock-objects": "2.3.0 || ^3.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
-                    "Assert\\": "lib/Assert"
-                },
-                "files": [
-                    "lib/Assert/functions.php"
-                ]
+                    "Composer\\Semver\\": "src"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-2-Clause"
+                "MIT"
             ],
             "authors": [
                 {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de",
-                    "role": "Lead Developer"
+                    "name": "Nils Adermann",
+                    "email": "naderman@naderman.de",
+                    "homepage": "http://www.naderman.de"
                 },
                 {
-                    "name": "Richard Quadling",
-                    "email": "rquadling@gmail.com",
-                    "role": "Collaborator"
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "http://seld.be"
+                },
+                {
+                    "name": "Rob Bast",
+                    "email": "rob.bast@gmail.com",
+                    "homepage": "http://robbast.nl"
                 }
             ],
-            "description": "Thin assertion library for input validation in business models.",
+            "description": "Semver library that offers utilities, version constraint parsing and validation.",
             "keywords": [
-                "assert",
-                "assertion",
-                "validation"
+                "semantic",
+                "semver",
+                "validation",
+                "versioning"
             ],
-            "time": "2019-02-22T15:52:05+00:00"
+            "time": "2019-01-30T14:33:02+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -2523,6 +2530,61 @@
     ],
     "packages-dev": [
         {
+            "name": "beberlei/assert",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/assert.git",
+                "reference": "9b8ee759e437a63eefaf76340fc853935d58f3b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/9b8ee759e437a63eefaf76340fc853935d58f3b5",
+                "reference": "9b8ee759e437a63eefaf76340fc853935d58f3b5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "*",
+                "phpstan/phpstan-shim": "*",
+                "phpunit/phpunit": ">=6.0.0 <8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Assert\\": "lib/Assert"
+                },
+                "files": [
+                    "lib/Assert/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Richard Quadling",
+                    "email": "rquadling@gmail.com",
+                    "role": "Collaborator"
+                }
+            ],
+            "description": "Thin assertion library for input validation in business models.",
+            "keywords": [
+                "assert",
+                "assertion",
+                "validation"
+            ],
+            "time": "2019-02-22T15:52:05+00:00"
+        },
+        {
             "name": "hamcrest/hamcrest-php",
             "version": "dev-master",
             "source": {
@@ -2704,8 +2766,9 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "beberlei/assert": 20,
         "ramsey/uuid": 20,
+        "composer/semver": 20,
+        "beberlei/assert": 20,
         "mockery/mockery": 20
     },
     "prefer-stable": false,

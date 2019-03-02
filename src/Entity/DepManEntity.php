@@ -4,6 +4,8 @@ namespace GMDepMan\Entity;
 use Assert\Assert;
 use Assert\Assertion;
 use Assert\AssertionFailedException;
+use Composer\Semver\Semver;
+use Composer\Semver\VersionParser;
 use GMDepMan\Exception\MalformedProjectFileException;
 use Symfony\Component\Console\Output\Output;
 
@@ -46,6 +48,9 @@ class DepManEntity {
     /** @var string */
     private $projectPath;
 
+    /** @var string */
+    private $version;
+
     public function initialize(string $projectPath, string $name, string $description, string $license, string $homepage, string $yyp)
     {
         $this->projectPath = $projectPath;
@@ -54,10 +59,20 @@ class DepManEntity {
         $this->license = $license;
         $this->homepage = $homepage;
         $this->yyp = $yyp;
+        $this->version = '0.0.1';
+        $this->require = [];
 
         $this->depData = new \stdClass();
 
         $this->save();
+    }
+
+    public function hasPackage(string $packageName):bool {
+        return array_key_exists($packageName, $this->require);
+    }
+
+    public function require(DepManEntity $package) {
+        $this->require[$package->name()] = $package->version();
     }
 
     /**
@@ -96,9 +111,14 @@ class DepManEntity {
         $this->projectEntity = (new YoYoProjectEntity())->load($this);
 
         $this->name = $config->name;
+        if (empty($this->name)) { throw new MalformedProjectFileException('gmdepman.json missing name'); }
         $this->description = $config->description ?? null;
         $this->license = $config->license ?? null;
         $this->homepage = $config->homepage ?? null;
+        $this->version = $config->version ?? null;
+        $this->version = $config->version ?? null;
+        $this->require = $config->require ?? [];
+        if (empty($this->version)) { throw new MalformedProjectFileException('gmdepman.json missing version'); }
     }
 
     public function projectEntity():YoYoProjectEntity
@@ -120,6 +140,8 @@ class DepManEntity {
         $jsonObj->license = $this->license;
         $jsonObj->homepage = $this->homepage;
         $jsonObj->yyp = $this->yyp;
+        $jsonObj->version = $this->version;
+        if (count($this->require)) { $jsonObj->require = $this->require; }
 
         return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
@@ -141,5 +163,15 @@ class DepManEntity {
     {
         file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
         file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
+    }
+
+    public function version()
+    {
+        return $this->version;
+    }
+
+    public function name()
+    {
+        return $this->name;
     }
 }

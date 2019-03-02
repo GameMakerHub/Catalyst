@@ -3,5 +3,6 @@
     "description": "Simple project",
     "license": "MIT",
     "homepage": "https://github.com/robquistnl/simple",
-    "yyp": "SimpleProject.yyp"
+    "yyp": "SimpleProject.yyp",
+    "version": "0.0.1"
 }

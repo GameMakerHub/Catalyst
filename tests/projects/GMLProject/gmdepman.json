@@ -3,5 +3,6 @@
     "description": "A testing project with some contents",
     "license": "MIT",
     "homepage": "http://www.dukesoft.nl",
-    "yyp": "GMLProject.yyp"
+    "yyp": "GMLProject.yyp",
+    "version": "0.0.1"
 }

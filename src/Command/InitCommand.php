@@ -19,9 +19,9 @@ class InitCommand extends Command
     /** @var StorageService */
     private $storageService;
 
-    public function __construct(StorageService $storageService)
+    public function __construct(StorageService $packageService)
     {
-        $this->storageService = $storageService;
+        $this->storageService = $packageService;
 
         parent::__construct();
     }
