@@ -51,6 +51,9 @@ class DepManEntity {
     /** @var string */
     private $version;
 
+    /** @var array */
+    private $repositories = [];
+
     public function initialize(string $projectPath, string $name, string $description, string $license, string $homepage, string $yyp)
     {
         $this->projectPath = $projectPath;
@@ -61,6 +64,7 @@ class DepManEntity {
         $this->yyp = $yyp;
         $this->version = '0.0.1';
         $this->require = [];
+        $this->repositories = [];
 
         $this->depData = new \stdClass();
 
@@ -116,8 +120,10 @@ class DepManEntity {
         $this->license = $config->license ?? null;
         $this->homepage = $config->homepage ?? null;
         $this->version = $config->version ?? null;
-        $this->version = $config->version ?? null;
-        $this->require = (array) $config->require ?? [];
+        $this->require = (array) ($config->require ?? []);
+
+
+
         if (empty($this->version)) { throw new MalformedProjectFileException('gmdepman.json missing version'); }
     }
 

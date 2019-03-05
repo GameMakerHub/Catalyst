@@ -4,42 +4,59 @@ namespace GMDepMan\Service;
 
 use Assert\Assertion;
 use GMDepMan\Entity\DepManEntity;
+use GMDepMan\Exception\PackageNotFoundException;
+use GMDepMan\Model\Repository;
 
 class PackageService
 {
-    const REPO_DIRECTORY = 'directory';
-    const REPO_VCS = 'vcs';
-    const REPO_GMDEPMAN = 'gmdepman';
-
-    private $repositories = [
-        [
-            'type' => self::REPO_DIRECTORY,
-            'uri' => 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests\projects'
-        ],
-    ];
 
     private $repositories_EXAMPLE = [
         [
-            'type' => self::REPO_DIRECTORY,
+            'type' => Repository::REPO_DIRECTORY,
             'uri' => 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests\projects'
         ],
         [
-            'type' => self::REPO_VCS,
+            'type' => Repository::REPO_VCS,
             'uri' => 'git@github.com:GameMakerHub/GameMakerStandards.git'
         ],
         [
-            'type' => self::REPO_VCS,
+            'type' => Repository::REPO_VCS,
             'uri' => 'https://github.com/GameMakerHub/GameMakerStandards.git'
         ],
         [
-            'type' => self::REPO_GMDEPMAN,
+            'type' => Repository::REPO_GMDEPMAN,
             'uri' => 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json'
         ],
     ];
 
-    public function getPackage(string $package, string $version):DepManEntity {
-        throw new \InvalidArgumentException('TODO check repo for package');
-        return $this->getPackageByPath($identifier);
+    /**
+     * @return Repository[]
+     */
+    public function getDefaultRepositories():array
+    {
+        return [
+            new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests')
+        ];
+    }
+
+    /**
+     * @param string $package
+     * @param string $version
+     * @param array|null $repositoriesOverride
+     * @return DepManEntity
+     */
+    public function getPackage(string $package, string $version, array $repositoriesOverride = []):DepManEntity {
+
+        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
+
+        foreach ($repositories as $repository) {
+            try {
+                return $repository->findPackage($package, $version);
+            } catch (PackageNotFoundException $e) {
+            }
+        }
+
+        throw new PackageNotFoundException($package, $version);
     }
 
     public function getPackageByPath(string $projectPath):DepManEntity {

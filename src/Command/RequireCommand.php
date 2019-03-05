@@ -2,14 +2,11 @@
 
 namespace GMDepMan\Command;
 
-use Composer\Semver\Semver;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Service\PackageService;
-use GMDepMan\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RequireCommand extends Command
@@ -38,8 +35,8 @@ class RequireCommand extends Command
     {
         $thisDepMan = new DepManEntity(realpath('.'));
 
-        $version = 'dev-master';
-        preg_match('~^([a-z0-9]+\/[a-z0-9]+)(\@[a-z0-9.\-\*\^]+)?$~', $input->getArgument('package'), $matches);
+        $version = '*';
+        preg_match('~^([a-z0-9-]+\/[a-z0-9-]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
         if (!isset($matches[1])) {
             $output->writeln('<bg=red>Invalid or missing package name (format must be vendor/package or vendor/package@version)</>');
             return 1;
@@ -48,6 +45,11 @@ class RequireCommand extends Command
         $package = $matches[1];
         if (isset($matches[2])) {
             $version = substr($matches[2], 1, strlen($matches[2])-1);
+        }
+
+        if ($package == $thisDepMan->name()) {
+            $output->writeln('<bg=red>Package can not require itself</>');
+            return 1;
         }
 
         $output->writeln('Require version <fg=green>' . $version . '</> for <fg=green>' . $package . '</>');
