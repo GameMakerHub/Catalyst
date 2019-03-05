@@ -4,5 +4,8 @@
     "license": "MIT",
     "homepage": "https://github.com/robquistnl/simple",
     "yyp": "SimpleProject.yyp",
-    "version": "0.0.1"
+    "version": "1.0.1",
+    "require": {
+        "dukesoft/other-project": "^1.2"
+    }
 }

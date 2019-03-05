@@ -4,6 +4,7 @@ namespace GMDepMan\Model;
 use Composer\Semver\Semver;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Exception\PackageNotFoundException;
+use GMDepMan\Exception\PackageNotSatisfiableException;
 
 class Repository implements \JsonSerializable {
 
@@ -34,7 +35,7 @@ class Repository implements \JsonSerializable {
         return $this;
     }
 
-    public function findPackage(string $packageName, string $version):DepManEntity
+    public function getSatisfiableVersions(string $packageName, string $version):array
     {
         $this->scanPackagesIfNotScanned();
 
@@ -44,11 +45,19 @@ class Repository implements \JsonSerializable {
 
         $satisfied = Semver::satisfiedBy(array_keys($this->availablePackages[$packageName]), $version);
         if (count($satisfied)) {
-            $sorted = Semver::rsort($satisfied);
-            return new DepManEntity($this->availablePackages[$packageName][$sorted[0]]);
+            return Semver::rsort($satisfied);
+        }
+        throw new PackageNotFoundException($packageName, $version);
+    }
+
+    public function findPackage(string $packageName, string $version):DepManEntity
+    {
+        $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
+        if (count($satisfieableVersions)) {
+            return new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
         }
 
-        throw new PackageNotFoundException($packageName, $version);
+        throw new PackageNotSatisfiableException($packageName, $version);
     }
 
     private function scanPackagesIfNotScanned():void
@@ -86,12 +95,13 @@ class Repository implements \JsonSerializable {
                     }
 
                     $this->availablePackages[$jsonData->name][$jsonData->version] = $packagePath;
-                    $this->availablePackages[$jsonData->name]['1.1.0'] = $packagePath;
-                    $this->availablePackages[$jsonData->name]['dev-master'] = $packagePath;
-                    $this->availablePackages[$jsonData->name]['1.0.3'] = $packagePath;
-                    $this->availablePackages[$jsonData->name]['1.1.1'] = $packagePath;
-                    $this->availablePackages[$jsonData->name]['1.0.3-rc2'] = $packagePath;
-
+                    /*
+                        $this->availablePackages[$jsonData->name]['1.1.0'] = $packagePath;
+                        $this->availablePackages[$jsonData->name]['dev-master'] = $packagePath;
+                        $this->availablePackages[$jsonData->name]['1.0.3'] = $packagePath;
+                        $this->availablePackages[$jsonData->name]['1.1.1'] = $packagePath;
+                        $this->availablePackages[$jsonData->name]['1.0.3-rc2'] = $packagePath;
+                    */
                 }
             } catch (\Exception $e) {
                 // ignore

@@ -5,6 +5,7 @@ namespace GMDepMan\Service;
 use Assert\Assertion;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Exception\PackageNotFoundException;
+use GMDepMan\Exception\PackageNotSatisfiableException;
 use GMDepMan\Model\Repository;
 
 class PackageService
@@ -57,6 +58,27 @@ class PackageService
         }
 
         throw new PackageNotFoundException($package, $version);
+    }
+
+    /**
+     * @param string $package
+     * @param string $version
+     * @param array|null $repositoriesOverride
+     * @return array
+     */
+    public function getSatisfiableVersions(string $package, string $version, array $repositoriesOverride = []):array {
+
+        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
+        $versions = [];
+
+        foreach ($repositories as $repository) {
+            try {
+                $versions += $repository->getSatisfiableVersions($package, $version);
+            } catch (PackageNotFoundException $e) {
+            }
+        }
+
+        return $versions;
     }
 
     public function getPackageByPath(string $projectPath):DepManEntity {
