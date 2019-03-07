@@ -105,6 +105,14 @@
             }
         },
         {
+            "Key": "6fd70c5a-55a8-4c35-842d-5e0cb43993d6",
+            "Value": {
+                "id": "e4d22e04-b54f-4bc2-874d-3512e3b23252",
+                "resourcePath": "objects\\obj_using_simple_project\\obj_using_simple_project.yy",
+                "resourceType": "GMObject"
+            }
+        },
+        {
             "Key": "75ac291e-7061-4bcb-8e8a-3b3545332d41",
             "Value": {
                 "id": "5fd3a671-3a10-4707-ad45-9394ae707436",
