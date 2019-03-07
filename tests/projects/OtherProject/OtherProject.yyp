@@ -50,7 +50,7 @@
             "Key": "2c06e728-9bcc-48ab-bbe4-82c08afddf60",
             "Value": {
                 "id": "98b52d0e-7d4a-4407-9fb2-0f3cae5e39bb",
-                "resourcePath": "sprites\\spr_simple_dots\\spr_simple_dots.yy",
+                "resourcePath": "sprites\\spr_other_squares\\spr_other_squares.yy",
                 "resourceType": "GMSprite"
             }
         },
@@ -124,14 +124,6 @@
                 "id": "0668a571-3d11-4f49-b8e2-c26378e6f86d",
                 "resourcePath": "options\\ios\\options_ios.yy",
                 "resourceType": "GMiOSOptions"
-            }
-        },
-        {
-            "Key": "901fbca0-5c7d-44f7-a6d3-e4aca33a147d",
-            "Value": {
-                "id": "60c2cc17-1459-4406-b803-b6f24ecf2da0",
-                "resourcePath": "scripts\\scr_simple_test\\scr_simple_test.yy",
-                "resourceType": "GMScript"
             }
         },
         {
@@ -232,7 +224,7 @@
         }
     ],
     "script_order": [
-        "901fbca0-5c7d-44f7-a6d3-e4aca33a147d"
+        
     ],
     "tutorial": ""
 }
