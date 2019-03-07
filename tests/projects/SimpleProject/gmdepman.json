@@ -6,6 +6,5 @@
     "yyp": "SimpleProject.yyp",
     "version": "1.0.1",
     "require": {
-        "dukesoft/other-project": "^1.2"
     }
 }
