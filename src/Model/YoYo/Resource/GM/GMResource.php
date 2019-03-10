@@ -92,7 +92,7 @@ abstract class GMResource
 
     public function save()
     {
-        var_dump($this->getJson(), $this->getFilePath());
-        //file_put_contents($this->getFilePath(), $this->getJson());
+        //var_dump($this->getJson(), $this->getFilePath());
+        file_put_contents($this->getFilePath(), $this->getJson());
     }
 }

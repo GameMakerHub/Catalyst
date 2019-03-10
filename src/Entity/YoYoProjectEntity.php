@@ -174,9 +174,9 @@ class YoYoProjectEntity {
                 $resource->gmResource()->save();
             }
         }
-        var_dump($this->depManEntity->getYypFilename(), $this->getJson());
-        //file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
-        die;
+        //var_dump($this->depManEntity->getYypFilename(), $this->getJson());
+        file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
+        //die;
         return true;
     }
 }
