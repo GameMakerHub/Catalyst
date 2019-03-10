@@ -11,12 +11,6 @@ class GMFolder extends GMResource {
     /** @var string */
     public $folderName;
 
-    public $mvc = '1.1';
-
-    public $isDefaultView = false;
-
-    public $localisedFolderName = '';
-
     public static function createNew($folderName, $forType)
     {
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $folderName);

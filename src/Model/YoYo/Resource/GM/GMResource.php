@@ -4,7 +4,7 @@ namespace GMDepMan\Model\YoYo\Resource\GM;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Traits\JsonUnpacker;
 
-abstract class GMResource
+abstract class GMResource implements \JsonSerializable
 {
 
     use JsonUnpacker;
@@ -16,7 +16,16 @@ abstract class GMResource
     public $modelName;
 
     /** @var string */
+    public $mvc = '1.1';
+
+    /** @var string */
     public $name;
+
+    /** @var bool */
+    public $isDefaultView = false;
+
+    /** @var string */
+    public $localisedFolderName = '';
 
     /** @var string */
     public $filterType;
@@ -83,6 +92,29 @@ abstract class GMResource
     public function getFilePath()
     {
         return $this->_filePath;
+    }
+
+    public function jsonSerialize()
+    {
+        //Creating a new object to get the order of the JSON file OK, so the diff doesn't explode
+        $newObj = new \stdClass();
+        $newObj->id = $this->id;
+        $newObj->modelName = $this->modelName;
+        $newObj->mvc = $this->mvc;
+        $newObj->name = $this->name;
+        if (isset($this->children)) {
+            $newObj->children = $this->children;
+        }
+        $newObj->filterType = $this->filterType;
+        if (isset($this->folderName)) {
+            $newObj->folderName = $this->folderName;
+        }
+        $newObj->isDefaultView = $this->isDefaultView;
+        if (isset($this->localisedFolderName)) {
+            $newObj->localisedFolderName = $this->localisedFolderName;
+        }
+
+        return $newObj;
     }
 
     public function getJson()
