@@ -69,16 +69,16 @@ class Resource implements \JsonSerializable {
 
     public function jsonSerialize()
     {
-        return self::makeJsonObject($this->gmResource, $this->resourceType);
+        return self::makeJsonObject($this->key, $this->id, $this->resourceType, $this->gmResource);
     }
 
-    private static function makeJsonObject(GMResource $resource, $type)
+    private static function makeJsonObject($key, $id, $type, GMResource $resource)
     {
         $jsonObj = new \stdClass();
-        $jsonObj->Key = (string) $resource->id;
+        $jsonObj->Key = $key;
 
         $jsonObj->Value = new \stdClass();
-        $jsonObj->Value->id = (string) $resource->id;
+        $jsonObj->Value->id = $id;
         $jsonObj->Value->resourcePath = $resource->getFilePath();
         $jsonObj->Value->resourceType = $type;
 
@@ -86,7 +86,7 @@ class Resource implements \JsonSerializable {
     }
 
     public static function createFolder(DepManEntity $depManEntity, GMFolder $resource):self {
-        $jsonObj = self::makeJsonObject($resource, GMResourceTypes::GM_FOLDER);
+        $jsonObj = self::makeJsonObject((string) $resource->id, (string) $resource->id, GMResourceTypes::GM_FOLDER, $resource);
 
         return new self(
             $depManEntity,
