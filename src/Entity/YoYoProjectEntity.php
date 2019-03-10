@@ -138,15 +138,10 @@ class YoYoProjectEntity {
             throw new \InvalidArgumentException('Folder path is not a folder');
         }
         $newObj = Resource\GM\GMFolder::createNew($folders[0], $newChild->filterType);
+        $this->resources[] = Resource::createFolder($this->depManEntity, $newObj);
         $newChild->addChild($newObj);
-        var_dump('CREATING NEW FOLDER FOR ' . $folders[0]);
-        die;
-        /*$guid = \Ramsey\Uuid\Uuid::uuid5('GMDepMan', $folders[0]);
-        file_put_contents()
-
-        $newFolder = Resource\GM\GMFolder::class
-        $newChild->addChild()
-        */
+        $newChild->markEdited();
+        return true;
     }
 
     /**
@@ -154,7 +149,9 @@ class YoYoProjectEntity {
      */
     public function getJson()
     {
-        return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $newObject = $this->originalData;
+        $newObject->resources = array_values($this->resources);
+        return json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -170,4 +167,16 @@ class YoYoProjectEntity {
         return $this->_children;
     }
 
+    public function save()
+    {
+        foreach ($this->resources as $resource) {
+            if ($resource->gmResource()->isEdited()) {
+                $resource->gmResource()->save();
+            }
+        }
+        var_dump($this->depManEntity->getYypFilename(), $this->getJson());
+        //file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
+        die;
+        return true;
+    }
 }

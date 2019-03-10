@@ -3,10 +3,11 @@ namespace GMDepMan\Model\YoYo;
 
 use Assert\Assertion;
 use GMDepMan\Entity\DepManEntity;
+use GMDepMan\Model\YoYo\Resource\GM\GMFolder;
 use GMDepMan\Model\YoYo\Resource\GM\GMResource;
 use GMDepMan\Model\YoYo\Resource\GM\GMResourceTypes;
 
-class Resource {
+class Resource implements \JsonSerializable {
 
     /** @var string */
     private $id;
@@ -29,7 +30,7 @@ class Resource {
     /** @var DepManEntity */
     private $depManEntity;
 
-    public function __construct(DepManEntity $depManEntity, \stdClass $gmJsonResource)
+    public function __construct(DepManEntity $depManEntity, \stdClass $gmJsonResource, $gmResource = null)
     {
         $this->depManEntity = $depManEntity;
         $this->id = $gmJsonResource->Value->id;
@@ -44,7 +45,11 @@ class Resource {
         );
 
         $className = GMResourceTypes::TYPEMAP[$this->resourceType];
-        $this->gmResource = new $className($this->depManEntity->getProjectPath() . '/' . $this->resourcePath, $this->depManEntity);
+        if ($gmResource === null) {
+            $this->gmResource = new $className($this->resourcePath, $this->depManEntity);
+        } else {
+            $this->gmResource = $gmResource;
+        }
     }
 
     public function key():string
@@ -60,6 +65,34 @@ class Resource {
     public function children():array
     {
         return $this->children;
+    }
+
+    public function jsonSerialize()
+    {
+        return self::makeJsonObject($this->gmResource, $this->resourceType);
+    }
+
+    private static function makeJsonObject(GMResource $resource, $type)
+    {
+        $jsonObj = new \stdClass();
+        $jsonObj->Key = (string) $resource->id;
+
+        $jsonObj->Value = new \stdClass();
+        $jsonObj->Value->id = (string) $resource->id;
+        $jsonObj->Value->resourcePath = $resource->getFilePath();
+        $jsonObj->Value->resourceType = $type;
+
+        return $jsonObj;
+    }
+
+    public static function createFolder(DepManEntity $depManEntity, GMFolder $resource):self {
+        $jsonObj = self::makeJsonObject($resource, GMResourceTypes::GM_FOLDER);
+
+        return new self(
+            $depManEntity,
+            $jsonObj,
+            $resource
+        );
     }
 
 }

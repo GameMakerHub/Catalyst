@@ -19,15 +19,16 @@ class GMFolder extends GMResource {
 
     public static function createNew($folderName, $forType)
     {
-        $newObj = new self(false);
-
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $folderName);
+
+        $newObj = new self('views\\' . $newUuid . '.yy', null, false);
         $newObj->id = new Uuid();
         $newObj->id->value = $newUuid;
         $newObj->name = (string) $newObj->id;
         $newObj->filterType = $forType;
         $newObj->modelName = GMResourceTypes::GM_FOLDER;
         $newObj->folderName = $folderName;
+        $newObj->markEdited();
 
         return $newObj;
     }

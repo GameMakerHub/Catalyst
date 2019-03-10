@@ -205,7 +205,8 @@ class DepManEntity {
                     $this->projectEntity()->createGmFolder($name . '/vendor');
                 }
 
-                var_dump($this->projectEntity()->getGmFolderByName($name . '/vendor'));
+                //var_dump($this->projectEntity()->getGmFolderByName($name . '/vendor'));
+                $this->projectEntity()->save();
                 die;
                 //$thisDepMan->addVendorFolder($name, $newPackage);
                 //die;
