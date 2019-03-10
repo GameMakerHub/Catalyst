@@ -7,7 +7,6 @@ use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Exception\UnresolveableDependenciesException;
 use GMDepMan\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,15 +43,15 @@ class InstallCommand extends Command
 
         //$requiredPackage = $this->packageService->getPackage($input->getArgument('package'));
 
+        $this->installDependencies($thisDepMan, $output);
+
         //$output->writeln('Require version <fg=green>' . $requiredPackage->version() . '</> for <fg=green>' . $requiredPackage->name() . '</>');
-
-
     }
 
     private function solveDependencies(DepManEntity $depManEntity, OutputInterface $output, $indentLevel = 0)
     {
         foreach ($depManEntity->require as $package => $version) {
-            $output->writeln(str_repeat('  ', $indentLevel) . 'Package <fg=green>' . $depManEntity->name() . '</>@<fg=green>' . $depManEntity->version() . '</> depends on <fg=yellow>' . $package . '</>@<fg=yellow>' . $version . '</>', Output::VERBOSITY_VERBOSE);
+            $output->writeln(str_repeat('  ', $indentLevel) . 'Package <fg=green>' . $depManEntity->name() . '</>@<fg=cyan>' . $depManEntity->version() . '</> depends on <fg=yellow>' . $package . '</>@<fg=cyan>' . $version . '</>', Output::VERBOSITY_VERBOSE);
 
             if (!array_key_exists($package, $this->dependencies)) {
                 // It doesn't exist yet, so search for versions we can use
@@ -71,7 +70,21 @@ class InstallCommand extends Command
             foreach ($this->dependencies[$package] as $testingVersion) {
                 $this->solveDependencies($this->packageService->getPackage($package, $testingVersion), $output, $indentLevel+1);
             }
+        }
+    }
 
+    private function installDependencies(DepManEntity $thisDepMan, OutputInterface $output) {
+        foreach ($this->dependencies as $package => $versions) {
+            $versionSort = Semver::rsort($versions);
+            $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $versionSort[0] . '</>', Output::VERBOSITY_VERBOSE);
+            $output->writeln('    Candidates: <fg=cyan>' . implode(', ', $versions) . '</>', Output::VERBOSITY_VERBOSE);
+
+            //$this->packageService->downloadPackage($package, $versionSort[0]); // Skip because we're local only now
+
+            $newPackage = $this->packageService->getPackage($package, $versionSort[0]);
+
+            // Make the vendor folder for this package
+            $thisDepMan->installPackage($newPackage, $output);
         }
     }
 }

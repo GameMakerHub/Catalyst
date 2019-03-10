@@ -4,7 +4,8 @@ namespace GMDepMan\Model\YoYo\Resource\GM;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Traits\JsonUnpacker;
 
-abstract class GMResource {
+abstract class GMResource
+{
 
     use JsonUnpacker;
 
@@ -15,14 +16,24 @@ abstract class GMResource {
     public $modelName;
 
     /** @var string */
+    public $name;
+
+    /** @var string */
     public $filterType;
 
     /** @var array */
-    public $_children = [];
+    private $_children = [];
 
-    public function __construct($yyFilePath, DepManEntity $depManEntity)
+    /**
+     * GMResource constructor.
+     * @param $yyFilePath|false
+     * @param DepManEntity $depManEntity
+     */
+    public function __construct($yyFilePath, DepManEntity $depManEntity = null)
     {
-        $this->unpack(json_decode(file_get_contents($yyFilePath)), $depManEntity);
+        if ($yyFilePath !== false) {
+            $this->unpack(json_decode(file_get_contents($yyFilePath)), $depManEntity);
+        }
     }
 
     public function addChild(GMResource $child)
@@ -38,5 +49,10 @@ abstract class GMResource {
     public function getChildren()
     {
         return $this->_children;
+    }
+
+    public function isFolder():bool
+    {
+        return $this->modelName == GMResourceTypes::GM_FOLDER;
     }
 }

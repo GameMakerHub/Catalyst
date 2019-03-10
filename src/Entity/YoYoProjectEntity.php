@@ -27,6 +27,9 @@ class YoYoProjectEntity {
     /** @var \GMDepMan\Model\YoYo\Resource\GM\GMResource[] */
     private $_children = [];
 
+    /** @var DepManEntity */
+    private $depManEntity;
+
     /**
      * Load a JSON string in YYP format
      * @param string $json
@@ -34,6 +37,8 @@ class YoYoProjectEntity {
      */
     public function load(DepManEntity $depManEntity)
     {
+        $this->depManEntity = $depManEntity;
+
         try {
             Assertion::file($depManEntity->getYypFilename());
         } catch (\InvalidArgumentException $e) {
@@ -76,6 +81,72 @@ class YoYoProjectEntity {
         }
 
         return $this;
+    }
+
+    public function gmFolderExists($foldername):bool
+    {
+        return $this->getGmFolderByName($foldername) instanceof Resource\GM\GMResource;
+    }
+
+    public function getGmFolderByName($foldername)
+    {
+        $folders = explode('/', $foldername);
+        $children = $this->getChildren();
+        while (count($folders)) {
+            $looknow = array_shift($folders);
+            $newChild = false;
+            foreach ($children as $child) {
+                //echo 'matching ' . (isset($child->folderName) ? $child->folderName : $child->name ) . ' ('.$child->isFolder().') vs ' . $looknow . PHP_EOL;
+                if ($child->isFolder() && $child->folderName == $looknow) {
+                    $newChild = $child;
+                    break;
+                }
+            }
+            if ($newChild == false) {
+                return false;
+            }
+            $children = $newChild->getChildren();
+        }
+        return $newChild;
+    }
+
+    public function createGmFolder($foldername)
+    {
+        if ($this->gmFolderExists($foldername)) {
+            //Already exists
+            return true;
+        }
+
+        $folders = explode('/', $foldername);
+        $children = $this->getChildren();
+        while (count($folders) > 1) {
+            $looknow = array_shift($folders);
+            $newChild = false;
+            foreach ($children as $child) {
+                //echo 'matching ' . (isset($child->folderName) ? $child->folderName : $child->name ) . ' ('.$child->isFolder().') vs ' . $looknow . PHP_EOL;
+                if ($child->isFolder() && $child->folderName == $looknow) {
+                    $newChild = $child;
+                    break;
+                }
+            }
+            if ($newChild == false) {
+                return false;
+            }
+            $children = $newChild->getChildren();
+        }
+        if (!$newChild instanceof Resource\GM\GMFolder) {
+            throw new \InvalidArgumentException('Folder path is not a folder');
+        }
+        $newObj = Resource\GM\GMFolder::createNew($folders[0], $newChild->filterType);
+        $newChild->addChild($newObj);
+        var_dump('CREATING NEW FOLDER FOR ' . $folders[0]);
+        die;
+        /*$guid = \Ramsey\Uuid\Uuid::uuid5('GMDepMan', $folders[0]);
+        file_put_contents()
+
+        $newFolder = Resource\GM\GMFolder::class
+        $newChild->addChild()
+        */
     }
 
     /**
