@@ -112,9 +112,16 @@ class YoYoProjectEntity {
 
     public function createGmFolder($foldername)
     {
+        echo 'CREATE ' . $foldername . PHP_EOL;
         if ($this->gmFolderExists($foldername)) {
             //Already exists
             return true;
+        }
+
+        // Check parents
+        $parentFolder = substr($foldername, 0, strrpos($foldername, '/', 0));
+        if (!$this->gmFolderExists($parentFolder)) {
+            $this->createGmFolder($parentFolder);
         }
 
         $folders = explode('/', $foldername);
@@ -137,7 +144,8 @@ class YoYoProjectEntity {
         if (!$newChild instanceof Resource\GM\GMFolder) {
             throw new \InvalidArgumentException('Folder path is not a folder');
         }
-        $newObj = Resource\GM\GMFolder::createNew($folders[0], $newChild->filterType);
+        $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $foldername);
+        $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType);
         $this->resources[] = Resource::createFolder($this->depManEntity, $newObj);
         $newChild->addChild($newObj);
         $newChild->markEdited();
@@ -174,9 +182,9 @@ class YoYoProjectEntity {
                 $resource->gmResource()->save();
             }
         }
-        //var_dump($this->depManEntity->getYypFilename(), $this->getJson());
-        file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
-        //die;
+        if (!$GLOBALS['dry']) {
+            file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
+        }
         return true;
     }
 }

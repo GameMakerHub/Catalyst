@@ -11,13 +11,11 @@ class GMFolder extends GMResource {
     /** @var string */
     public $folderName;
 
-    public static function createNew($folderName, $forType)
+    public static function createNew(\Ramsey\Uuid\UuidInterface $uuid, $folderName, $forType)
     {
-        $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $folderName);
-
-        $newObj = new self('views\\' . $newUuid . '.yy', null, false);
+        $newObj = new self('views\\' . $uuid . '.yy', null, false);
         $newObj->id = new Uuid();
-        $newObj->id->value = $newUuid;
+        $newObj->id->value = $uuid;
         $newObj->name = (string) $newObj->id;
         $newObj->filterType = $forType;
         $newObj->modelName = GMResourceTypes::GM_FOLDER;

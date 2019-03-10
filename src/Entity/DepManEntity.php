@@ -173,7 +173,9 @@ class DepManEntity {
     public function installPackage(DepManEntity $newPackage, OutputInterface $output)
     {
         //First make vendor folder for this package
-        @mkdir($this->getProjectPath() . '/'.self::$vendorFolderName.'/' . $newPackage->name(), 0777, true);
+        if (!$GLOBALS['dry']) {
+            @mkdir($this->getProjectPath() . '/'.self::$vendorFolderName.'/' . $newPackage->name(), 0777, true);
+        }
 
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
@@ -197,36 +199,18 @@ class DepManEntity {
             $hasChildren = count($child->getChildren()) >= 1;
             $output->writeln('<fg=' . ($copyFolder ? 'green' : 'red') . '>' . str_repeat('|  ', $level).'\__</> ' . $name);
 
-            if ($copyFolder && $level == 0 && $hasChildren) {
-                //Check if the vendor directory exists
-                // Make the root level folder (in project and on disk
-                //echo 'Checking for ' . $name;
-                if (!$this->projectEntity()->gmFolderExists($name . '/vendor')) {
-                    $this->projectEntity()->createGmFolder($name . '/vendor');
+            if ($hasChildren && $copyFolder) {
+                if ($level == 0) {
+                    if (!$this->projectEntity()->gmFolderExists($name . '/vendor/' . $newPackage->name())) {
+                        $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
+                        $output->writeln('<fg=cyan>' . str_repeat('|  ', $level+1).'\__</> vendor');
+                    }
                 }
-
-                //var_dump($this->projectEntity()->getGmFolderByName($name . '/vendor'));
-                $this->projectEntity()->save();
-                die;
-                //$thisDepMan->addVendorFolder($name, $newPackage);
-                //die;
-            }
-
-
-            if ($hasChildren) { // and add ($name != 'vendor' && $copyFolder) to make it faster
                 $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $copyFolder);
             }
-        }
-    }
 
-    /**
-     * Adds a root vendor folder in files, as a view file, and adds to project entity
-     * @param $name
-     */
-    public function addVendorFolder($name, DepManEntity $newPackage)
-    {
-        $this->projectEntity()->makeFolderIfNotExists('/vendor/' . $newPackage->name());
-        die;
+            $this->projectEntity()->save();
+        }
     }
 
     public function getProjectPath():string
@@ -244,8 +228,10 @@ class DepManEntity {
      */
     public function save()
     {
-        file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
-        file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
+        if (!$GLOBALS['dry']) {
+            file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
+            file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
+        }
     }
 
     public function version()

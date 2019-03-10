@@ -125,6 +125,8 @@ abstract class GMResource implements \JsonSerializable
     public function save()
     {
         //var_dump($this->getJson(), $this->getFilePath());
-        file_put_contents($this->getFilePath(), $this->getJson());
+        if (!$GLOBALS['dry']) {
+            file_put_contents($this->getFilePath(), $this->getJson());
+        }
     }
 }

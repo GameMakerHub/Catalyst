@@ -8,6 +8,7 @@ use GMDepMan\Exception\UnresolveableDependenciesException;
 use GMDepMan\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -32,12 +33,19 @@ class InstallCommand extends Command
     {
         $this
             ->setDescription('Install all dependencies')
-            ->setHelp('Solves the dependencies and tries to install all dependencies');
+            ->setHelp('Solves the dependencies and tries to install all dependencies')
+            ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Don\'t touch any files');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $thisDepMan = new DepManEntity(realpath('.'));
+
+        if ($input->getOption('dry-run')) {
+            $GLOBALS['dry'] = true;
+        } else {
+            $GLOBALS['dry'] = false;
+        }
 
         $this->solveDependencies($thisDepMan, $output, 0);
 
