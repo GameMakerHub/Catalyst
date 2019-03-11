@@ -112,7 +112,7 @@ class YoYoProjectEntity {
 
     public function createGmFolder($foldername)
     {
-        echo 'CREATE ' . $foldername . PHP_EOL;
+        //echo 'CREATE ' . $foldername . PHP_EOL;
         if ($this->gmFolderExists($foldername)) {
             //Already exists
             return true;

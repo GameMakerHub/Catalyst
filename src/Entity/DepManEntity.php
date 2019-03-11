@@ -181,10 +181,11 @@ class DepManEntity {
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
     }
 
-    private function loopIn(OutputInterface $output, DepManEntity $newPackage, array $children, $level = 0, $copyFolder = true) {
+    private function loopIn(OutputInterface $output, DepManEntity $newPackage, array $children, $level = 0) {
         foreach ($children as $child) {
             $name = '?';
 
+            $copyFolder = true;
             $isFolder = false;
             if (isset($child->folderName)) {
                 $name = $child->folderName;
@@ -197,20 +198,24 @@ class DepManEntity {
             }
 
             $hasChildren = count($child->getChildren()) >= 1;
-            $output->writeln('<fg=' . ($copyFolder ? 'green' : 'red') . '>' . str_repeat('|  ', $level).'\__</> ' . $name);
 
-            if ($hasChildren && $copyFolder) {
+            if ($isFolder && $hasChildren && $copyFolder) {
                 if ($level == 0) {
                     if (!$this->projectEntity()->gmFolderExists($name . '/vendor/' . $newPackage->name())) {
                         $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
-                        $output->writeln('<fg=cyan>' . str_repeat('|  ', $level+1).'\__</> vendor');
                     }
+                    $output->writeln('<fg=cyan>    |' . $name);
                 }
-                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $copyFolder);
+                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1);
+            } else {
+                //file
+                $output->writeln('<fg=cyan>    ' . str_repeat('|  ', $level).'\__</> ' . $name);
             }
 
-            $this->projectEntity()->save();
+
         }
+
+        $this->projectEntity()->save();
     }
 
     public function getProjectPath():string
