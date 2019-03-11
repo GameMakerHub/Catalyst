@@ -107,20 +107,28 @@ class YoYoProjectEntity {
             }
             $children = $newChild->getChildren();
         }
+        $newChild->setFullName($foldername);
         return $newChild;
     }
 
+    /**
+     * @param $foldername
+     * @return bool|Resource\GM\GMFolder
+     * @throws \Exception
+     */
     public function createGmFolder($foldername)
     {
-        //echo 'CREATE ' . $foldername . PHP_EOL;
+        echo 'GM ' . $foldername . PHP_EOL;
         if ($this->gmFolderExists($foldername)) {
             //Already exists
-            return true;
+            echo 'Already exists ' . $foldername . PHP_EOL;
+            return $this->getGmFolderByName($foldername);
         }
 
         // Check parents
         $parentFolder = substr($foldername, 0, strrpos($foldername, '/', 0));
         if (!$this->gmFolderExists($parentFolder)) {
+            //echo 'Parent does not exist, creating: ' . $parentFolder . PHP_EOL;
             $this->createGmFolder($parentFolder);
         }
 
@@ -145,11 +153,13 @@ class YoYoProjectEntity {
             throw new \InvalidArgumentException('Folder path is not a folder');
         }
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $foldername);
-        $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType);
-        $this->resources[] = Resource::createFolder($this->depManEntity, $newObj);
+        echo 'making folder ' . $folders[0] . PHP_EOL;
+        $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
+        $this->addResource(Resource::createFolder($this->depManEntity, $newObj));
         $newChild->addChild($newObj);
         $newChild->markEdited();
-        return true;
+        echo 'RETURN: ' . $foldername . PHP_EOL;
+        return $newChild;
     }
 
     /**
@@ -162,6 +172,11 @@ class YoYoProjectEntity {
         return json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
+    public function addResource(Resource $resource)
+    {
+        $this->resources[] = $resource;
+    }
+
     /**
      * @return Resource[]
      */
@@ -170,6 +185,9 @@ class YoYoProjectEntity {
         return $this->resources;
     }
 
+    /**
+     * @return \GMDepMan\Model\YoYo\Resource\GM\GMResource[]
+     */
     public function getChildren():array
     {
         return $this->_children;

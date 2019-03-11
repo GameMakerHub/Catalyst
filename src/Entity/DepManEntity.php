@@ -7,6 +7,7 @@ use Assert\AssertionFailedException;
 use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
 use GMDepMan\Exception\MalformedProjectFileException;
+use GMDepMan\Model\YoYo\Resource\GM\GMFolder;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -181,17 +182,24 @@ class DepManEntity {
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
     }
 
-    private function loopIn(OutputInterface $output, DepManEntity $newPackage, array $children, $level = 0) {
+    /**
+     * @param OutputInterface $output
+     * @param DepManEntity $newPackage
+     * @param \GMDepMan\Model\YoYo\Resource\GM\GMResource[] $children
+     * @param int $level
+     * @param GMFolder|null $rootFolder
+     * @throws \Exception
+     */
+    private function loopIn(OutputInterface $output, DepManEntity $newPackage, array $children, $level = 0, GMFolder $rootFolder = null) {
         foreach ($children as $child) {
             $name = '?';
 
-            $copyFolder = true;
             $isFolder = false;
             if (isset($child->folderName)) {
                 $name = $child->folderName;
                 $isFolder = true;
-                if ($name == self::$vendorFolderName || $copyFolder == false || ($level == 0 && !in_array($name, self::$rootFolderCopyOnly) )) {
-                    $copyFolder = false;
+                if ($name == self::$vendorFolderName || ($level == 0 && !in_array($name, self::$rootFolderCopyOnly) )) {
+                    continue;
                 }
             } else if (isset($child->name)) {
                 $name = $child->name;
@@ -199,23 +207,59 @@ class DepManEntity {
 
             $hasChildren = count($child->getChildren()) >= 1;
 
-            if ($isFolder && $hasChildren && $copyFolder) {
+            if ($isFolder && $hasChildren) {
                 if ($level == 0) {
-                    if (!$this->projectEntity()->gmFolderExists($name . '/vendor/' . $newPackage->name())) {
-                        $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
-                    }
-                    $output->writeln('<fg=cyan>    |' . $name);
+                    $rootFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
+                } else {
+                    echo 'WANT TO CREATE: ' . $rootFolder->getFullName() . '/' . $name . PHP_EOL;
+                    $rootFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
                 }
-                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1);
-            } else {
-                //file
-                $output->writeln('<fg=cyan>    ' . str_repeat('|  ', $level).'\__</> ' . $name);
+                $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
+                echo ' LOOP INTO: ' . $rootFolder->getFullName() . PHP_EOL;
+                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $rootFolder);
             }
 
+            if (!$isFolder) {
+                $output->writeln('    ' . str_repeat('|  ', $level).'\__ <fg=green>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
+                $rootFolder->markEdited();
+                $rootFolder->addChild($child);
 
+                $originalResource = $child->getYypResource();
+                $newResource = clone $originalResource;
+
+                $newResource->prependFilePath('vendor/' . $newPackage->name() . '/');
+
+                $this->recurse_copy(
+                    $newPackage->getProjectPath() . '/' . $originalResource->resourcePathRoot(),
+                    $this->getProjectPath() . '/' . $newResource->resourcePathRoot()
+                );
+
+                $this->projectEntity->addResource($newResource);
+            }
         }
 
         $this->projectEntity()->save();
+    }
+
+    /**
+     * @todo remove placeholder code
+     * @param $src
+     * @param $dst
+     */
+    private function recurse_copy($src,$dst) {
+        $dir = opendir($src);
+        @mkdir($dst, 0777, true);
+        while(false !== ( $file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                if ( is_dir($src . '/' . $file) ) {
+                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
+                }
+                else {
+                    copy($src . '/' . $file,$dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
     }
 
     public function getProjectPath():string

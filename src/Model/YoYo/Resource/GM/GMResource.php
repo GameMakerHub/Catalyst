@@ -2,6 +2,7 @@
 namespace GMDepMan\Model\YoYo\Resource\GM;
 
 use GMDepMan\Entity\DepManEntity;
+use GMDepMan\Model\YoYo\Resource;
 use GMDepMan\Traits\JsonUnpacker;
 
 abstract class GMResource implements \JsonSerializable
@@ -38,6 +39,9 @@ abstract class GMResource implements \JsonSerializable
 
     /** @var string */
     private $_filePath;
+
+    /** @var Resource */
+    private $_yypResource;
 
     /**
      * GMResource constructor.
@@ -128,5 +132,15 @@ abstract class GMResource implements \JsonSerializable
         if (!$GLOBALS['dry']) {
             file_put_contents($this->getFilePath(), $this->getJson());
         }
+    }
+
+    public function getYypResource()
+    {
+        return $this->_yypResource;
+    }
+
+    public function setYypResource(Resource $yypResource)
+    {
+        $this->_yypResource = $yypResource;
     }
 }

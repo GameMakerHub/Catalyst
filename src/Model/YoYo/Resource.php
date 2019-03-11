@@ -50,6 +50,8 @@ class Resource implements \JsonSerializable {
         } else {
             $this->gmResource = $gmResource;
         }
+
+        $this->gmResource->setYypResource($this);
     }
 
     public function key():string
@@ -69,30 +71,41 @@ class Resource implements \JsonSerializable {
 
     public function jsonSerialize()
     {
-        return self::makeJsonObject($this->key, $this->id, $this->resourceType, $this->gmResource);
+        return self::makeJsonObject($this->key, $this->id, $this->resourceType, $this->resourcePath);
     }
 
-    private static function makeJsonObject($key, $id, $type, GMResource $resource)
+    private static function makeJsonObject($key, $id, $type, $resourcePath)
     {
         $jsonObj = new \stdClass();
         $jsonObj->Key = $key;
 
         $jsonObj->Value = new \stdClass();
         $jsonObj->Value->id = $id;
-        $jsonObj->Value->resourcePath = $resource->getFilePath();
+        $jsonObj->Value->resourcePath = str_replace('/', '\\', $resourcePath);
         $jsonObj->Value->resourceType = $type;
 
         return $jsonObj;
     }
 
     public static function createFolder(DepManEntity $depManEntity, GMFolder $resource):self {
-        $jsonObj = self::makeJsonObject((string) $resource->id, (string) $resource->id, GMResourceTypes::GM_FOLDER, $resource);
+        $jsonObj = self::makeJsonObject((string) $resource->id, (string) $resource->id, GMResourceTypes::GM_FOLDER, $resource->getFilePath());
 
         return new self(
             $depManEntity,
             $jsonObj,
             $resource
         );
+    }
+
+    public function prependFilePath($filePath)
+    {
+        $this->resourcePath = $filePath . $this->resourcePath;
+        return $this;
+    }
+
+    public function resourcePathRoot()
+    {
+        return dirname($this->resourcePath);
     }
 
 }
