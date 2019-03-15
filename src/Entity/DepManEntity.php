@@ -211,11 +211,9 @@ class DepManEntity {
                 if ($level == 0) {
                     $rootFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
                 } else {
-                    echo 'WANT TO CREATE: ' . $rootFolder->getFullName() . '/' . $name . PHP_EOL;
                     $rootFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
                 }
                 $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
-                echo ' LOOP INTO: ' . $rootFolder->getFullName() . PHP_EOL;
                 $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $rootFolder);
             }
 

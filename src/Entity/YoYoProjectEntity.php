@@ -118,17 +118,14 @@ class YoYoProjectEntity {
      */
     public function createGmFolder($foldername)
     {
-        echo 'GM ' . $foldername . PHP_EOL;
         if ($this->gmFolderExists($foldername)) {
             //Already exists
-            echo 'Already exists ' . $foldername . PHP_EOL;
             return $this->getGmFolderByName($foldername);
         }
 
         // Check parents
         $parentFolder = substr($foldername, 0, strrpos($foldername, '/', 0));
         if (!$this->gmFolderExists($parentFolder)) {
-            //echo 'Parent does not exist, creating: ' . $parentFolder . PHP_EOL;
             $this->createGmFolder($parentFolder);
         }
 
@@ -138,7 +135,6 @@ class YoYoProjectEntity {
             $looknow = array_shift($folders);
             $newChild = false;
             foreach ($children as $child) {
-                //echo 'matching ' . (isset($child->folderName) ? $child->folderName : $child->name ) . ' ('.$child->isFolder().') vs ' . $looknow . PHP_EOL;
                 if ($child->isFolder() && $child->folderName == $looknow) {
                     $newChild = $child;
                     break;
@@ -153,13 +149,11 @@ class YoYoProjectEntity {
             throw new \InvalidArgumentException('Folder path is not a folder');
         }
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $foldername);
-        echo 'making folder ' . $folders[0] . PHP_EOL;
         $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
         $this->addResource(Resource::createFolder($this->depManEntity, $newObj));
         $newChild->addChild($newObj);
         $newChild->markEdited();
-        echo 'RETURN: ' . $foldername . PHP_EOL;
-        return $newChild;
+        return $newObj;
     }
 
     /**
