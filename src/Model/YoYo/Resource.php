@@ -97,12 +97,6 @@ class Resource implements \JsonSerializable {
         );
     }
 
-    public function prependFilePath($filePath)
-    {
-        $this->resourcePath = $filePath . $this->resourcePath;
-        return $this;
-    }
-
     public function resourcePathRoot()
     {
         return dirname($this->resourcePath);

@@ -222,17 +222,14 @@ class DepManEntity {
                 $rootFolder->markEdited();
                 $rootFolder->addChild($child);
 
-                $originalResource = $child->getYypResource();
-                $newResource = clone $originalResource;
-
-                $newResource->prependFilePath('vendor/' . $newPackage->name() . '/');
+                $resource = $child->getYypResource();
 
                 $this->recurse_copy(
-                    $newPackage->getProjectPath() . '/' . $originalResource->resourcePathRoot(),
-                    $this->getProjectPath() . '/' . $newResource->resourcePathRoot()
+                    $newPackage->getProjectPath() . '/' . $resource->resourcePathRoot(),
+                    $this->getProjectPath() . '/' . $resource->resourcePathRoot()
                 );
 
-                $this->projectEntity->addResource($newResource);
+                $this->projectEntity->addResource($resource);
             }
         }
 
