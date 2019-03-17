@@ -26,9 +26,7 @@
                 }
             }
         ],
-        "hiddenResources": [
-            
-        ],
+        "hiddenResources": [],
         "projectPath": "${base_project}"
     },
     "resources": [

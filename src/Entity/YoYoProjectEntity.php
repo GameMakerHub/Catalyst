@@ -163,7 +163,19 @@ class YoYoProjectEntity {
     {
         $newObject = $this->originalData;
         $newObject->resources = array_values($this->resources);
-        return json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return str_replace("\n", "\r\n", json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    public function removeResource($id)
+    {
+        unset($this->resources[$id]);
+
+        foreach ($this->_children as $key => $value) {
+            if ((string) $value->id == (string) $id) {
+                unset($this->_children[$key]);
+            }
+        }
+
     }
 
     public function addResource(Resource $resource)

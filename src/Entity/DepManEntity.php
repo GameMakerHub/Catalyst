@@ -174,9 +174,9 @@ class DepManEntity {
     public function installPackage(DepManEntity $newPackage, OutputInterface $output)
     {
         //First make vendor folder for this package
-        if (!$GLOBALS['dry']) {
-            @mkdir($this->getProjectPath() . '/'.self::$vendorFolderName.'/' . $newPackage->name(), 0777, true);
-        }
+        //if (!$GLOBALS['dry']) {
+            //@mkdir($this->getProjectPath() . '/'.self::$vendorFolderName.'/' . $newPackage->name(), 0777, true);
+        //}
 
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);

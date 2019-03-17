@@ -68,6 +68,29 @@ abstract class GMResource implements \JsonSerializable
         $this->_children[] = $child;
     }
 
+    public function removeChild(string $id)
+    {
+        if (!isset($this->children)) {
+            return;
+        }
+
+        foreach ($this->_children as $key => $child) {
+            if ($child->id == $id) {
+                echo 'Deleting ' . $id . ' from ' . $this->id . '('.$key.')' . PHP_EOL;
+
+                foreach ($this->children as $key2 => $child2) {
+                    if ($child2 == $id) {
+                        unset($this->children[$key2]);
+                    }
+                }
+
+                unset($this->_children[$key]);
+                $this->markEdited();
+            }
+        }
+
+    }
+
     public function addChildren(array $children)
     {
         $this->_children = $children;
@@ -123,7 +146,7 @@ abstract class GMResource implements \JsonSerializable
 
     public function getJson()
     {
-        return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return str_replace("\n", "\r\n", json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     public function save()
@@ -142,5 +165,29 @@ abstract class GMResource implements \JsonSerializable
     public function setYypResource(Resource $yypResource)
     {
         $this->_yypResource = $yypResource;
+    }
+
+    public function delete()
+    {
+        //echo 'TO RM:  ' . $this->getFilePath() . '('.dirname($this->getFilePath()).')';
+        if ($this instanceof GMFolder) {
+            unlink($this->getFilePath());
+        } else {
+            $this->rrmdir(dirname($this->getFilePath()));
+        }
+
+    }
+
+    private function rrmdir($path) {
+        // Open the source directory to read in files
+        $i = new \DirectoryIterator($path);
+        foreach($i as $f) {
+            if($f->isFile()) {
+                unlink($f->getRealPath());
+            } else if(!$f->isDot() && $f->isDir()) {
+                $this->rrmdir($f->getRealPath());
+            }
+        }
+        rmdir($path);
     }
 }
