@@ -30,6 +30,9 @@ class YoYoProjectEntity {
     /** @var DepManEntity */
     private $depManEntity;
 
+    /** @var array */
+    public $script_order;
+
     /**
      * Load a JSON string in YYP format
      * @param string $json
@@ -52,6 +55,9 @@ class YoYoProjectEntity {
         foreach ($this->originalData->resources as $resource) {
             $this->resources[$resource->Key] = new Resource($depManEntity, $resource);
         }
+
+        // Script order (todo for when installing)
+        $this->script_order = $this->originalData->script_order;
 
         // This is somewhat the same, but unused for now, so skipperino
         /*
@@ -163,6 +169,8 @@ class YoYoProjectEntity {
     {
         $newObject = $this->originalData;
         $newObject->resources = array_values($this->resources);
+        $newObject->script_order = $this->script_order;
+        
         return str_replace("\n", "\r\n", json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 

@@ -58,7 +58,14 @@ class CleanCommand extends Command
             foreach ($this->thisDepMan->projectEntity()->getChildren() as $child) {
                 $child->removeChild($id);
             }
+            foreach ($this->thisDepMan->projectEntity()->script_order as $key => $val) {
+                if ($val == $id) {
+                    unset($this->thisDepMan->projectEntity()->script_order[$key]);
+                }
+            }
         }
+
+
 
         $this->thisDepMan->projectEntity()->save();
         $this->thisDepMan->save();
