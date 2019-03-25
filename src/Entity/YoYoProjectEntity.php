@@ -156,7 +156,11 @@ class YoYoProjectEntity {
         }
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $foldername);
         $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
-        $this->addResource(Resource::createFolder($this->depManEntity, $newObj));
+
+        $newFolder = Resource::createFolder($this->depManEntity, $newObj);
+
+        $this->addResource($newFolder);
+        $this->depManEntity->addIgnore($newObj->getFilePath());
         $newChild->addChild($newObj);
         $newChild->markEdited();
         return $newObj;
@@ -170,7 +174,7 @@ class YoYoProjectEntity {
         $newObject = $this->originalData;
         $newObject->resources = array_values($this->resources);
         $newObject->script_order = $this->script_order;
-        
+
         return str_replace("\n", "\r\n", json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 

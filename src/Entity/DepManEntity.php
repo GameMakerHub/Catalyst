@@ -180,6 +180,8 @@ class DepManEntity {
 
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
+        $this->projectEntity()->save();
+        $this->save();
     }
 
     /**
@@ -230,10 +232,19 @@ class DepManEntity {
                 );
 
                 $this->projectEntity->addResource($resource);
+                $this->addIgnore($resource->resourcePathRoot());
             }
         }
+    }
 
-        $this->projectEntity()->save();
+    private $ignored = [];
+
+    public function addIgnore($path)
+    {
+        $path = str_replace('\\', '/', $path);
+        if (!in_array($path, $this->ignored)) {
+            $this->ignored[] = $path;
+        }
     }
 
     /**
@@ -248,8 +259,7 @@ class DepManEntity {
             if (( $file != '.' ) && ( $file != '..' )) {
                 if ( is_dir($src . '/' . $file) ) {
                     $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
-                }
-                else {
+                } else {
                     copy($src . '/' . $file,$dst . '/' . $file);
                 }
             }
@@ -275,7 +285,34 @@ class DepManEntity {
         if (!$GLOBALS['dry']) {
             file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
             file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
+            $this->saveIgnoreFile();
         }
+    }
+
+    const IGNORE_TOKEN = '### GMDEPMAN ###';
+
+    /**
+     * @todo this is horrible and slow, but does the trick for now.
+     */
+    private function saveIgnoreFile()
+    {
+        $newContent = PHP_EOL . self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->ignored) . PHP_EOL . self::IGNORE_TOKEN;
+
+        $ignoreFile = $this->projectPath . '/.gitignore';
+        $contents = '';
+        if (file_exists($ignoreFile)) {
+            $contents = file_get_contents($ignoreFile);
+        }
+
+        preg_match('~(### GMDEPMAN ###)[\s\S]+(### GMDEPMAN ###)~', $contents, $matches);
+
+        if (count($matches) == 0) {
+            $contents .= $newContent;
+        } else {
+            $contents = str_replace($matches[0], $newContent, $contents);
+        }
+
+        file_put_contents($ignoreFile, $contents);
     }
 
     public function version()
