@@ -74,6 +74,28 @@ class Repository implements \JsonSerializable {
         throw new PackageNotSatisfiableException($packageName, $version);
     }
 
+    public function findPackageDependencies(string $packageName, string $version):array
+    {
+        $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
+        if (count($satisfieableVersions)) {
+            switch ($this->type) {
+                case self::REPO_DIRECTORY:
+                    $depManEntity = new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    return $depManEntity->require;
+                    break;
+                case self::REPO_VCS:
+                    $githubService = new GithubService();
+                    return $githubService->getDependenciesFor($packageName, $satisfieableVersions[0]);
+                    break;
+                case self::REPO_GMDEPMAN:
+                    throw new \RuntimeException('Repo type not supported yet');
+                    break;
+            }
+        }
+
+        throw new PackageNotSatisfiableException($packageName, $version);
+    }
+
     private function scanPackagesIfNotScanned():void
     {
         if ($this->scannedPackages) {

@@ -4,6 +4,7 @@ namespace GMDepMan\Service;
 
 use Assert\Assertion;
 use GMDepMan\Entity\YoYoProjectEntity;
+use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Output\Output;
 
 class GithubService
@@ -14,6 +15,14 @@ class GithubService
     {
         $this->client = new \GuzzleHttp\Client([
             'base_uri' => 'https://api.github.com/',
+            'headers' => [
+                'User-Agent' => 'gmdepman/1.0',
+                'Accept'     => 'application/vnd.github.v3+json',
+            ]
+        ]);
+
+        $this->fileClient = new \GuzzleHttp\Client([
+            'base_uri' => 'https://raw.githubusercontent.com/',
             'headers' => [
                 'User-Agent' => 'gmdepman/1.0',
                 'Accept'     => 'application/vnd.github.v3+json',
@@ -31,6 +40,26 @@ class GithubService
             }
             $ret[$item->name] = $item->zipball_url;
         }
+        return $ret;
+    }
+
+    public function getDependenciesFor(string $package, string $version):array {
+
+        try {
+            $try = $this->fileClient->get($package.'/' . $version . '/gmdepman.json');
+        } catch (ClientException $e) {
+            $try = $this->fileClient->get($package.'/v' . $version . '/gmdepman.json');
+        }
+
+        $data = json_decode($try->getBody()->getContents());
+
+        $ret = [];
+        if (isset($data->require)) {
+            foreach ($data->require as $item => $version) {
+                $ret[$item->name] = $version;
+            }
+        }
+
         return $ret;
     }
 

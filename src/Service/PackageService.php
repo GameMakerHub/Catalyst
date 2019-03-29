@@ -62,6 +62,20 @@ class PackageService
         throw new PackageNotFoundException($package, $version);
     }
 
+    public function getPackageDependencies(string $package, string $version, array $repositoriesOverride = [])
+    {
+        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
+
+        foreach ($repositories as $repository) {
+            try {
+                return $repository->findPackageDependencies($package, $version);
+            } catch (PackageNotFoundException $e) {
+            }
+        }
+
+        throw new PackageNotFoundException($package, $version);
+    }
+
     /**
      * @param string $package
      * @param string $version
