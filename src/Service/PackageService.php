@@ -36,7 +36,9 @@ class PackageService
     public function getDefaultRepositories():array
     {
         return [
-            new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests')
+            //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests')
+            //new Repository(Repository::REPO_GMDEPMAN, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
+            new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
         ];
     }
 
@@ -72,10 +74,7 @@ class PackageService
         $versions = [];
 
         foreach ($repositories as $repository) {
-            try {
-                $versions += $repository->getSatisfiableVersions($package, $version);
-            } catch (PackageNotFoundException $e) {
-            }
+            $versions += $repository->getSatisfiableVersions($package, $version);
         }
 
         return $versions;

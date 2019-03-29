@@ -6,6 +6,6 @@
     "yyp": "GMLProject.yyp",
     "version": "0.0.1",
     "require": {
-        "dukesoft/simple-project": "*"
+        "dukesoft/extended-functions": "*"
     }
 }

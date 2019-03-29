@@ -60,18 +60,17 @@ class InstallCommand extends Command
     {
         foreach ($depManEntity->require as $package => $version) {
             $output->writeln(str_repeat('  ', $indentLevel) . 'Package <fg=green>' . $depManEntity->name() . '</>@<fg=cyan>' . $depManEntity->version() . '</> depends on <fg=yellow>' . $package . '</>@<fg=cyan>' . $version . '</>', Output::VERBOSITY_VERBOSE);
-
             if (!array_key_exists($package, $this->dependencies)) {
                 // It doesn't exist yet, so search for versions we can use
                 $this->dependencies[$package] = $this->packageService->getSatisfiableVersions($package, $version);
+            }
+
+            // Filter all that are satisfied
+            $satisfied = Semver::satisfiedBy($this->dependencies[$package], $version);
+            if (count($satisfied)) {
+                $this->dependencies[$package] = $satisfied;
             } else {
-                // It is already constrained, now we have to filter this version an extra time
-                $satisfied = Semver::satisfiedBy($this->dependencies[$package], $version);
-                if (count($satisfied)) {
-                    $this->dependencies[$package] = $satisfied;
-                } else {
-                    throw new UnresolveableDependenciesException('Package ' . $package . ' could not be resolved because of conflicting dependency constraints.');
-                }
+                throw new UnresolveableDependenciesException('Package ' . $package . ' could not be resolved because of the dependency constraints.');
             }
 
             $output->writeln(str_repeat('  ', $indentLevel+1) . 'satisfiable by <fg=cyan>' . implode(', ', $this->dependencies[$package]) . '</>', Output::VERBOSITY_VERBOSE);

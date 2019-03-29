@@ -5,6 +5,7 @@ use Composer\Semver\Semver;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Exception\PackageNotFoundException;
 use GMDepMan\Exception\PackageNotSatisfiableException;
+use GMDepMan\Service\GithubService;
 
 class Repository implements \JsonSerializable {
 
@@ -54,7 +55,20 @@ class Repository implements \JsonSerializable {
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {
-            return new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+
+            switch ($this->type) {
+                case self::REPO_DIRECTORY:
+                    return new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    break;
+                case self::REPO_VCS:
+                    $zipBallUrl = $this->availablePackages[$packageName][$satisfieableVersions[0]];
+                    $githubService = new GithubService();
+                    return new DepManEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    break;
+                case self::REPO_GMDEPMAN:
+                    throw new \RuntimeException('Repo type not supported yet');
+                    break;
+            }
         }
 
         throw new PackageNotSatisfiableException($packageName, $version);
@@ -70,8 +84,10 @@ class Repository implements \JsonSerializable {
             case self::REPO_DIRECTORY:
                 $this->scanPackagesForDirectory();
                 break;
-            case self::REPO_GMDEPMAN:
             case self::REPO_VCS:
+                $this->scanGithubForPackages();
+                break;
+            case self::REPO_GMDEPMAN:
                 throw new \RuntimeException('Repo type not supported yet');
                 break;
         }
@@ -107,5 +123,30 @@ class Repository implements \JsonSerializable {
                 // ignore
             }
         }
+    }
+
+    private function scanGithubForPackages(): void
+    {
+        $matches = [];
+        preg_match(
+            '~git@github\.com:([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+){1}\.git~',
+            $this->uri,
+            $matches
+        );
+
+        if (count($matches) != 2) {
+            throw new \RuntimeException(
+                sprintf(
+                    'VCS URI "%s" is not supported - must be "%s" format',
+                    $this->uri,
+                    'git@github.com:vendor/package.git'
+                )
+            );
+        }
+
+        $githubService = new GithubService();
+
+        $packageName = strtolower($matches[1]);
+        $this->availablePackages[$packageName] = $githubService->getTags($packageName);
     }
 }
