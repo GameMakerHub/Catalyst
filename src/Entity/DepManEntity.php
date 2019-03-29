@@ -208,15 +208,14 @@ class DepManEntity {
             }
 
             $hasChildren = count($child->getChildren()) >= 1;
-
             if ($isFolder && $hasChildren) {
                 if ($level == 0) {
-                    $rootFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
+                    $nextFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
                 } else {
-                    $rootFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
+                    $nextFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
                 }
                 $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
-                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $rootFolder);
+                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $nextFolder);
             }
 
             if (!$isFolder) {
@@ -235,6 +234,7 @@ class DepManEntity {
                 $this->addIgnore($resource->resourcePathRoot());
             }
         }
+        $output->writeln('    end loop');
     }
 
     private $ignored = [];
