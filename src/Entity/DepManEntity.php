@@ -213,6 +213,7 @@ class DepManEntity {
                     $nextFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
                 } else {
                     $nextFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
+                    $this->addIgnore($nextFolder->getFilePath());
                 }
                 $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
                 $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $nextFolder);
@@ -234,7 +235,6 @@ class DepManEntity {
                 $this->addIgnore($resource->resourcePathRoot());
             }
         }
-        $output->writeln('    end loop');
     }
 
     private $ignored = [];
