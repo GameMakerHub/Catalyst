@@ -180,6 +180,15 @@ class DepManEntity {
 
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
+
+        // Copy the datafiles needed
+        foreach (glob($newPackage->getProjectPath() . '/datafiles/*') as $datafile) {
+            @mkdir($this->getProjectPath() . '/datafiles');
+            $destFile =  '/datafiles/' . basename($datafile);
+            copy($datafile, $this->getProjectPath() . $destFile);
+            $this->addIgnore($destFile);
+        }
+
         $this->projectEntity()->save();
         $this->save();
     }
