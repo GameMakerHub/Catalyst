@@ -2,6 +2,7 @@
 namespace GMDepMan\Entity;
 
 use Assert\Assertion;
+use GMDepMan\Exception\FileNotFoundException;
 use GMDepMan\Exception\MalformedProjectFileException;
 use GMDepMan\Model\Uuid;
 use GMDepMan\Model\YoYo\Resource;
@@ -53,7 +54,11 @@ class YoYoProjectEntity {
 
         // Load all the resources into a map
         foreach ($this->originalData->resources as $resource) {
-            $this->resources[$resource->Key] = new Resource($depManEntity, $resource);
+            try {
+                $this->resources[$resource->Key] = new Resource($depManEntity, $resource);
+            } catch (FileNotFoundException $e) {
+                //Ignore, probably a vendored file
+            }
         }
 
         // Script order (todo for when installing)

@@ -79,7 +79,7 @@ class InstallCommand extends Command
             foreach ($this->dependencies[$package] as $testingVersion) {
                 // Gep dependencies for testversion
                 $output->writeln(str_repeat('  ', $indentLevel+1) . 'Package <fg=green>' . $package . '</>@<fg=cyan>' . $testingVersion . '</> depends on:', Output::VERBOSITY_VERBOSE);
-                $this->solveDependencies($this->packageService->getPackageDependencies($package, $testingVersion), $output, $indentLevel+1);
+                $this->solveDependencies($this->packageService->getPackageDependencies($package, $testingVersion), $output, $indentLevel+2);
             }
         }
     }

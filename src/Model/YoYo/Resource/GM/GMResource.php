@@ -2,6 +2,7 @@
 namespace GMDepMan\Model\YoYo\Resource\GM;
 
 use GMDepMan\Entity\DepManEntity;
+use GMDepMan\Exception\FileNotFoundException;
 use GMDepMan\Model\YoYo\Resource;
 use GMDepMan\Traits\JsonUnpacker;
 
@@ -51,8 +52,13 @@ abstract class GMResource implements \JsonSerializable
     public function __construct(string $yyFilePath, DepManEntity $depManEntity = null, $load = true)
     {
         $this->_filePath = $yyFilePath;
+        $actualFile = $depManEntity->getProjectPath() . '/' . str_replace('\\', '/', $yyFilePath);
+        if (!file_exists($actualFile)) {
+            //Skipping because its probably a vendored file
+            throw new FileNotFoundException($actualFile . ' was not found');
+        }
         if ($load) {
-            $this->unpack(json_decode(file_get_contents($depManEntity->getProjectPath() . '/' . str_replace('\\', '/', $yyFilePath))), $depManEntity);
+            $this->unpack(json_decode(file_get_contents($actualFile)), $depManEntity);
         }
     }
 
