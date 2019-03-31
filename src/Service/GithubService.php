@@ -69,6 +69,34 @@ class GithubService
         return ['response_code'=>$response->getStatusCode()];
     }
 
+    public function getZipballUrl(string $gitUri, string $version) {
+        return sprintf(
+            'https://api.github.com/repos/%s/zipball/%s',
+            $this->getPackageNameFromUri($gitUri),
+            $version
+        );
+    }
+
+    public function getPackageNameFromUri($uri) {
+        $matches = [];
+        preg_match(
+            '~git@github\.com:([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+){1}\.git~',
+            $uri,
+            $matches
+        );
+
+        if (count($matches) != 2) {
+            throw new \RuntimeException(
+                sprintf(
+                    'VCS URI "%s" is not supported - must be "%s" format',
+                    $uri,
+                    'git@github.com:vendor/package.git'
+                )
+            );
+        }
+        return strtolower($matches[1]);
+    }
+
     public function getDownloadedPackageFolder(string $zipballUrl):string {
         $cacheKey = sha1($zipballUrl);
 

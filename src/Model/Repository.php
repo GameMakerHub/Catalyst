@@ -44,7 +44,7 @@ class Repository implements \JsonSerializable {
             throw new PackageNotFoundException($packageName, $version);
         }
 
-        $satisfied = Semver::satisfiedBy(array_keys($this->availablePackages[$packageName]), $version);
+        $satisfied = Semver::satisfiedBy(array_keys($this->availablePackages[$packageName]['versions']), $version);
         if (count($satisfied)) {
             return Semver::rsort($satisfied);
         }
@@ -55,7 +55,6 @@ class Repository implements \JsonSerializable {
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {
-
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
                     return new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
@@ -66,7 +65,9 @@ class Repository implements \JsonSerializable {
                     return new DepManEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
                 case self::REPO_GMDEPMAN:
-                    throw new \RuntimeException('Repo type not supported yet');
+                    $githubService = new GithubService();
+                    $zipBallUrl = $githubService->getZipballUrl($this->availablePackages[$packageName]['source'], $satisfieableVersions[0]);
+                    return new DepManEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
             }
         }
@@ -88,7 +89,7 @@ class Repository implements \JsonSerializable {
                     return $githubService->getDependenciesFor($packageName, $satisfieableVersions[0]);
                     break;
                 case self::REPO_GMDEPMAN:
-                    throw new \RuntimeException('Repo type not supported yet');
+                    return $this->availablePackages[$packageName]['versions'][$version];
                     break;
             }
         }
@@ -110,13 +111,14 @@ class Repository implements \JsonSerializable {
                 $this->scanGithubForPackages();
                 break;
             case self::REPO_GMDEPMAN:
-                throw new \RuntimeException('Repo type not supported yet');
+                $this->scanGmdepmanForPackages();
                 break;
         }
     }
 
     private function scanPackagesForDirectory():void
     {
+        throw new \Exception('Redo in new structure');
         $packagePaths = [];
         foreach (glob($this->uri . '/*/*', GLOB_ONLYDIR) as $projectPath) {
             if (file_exists($projectPath . '/gmdepman.json')) {
@@ -133,13 +135,6 @@ class Repository implements \JsonSerializable {
                     }
 
                     $this->availablePackages[$jsonData->name][$jsonData->version] = $packagePath;
-                    /*
-                        $this->availablePackages[$jsonData->name]['1.1.0'] = $packagePath;
-                        $this->availablePackages[$jsonData->name]['dev-master'] = $packagePath;
-                        $this->availablePackages[$jsonData->name]['1.0.3'] = $packagePath;
-                        $this->availablePackages[$jsonData->name]['1.1.1'] = $packagePath;
-                        $this->availablePackages[$jsonData->name]['1.0.3-rc2'] = $packagePath;
-                    */
                 }
             } catch (\Exception $e) {
                 // ignore
@@ -149,26 +144,37 @@ class Repository implements \JsonSerializable {
 
     private function scanGithubForPackages(): void
     {
-        $matches = [];
-        preg_match(
-            '~git@github\.com:([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+){1}\.git~',
-            $this->uri,
-            $matches
-        );
-
-        if (count($matches) != 2) {
-            throw new \RuntimeException(
-                sprintf(
-                    'VCS URI "%s" is not supported - must be "%s" format',
-                    $this->uri,
-                    'git@github.com:vendor/package.git'
-                )
-            );
-        }
+        throw new \Exception('Redo in new structure');
 
         $githubService = new GithubService();
 
-        $packageName = strtolower($matches[1]);
+        $packageName = $githubService->getPackageNameFromUrl($this->uri);
         $this->availablePackages[$packageName] = $githubService->getTags($packageName);
+    }
+
+    private function scanGmdepmanForPackages(): void
+    {
+        $httpClient = new \GuzzleHttp\Client([
+            'base_uri' => $this->uri . '/',
+            'headers' => [
+                'User-Agent' => 'gmdepman/1.0',
+                'Accept'     => 'application/vnd.gmdepman.v1+json',
+            ]
+        ]);
+
+        $packages = json_decode($httpClient->get('packages')->getBody()->getContents(), true)['packages'];
+
+        foreach ($packages as $package) {
+
+            $versions = [];
+            foreach ($package['versions'] as $data) {
+                $versions[$data['version']] = $data['dependencies'];
+            }
+
+            $this->availablePackages[$package['name']] = [
+                'source' => $package['source'],
+                'versions' => $versions
+            ];
+        }
     }
 }

@@ -10,26 +10,6 @@ use GMDepMan\Model\Repository;
 
 class PackageService
 {
-
-    private $repositories_EXAMPLE = [
-        [
-            'type' => Repository::REPO_DIRECTORY,
-            'uri' => 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests\projects'
-        ],
-        [
-            'type' => Repository::REPO_VCS,
-            'uri' => 'git@github.com:GameMakerHub/GameMakerStandards.git'
-        ],
-        [
-            'type' => Repository::REPO_VCS,
-            'uri' => 'https://github.com/GameMakerHub/GameMakerStandards.git'
-        ],
-        [
-            'type' => Repository::REPO_GMDEPMAN,
-            'uri' => 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json'
-        ],
-    ];
-
     /**
      * @return Repository[]
      */
@@ -38,7 +18,8 @@ class PackageService
         return [
             //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests')
             //new Repository(Repository::REPO_GMDEPMAN, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
-            new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
+            //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
+            new Repository(Repository::REPO_GMDEPMAN, 'http://repo.gamemakerhub.net')
         ];
     }
 
