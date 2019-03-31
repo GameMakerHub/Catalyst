@@ -87,7 +87,7 @@ class InstallCommand extends Command
     private function installDependencies(DepManEntity $thisDepMan, OutputInterface $output) {
         foreach ($this->dependencies as $package => $versions) {
             $versionSort = Semver::rsort($versions);
-            $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $versionSort[0] . '</>', Output::VERBOSITY_VERBOSE);
+            $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $versionSort[0] . '</>');
             //$output->writeln('    Candidates: <fg=cyan>' . implode(', ', $versions) . '</>', Output::VERBOSITY_VERBOSE);
 
             //$this->packageService->downloadPackage($package, $versionSort[0]); // Skip because we're local only now

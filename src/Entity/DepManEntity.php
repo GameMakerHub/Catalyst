@@ -224,12 +224,12 @@ class DepManEntity {
                     $nextFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
                     $this->addIgnore($nextFolder->getFilePath());
                 }
-                $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
+                $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']', Output::VERBOSITY_VERY_VERBOSE);
                 $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $nextFolder);
             }
 
             if (!$isFolder) {
-                $output->writeln('    ' . str_repeat('|  ', $level).'\__ <fg=green>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']');
+                $output->writeln('    ' . str_repeat('|  ', $level).'\__ <fg=green>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']', Output::VERBOSITY_VERY_VERBOSE);
                 $rootFolder->markEdited();
                 $rootFolder->addChild($child);
 

@@ -105,11 +105,11 @@ class GithubService
         $location = $cacheFolder . $cacheKey;
 
         if (!file_exists($zipFile)) {
-            echo 'Downloading: <fg=yellow>' . $zipballUrl . '</> to '.$zipFile.'...' . PHP_EOL;
+            //echo 'Downloading: <fg=yellow>' . $zipballUrl . '</> to '.$zipFile.'...' . PHP_EOL;
             $this->downloadZipball($zipballUrl, $zipFile);
         }
 
-        echo 'Extracting ' . $zipFile . PHP_EOL;
+        //echo 'Extracting ' . $zipFile . PHP_EOL;
 
         $this->delTree($location);
 
