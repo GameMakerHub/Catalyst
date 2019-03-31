@@ -80,6 +80,7 @@ class YoYoProjectEntity {
             if (isset($item->gmResource()->children)) {
                 foreach ($item->gmResource()->children as $childKey) {
                     if (!array_key_exists($childKey, $this->resources)) {
+                        continue;//ignore because of installing stuff
                         throw new MalformedProjectFileException('Resource with GUID ' . $childKey . ' was not found, but appears to be a child of some resource.');
                     }
                     $item->gmResource()->addChild($this->resources[$childKey]->gmResource());

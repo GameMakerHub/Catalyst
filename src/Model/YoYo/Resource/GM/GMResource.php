@@ -52,12 +52,12 @@ abstract class GMResource implements \JsonSerializable
     public function __construct(string $yyFilePath, DepManEntity $depManEntity = null, $load = true)
     {
         $this->_filePath = $yyFilePath;
-        $actualFile = $depManEntity->getProjectPath() . '/' . str_replace('\\', '/', $yyFilePath);
-        if (!file_exists($actualFile)) {
-            //Skipping because its probably a vendored file
-            throw new FileNotFoundException($actualFile . ' was not found');
-        }
         if ($load) {
+            $actualFile = $depManEntity->getProjectPath() . '/' . str_replace('\\', '/', $yyFilePath);
+            if (!file_exists($actualFile)) {
+                //Skipping because its probably a vendored file
+                throw new FileNotFoundException($actualFile . ' was not found');
+            }
             $this->unpack(json_decode(file_get_contents($actualFile)), $depManEntity);
         }
     }
