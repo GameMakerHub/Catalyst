@@ -33,6 +33,7 @@ class RequireCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $GLOBALS['dry'] = false;
         $thisDepMan = new DepManEntity(realpath('.'));
 
         $version = '*';

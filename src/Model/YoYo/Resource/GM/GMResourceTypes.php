@@ -38,6 +38,8 @@ class GMResourceTypes {
     const GM_OPTIONS_ANDROID = 'GMAndroidOptions';
     const GM_OPTIONS_MAC = 'GMMacOptions';
 
+    const GM_EXTENSION = 'GMExtension';
+
     const TYPEMAP = [
         self::GM_FOLDER => GMFolder::class,
 
@@ -62,5 +64,7 @@ class GMResourceTypes {
         self::GM_OPTIONS_LINUX => GMLinuxOptions::class,
         self::GM_OPTIONS_WINDOWS => GMWindowsOptions::class,
         self::GM_OPTIONS_MAC => GMMacOptions::class,
+
+        self::GM_EXTENSION => GMExtension::class,
     ];
 }

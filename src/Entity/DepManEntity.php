@@ -305,7 +305,7 @@ class DepManEntity {
      */
     private function saveIgnoreFile()
     {
-        $newContent = PHP_EOL . self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->ignored) . PHP_EOL . self::IGNORE_TOKEN;
+        $newContent = self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->ignored) . PHP_EOL . self::IGNORE_TOKEN;
 
         $ignoreFile = $this->projectPath . '/.gitignore';
         $contents = '';
@@ -316,7 +316,7 @@ class DepManEntity {
         preg_match('~(### GMDEPMAN ###)[\s\S]+(### GMDEPMAN ###)~', $contents, $matches);
 
         if (count($matches) == 0) {
-            $contents .= $newContent;
+            $contents .= PHP_EOL . $newContent;
         } else {
             $contents = str_replace($matches[0], $newContent, $contents);
         }

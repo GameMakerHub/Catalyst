@@ -14,7 +14,8 @@
         "symfony/http-kernel": "^4.3",
         "ramsey/uuid": "^4.0@dev",
         "composer/semver": "^1.0@dev",
-        "guzzlehttp/guzzle": "^6.3@dev"
+        "guzzlehttp/guzzle": "^6.3@dev",
+        "symfony/process": "^4.3@dev"
     },
     "license": "MIT",
     "authors": [
