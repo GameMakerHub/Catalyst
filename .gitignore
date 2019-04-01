@@ -9,6 +9,7 @@ composer.phar
 
 # PHPUnit cache
 .phpunit.result.cache
+clover.xml
 
 # Symfone Cache and logs
 /var/

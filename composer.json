@@ -3,7 +3,7 @@
     "description": "An extension manager for Game Maker Studio 2",
     "type": "project",
     "require": {
-        "php": "^7.3",
+        "php": "^7",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "^4.3",
