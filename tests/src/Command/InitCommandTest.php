@@ -28,7 +28,7 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
             'description',
             0,
             'http://www.dukesoft.nl/',
-            'GMLProject.yyp'
+            __DIR__ . '/../../projects/GMLProject/GMLProject.yyp'
         ]);
 
         $commandTester->execute([
@@ -36,6 +36,10 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('YYP: yypfile', $output);
+        $this->assertStringContainsString('GMDepMan file initialized', $output);
+
+        //@todo
+        unlink('gmdepman.gdm');
+        unlink('gmdepman.json');
     }
 }
