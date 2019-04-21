@@ -79,7 +79,6 @@ class PackageService
         // Might be overkill, also in the depmanentity
         Assertion::directory($projectPath, $projectPath . ' does not exist');
         Assertion::file($projectPath . '/gmdepman.json', 'Project does not contain a gmdepman.json file');
-        Assertion::file($projectPath . '/gmdepman.gdm', 'Project does not contain a gmdepman.gdm file');
 
         return new DepManEntity($projectPath);
     }

@@ -5,6 +5,7 @@ namespace GMDepMan\Command;
 use Composer\Semver\Semver;
 use GMDepMan\Entity\DepManEntity;
 use GMDepMan\Exception\UnresolveableDependenciesException;
+use GMDepMan\Service\DepmanService;
 use GMDepMan\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,9 +23,13 @@ class InstallCommand extends Command
     /** @var PackageService */
     private $packageService;
 
-    public function __construct(PackageService $packageService)
+    /** @var DepmanService */
+    private $depmanService;
+
+    public function __construct(PackageService $packageService, DepmanService $depmanService)
     {
         $this->packageService = $packageService;
+        $this->depmanService = $depmanService;
 
         parent::__construct();
     }
@@ -39,18 +44,23 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $thisDepMan = new DepManEntity(realpath('.'));
-
         if ($input->getOption('dry-run')) {
             $GLOBALS['dry'] = true;
         } else {
             $GLOBALS['dry'] = false;
         }
 
+        $output->writeln('Uninstalling current packages...', Output::VERBOSITY_VERBOSE);
+        $this->depmanService->uninstallAll();
+
+        $thisDepMan = new DepManEntity(realpath('.'));
+
         $output->writeln('Package <fg=green>' . $thisDepMan->name() . '</>@<fg=cyan>' . $thisDepMan->version() . '</> depends on:', Output::VERBOSITY_VERBOSE);
         $this->solveDependencies($thisDepMan->require, $output, 0);
 
         //$requiredPackage = $this->packageService->getPackage($input->getArgument('package'));
+
+
 
         $this->installDependencies($thisDepMan, $output);
 

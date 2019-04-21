@@ -64,6 +64,9 @@ class GithubService
     }
 
     public function downloadZipball(string $url, string $location) {
+        if (!dir(dirname($location))) {
+            mkdir(dirname($location), 0777, true);
+        }
         $file_path = fopen($location,'w');
         $response = $this->client->get($url, ['save_to' => $file_path]);
         return ['response_code'=>$response->getStatusCode()];

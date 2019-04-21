@@ -198,6 +198,13 @@ class YoYoProjectEntity {
 
     public function addResource(Resource $resource)
     {
+        foreach ($this->resources as $test) {
+            if ($test->key() == $resource->key()) {
+                var_dump($resource->key());
+                throw new \Exception('ERROR: Resource with same key already exists in project: ');
+            }
+        }
+
         $this->resources[] = $resource;
     }
 
@@ -224,9 +231,9 @@ class YoYoProjectEntity {
                 $resource->gmResource()->save();
             }
         }
-        if (!$GLOBALS['dry']) {
-            file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
-        }
+        //if (!$GLOBALS['dry']) {
+        file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
+        //}
         return true;
     }
 }

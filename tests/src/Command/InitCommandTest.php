@@ -39,7 +39,6 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString('GMDepMan file initialized', $output);
 
         //@todo
-        unlink('gmdepman.gdm');
         unlink('gmdepman.json');
     }
 }
