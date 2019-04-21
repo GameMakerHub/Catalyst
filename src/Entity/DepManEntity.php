@@ -63,9 +63,6 @@ class DepManEntity {
     /** @var string */
     private $yyp;
 
-    /** @var \stdClass */
-    private $depData;
-
     /** @var string */
     private $projectPath;
 
@@ -86,8 +83,6 @@ class DepManEntity {
         $this->version = '0.0.1';
         $this->require = [];
         $this->repositories = [];
-
-        $this->depData = new \stdClass();
 
         $this->save();
     }
@@ -114,16 +109,9 @@ class DepManEntity {
         $this->projectPath = $projectPath;
 
         try {
-            Assertion::file($this->projectPath . '/gmdepman.gdm');
             Assertion::file($this->projectPath . '/gmdepman.json');
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('gmdepman files are not found. Initialize first!');
-        }
-
-        $this->depData = unserialize(file_get_contents($this->projectPath . '/gmdepman.gdm'));
-
-        if (false === $this->depData) {
-            throw new MalformedProjectFileException('gmdepman.gmd is malformed');
+            throw new \RuntimeException('gmdepman file is not found. Initialize first!');
         }
 
         // Load config from file
@@ -151,11 +139,6 @@ class DepManEntity {
         return $this->projectEntity;
     }
 
-    public function getGdm():string
-    {
-        return serialize($this->depData);
-    }
-
     public function getJson():string
     {
         $jsonObj = new \stdClass();
@@ -173,11 +156,6 @@ class DepManEntity {
 
     public function installPackage(DepManEntity $newPackage, OutputInterface $output)
     {
-        //First make vendor folder for this package
-        //if (!$GLOBALS['dry']) {
-            //@mkdir($this->getProjectPath() . '/'.self::$vendorFolderName.'/' . $newPackage->name(), 0777, true);
-        //}
-
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
 
@@ -293,7 +271,6 @@ class DepManEntity {
     {
         if (!$GLOBALS['dry']) {
             file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
-            file_put_contents($this->projectPath . '/gmdepman.gdm', $this->getGdm());
             $this->saveIgnoreFile();
         }
     }
