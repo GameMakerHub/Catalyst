@@ -1,12 +1,12 @@
 <?php
-namespace GMDepMan\Entity;
+namespace Catalyst\Entity;
 
 use Assert\Assertion;
-use GMDepMan\Exception\FileNotFoundException;
-use GMDepMan\Exception\MalformedProjectFileException;
-use GMDepMan\Model\Uuid;
-use GMDepMan\Model\YoYo\Resource;
-use GMDepMan\Traits\JsonUnpacker;
+use Catalyst\Exception\FileNotFoundException;
+use Catalyst\Exception\MalformedProjectFileException;
+use Catalyst\Model\Uuid;
+use Catalyst\Model\YoYo\Resource;
+use Catalyst\Traits\JsonUnpacker;
 use Ramsey\Uuid\UuidInterface;
 
 class YoYoProjectEntity {
@@ -16,16 +16,16 @@ class YoYoProjectEntity {
     /** @var \stdClass */
     private $originalData;
 
-    /** @var \GMDepMan\Model\Uuid */
+    /** @var \Catalyst\Model\Uuid */
     public $id;
 
     /** @var bool */
     public $IsDnDProject = false;
 
-    /** @var \GMDepMan\Model\YoYo\Resource[] */
+    /** @var \Catalyst\Model\YoYo\Resource[] */
     public $resources;
 
-    /** @var \GMDepMan\Model\YoYo\Resource\GM\GMResource[] */
+    /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource[] */
     private $_children = [];
 
     /** @var DepManEntity */
@@ -217,7 +217,7 @@ class YoYoProjectEntity {
     }
 
     /**
-     * @return \GMDepMan\Model\YoYo\Resource\GM\GMResource[]
+     * @return \Catalyst\Model\YoYo\Resource\GM\GMResource[]
      */
     public function getChildren():array
     {

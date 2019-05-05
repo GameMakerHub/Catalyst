@@ -1,18 +1,18 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource;
+namespace Catalyst\Model\YoYo\Resource;
 
 use Assert\Assertion;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Model\YoYo\Resource\GM\GMResource;
-use GMDepMan\Model\YoYo\Resource\GM\GMResourceTypes;
-use GMDepMan\Traits\JsonUnpacker;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Model\YoYo\Resource\GM\GMResource;
+use Catalyst\Model\YoYo\Resource\GM\GMResourceTypes;
+use Catalyst\Traits\JsonUnpacker;
 
 class Value {
     use JsonUnpacker {
         unpack as protected traitUnpack;
     }
 
-    /** @var \GMDepMan\Model\Uuid */
+    /** @var \Catalyst\Model\Uuid */
     public $id;
 
     /** @var string */
@@ -21,7 +21,7 @@ class Value {
     /** @var string */
     public $resourceType;
 
-    /** @var \GMDepMan\Model\YoYo\Resource\GM\GMResource */
+    /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource */
     private $resource;
 
     public function unpack($originalData, DepManEntity $depmanEntity)

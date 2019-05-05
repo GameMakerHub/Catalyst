@@ -1,6 +1,6 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM\Options;
+namespace Catalyst\Model\YoYo\Resource\GM\Options;
 
-use GMDepMan\Model\YoYo\Resource\GM\GMResource;
+use Catalyst\Model\YoYo\Resource\GM\GMResource;
 
 class GMHtml5Options extends GMResource {}

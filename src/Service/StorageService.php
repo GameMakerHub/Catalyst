@@ -1,9 +1,9 @@
 <?php
 
-namespace GMDepMan\Service;
+namespace Catalyst\Service;
 
 use Assert\Assertion;
-use GMDepMan\Entity\YoYoProjectEntity;
+use Catalyst\Entity\YoYoProjectEntity;
 
 class StorageService
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace GMDepMan\Service;
+namespace Catalyst\Service;
 
-use GMDepMan\Entity\DepManEntity;
+use Catalyst\Entity\DepManEntity;
 
 class DepmanService
 {
@@ -46,7 +46,7 @@ class DepmanService
     }
 
     /**
-     * @param \GMDepMan\Model\YoYo\Resource\GM\GMResource[] $children
+     * @param \Catalyst\Model\YoYo\Resource\GM\GMResource[] $children
      * @param int $level
      * @param bool $remove
      */

@@ -1,11 +1,11 @@
 <?php
-namespace GMDepMan\Model\YoYo;
+namespace Catalyst\Model\YoYo;
 
 use Assert\Assertion;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Model\YoYo\Resource\GM\GMFolder;
-use GMDepMan\Model\YoYo\Resource\GM\GMResource;
-use GMDepMan\Model\YoYo\Resource\GM\GMResourceTypes;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Model\YoYo\Resource\GM\GMFolder;
+use Catalyst\Model\YoYo\Resource\GM\GMResource;
+use Catalyst\Model\YoYo\Resource\GM\GMResourceTypes;
 
 class Resource implements \JsonSerializable {
 

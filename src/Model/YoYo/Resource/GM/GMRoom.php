@@ -1,5 +1,5 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM;
+namespace Catalyst\Model\YoYo\Resource\GM;
 
 class GMRoom extends GMResource {
 }

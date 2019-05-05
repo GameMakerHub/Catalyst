@@ -1,5 +1,5 @@
 <?php
-namespace GMDepMan\Model;
+namespace Catalyst\Model;
 
 class Uuid implements \JsonSerializable {
     /** @var \Ramsey\Uuid\UuidInterface */

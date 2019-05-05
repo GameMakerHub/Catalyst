@@ -1,5 +1,5 @@
 <?php
-namespace GMDepMan\DependencyInjection\CompilerPass;
+namespace Catalyst\DependencyInjection\CompilerPass;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;

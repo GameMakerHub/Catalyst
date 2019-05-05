@@ -1,17 +1,17 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM;
+namespace Catalyst\Model\YoYo\Resource\GM;
 
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Exception\FileNotFoundException;
-use GMDepMan\Model\YoYo\Resource;
-use GMDepMan\Traits\JsonUnpacker;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Exception\FileNotFoundException;
+use Catalyst\Model\YoYo\Resource;
+use Catalyst\Traits\JsonUnpacker;
 
 abstract class GMResource implements \JsonSerializable
 {
 
     use JsonUnpacker;
 
-    /** @var \GMDepMan\Model\Uuid */
+    /** @var \Catalyst\Model\Uuid */
     public $id;
 
     /** @var string */

@@ -1,6 +1,6 @@
 {
-    "name": "gamemakerhub/gmdepman",
-    "description": "An extension manager for Game Maker Studio 2",
+    "name": "gamemakerhub/catalyst",
+    "description": "A tool for Game Maker Studio 2 to manage dependencies and speed up your process",
     "type": "project",
     "require": {
         "php": "^7",
@@ -26,12 +26,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "GMDepMan\\": "src/"
+            "Catalyst\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "GMDepMan\\Tests\\": "tests/"
+            "Catalyst\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

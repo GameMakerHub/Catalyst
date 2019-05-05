@@ -1,4 +1,4 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM;
+namespace Catalyst\Model\YoYo\Resource\GM;
 
 class GMFont extends GMResource {}

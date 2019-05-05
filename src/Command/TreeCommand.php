@@ -1,8 +1,8 @@
 <?php
 
-namespace GMDepMan\Command;
+namespace Catalyst\Command;
 
-use GMDepMan\Entity\DepManEntity;
+use Catalyst\Entity\DepManEntity;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

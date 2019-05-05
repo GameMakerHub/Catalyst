@@ -1,8 +1,8 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM;
+namespace Catalyst\Model\YoYo\Resource\GM;
 
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Model\Uuid;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Model\Uuid;
 
 class GMFolder extends GMResource {
     /** @var Uuid[] */

@@ -1,9 +1,9 @@
 <?php
 
-namespace GMDepMan\Command;
+namespace Catalyst\Command;
 
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Service\PackageService;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

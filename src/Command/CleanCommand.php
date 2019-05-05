@@ -1,8 +1,8 @@
 <?php
 
-namespace GMDepMan\Command;
+namespace Catalyst\Command;
 
-use GMDepMan\Service\DepmanService;
+use Catalyst\Service\DepmanService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +25,7 @@ class CleanCommand extends Command
     {
         $this
             ->setDescription('Removes all dependencies')
-            ->setHelp('Remove all dependencies, files and folders installed by GMDepMan');
+            ->setHelp('Remove all dependencies, files and folders installed by Catalyst');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

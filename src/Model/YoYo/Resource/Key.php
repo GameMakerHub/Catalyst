@@ -1,7 +1,7 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource;
+namespace Catalyst\Model\YoYo\Resource;
 
-use GMDepMan\Model\Uuid;
+use Catalyst\Model\Uuid;
 
 class Key extends Uuid {
 

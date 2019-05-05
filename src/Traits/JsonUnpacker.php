@@ -1,7 +1,7 @@
 <?php
-namespace GMDepMan\Traits;
+namespace Catalyst\Traits;
 
-use GMDepMan\Entity\DepManEntity;
+use Catalyst\Entity\DepManEntity;
 
 trait JsonUnpacker {
 

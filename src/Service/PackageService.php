@@ -1,12 +1,12 @@
 <?php
 
-namespace GMDepMan\Service;
+namespace Catalyst\Service;
 
 use Assert\Assertion;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Exception\PackageNotFoundException;
-use GMDepMan\Exception\PackageNotSatisfiableException;
-use GMDepMan\Model\Repository;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Exception\PackageNotFoundException;
+use Catalyst\Exception\PackageNotSatisfiableException;
+use Catalyst\Model\Repository;
 
 class PackageService
 {
@@ -16,7 +16,7 @@ class PackageService
     public function getDefaultRepositories():array
     {
         return [
-            //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\GMDepMan\tests')
+            //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\Catalyst\tests')
             //new Repository(Repository::REPO_GMDEPMAN, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
             //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
             new Repository(Repository::REPO_GMDEPMAN, 'http://repo.gamemakerhub.net')

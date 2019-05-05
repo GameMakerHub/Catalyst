@@ -1,13 +1,13 @@
 <?php
-namespace GMDepMan\Entity;
+namespace Catalyst\Entity;
 
 use Assert\Assert;
 use Assert\Assertion;
 use Assert\AssertionFailedException;
 use Composer\Semver\Semver;
 use Composer\Semver\VersionParser;
-use GMDepMan\Exception\MalformedProjectFileException;
-use GMDepMan\Model\YoYo\Resource\GM\GMFolder;
+use Catalyst\Exception\MalformedProjectFileException;
+use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -174,7 +174,7 @@ class DepManEntity {
     /**
      * @param OutputInterface $output
      * @param DepManEntity $newPackage
-     * @param \GMDepMan\Model\YoYo\Resource\GM\GMResource[] $children
+     * @param \Catalyst\Model\YoYo\Resource\GM\GMResource[] $children
      * @param int $level
      * @param GMFolder|null $rootFolder
      * @throws \Exception

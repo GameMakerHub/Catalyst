@@ -1,8 +1,8 @@
 <?php
 
-namespace GMDepMan;
+namespace Catalyst;
 
-use GMDepMan\DependencyInjection\CompilerPass\CollectCommandsToApplicationCompilerPass;
+use Catalyst\DependencyInjection\CompilerPass\CollectCommandsToApplicationCompilerPass;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

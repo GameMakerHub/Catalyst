@@ -1,11 +1,11 @@
 <?php
 
-namespace GMDepMan\Command;
+namespace Catalyst\Command;
 
 use Composer\Semver\Semver;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Exception\UnresolveableDependenciesException;
-use GMDepMan\Service\PackageService;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Exception\UnresolveableDependenciesException;
+use Catalyst\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

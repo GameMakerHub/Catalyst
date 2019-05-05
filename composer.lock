@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6510d0e368849579054872e362389eb9",
+    "content-hash": "36bb96125bf806cc4f7cc30ef09049cf",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3072,12 +3072,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "96155acb01af837fadb11d7bdc1deb2e46406ba8"
+                "reference": "d3cbb7212568a4b401ea0e28bdd89c38b3f0e6e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/96155acb01af837fadb11d7bdc1deb2e46406ba8",
-                "reference": "96155acb01af837fadb11d7bdc1deb2e46406ba8",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/d3cbb7212568a4b401ea0e28bdd89c38b3f0e6e3",
+                "reference": "d3cbb7212568a4b401ea0e28bdd89c38b3f0e6e3",
                 "shasum": ""
             },
             "require": {
@@ -3129,7 +3129,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-04-27T12:01:28+00:00"
+            "time": "2019-05-04T18:28:21+00:00"
         },
         {
             "name": "theseer/tokenizer",

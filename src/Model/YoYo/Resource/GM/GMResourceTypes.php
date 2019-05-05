@@ -1,13 +1,13 @@
 <?php
-namespace GMDepMan\Model\YoYo\Resource\GM;
+namespace Catalyst\Model\YoYo\Resource\GM;
 
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMAmazonFireOptions;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMAndroidOptions;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMHtml5Options;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMIosOptions;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMLinuxOptions;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMMacOptions;
-use GMDepMan\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMAmazonFireOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMAndroidOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMHtml5Options;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMIosOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMLinuxOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMMacOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
 
 class GMResourceTypes {
 

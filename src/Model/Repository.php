@@ -1,11 +1,11 @@
 <?php
-namespace GMDepMan\Model;
+namespace Catalyst\Model;
 
 use Composer\Semver\Semver;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Exception\PackageNotFoundException;
-use GMDepMan\Exception\PackageNotSatisfiableException;
-use GMDepMan\Service\GithubService;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Exception\PackageNotFoundException;
+use Catalyst\Exception\PackageNotSatisfiableException;
+use Catalyst\Service\GithubService;
 
 class Repository implements \JsonSerializable {
 

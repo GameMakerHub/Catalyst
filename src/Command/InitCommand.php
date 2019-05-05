@@ -1,10 +1,10 @@
 <?php
 
-namespace GMDepMan\Command;
+namespace Catalyst\Command;
 
 use Assert\Assertion;
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Service\StorageService;
+use Catalyst\Entity\DepManEntity;
+use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,7 +37,7 @@ class InitCommand extends Command
     {
         $GLOBALS['dry'] = false;
         if ($this->storageService->fileExists('gmdepman.json')) {
-            $output->writeln('A GMDepMan file is already present.');
+            $output->writeln('A Catalyst file is already present.');
             return;
         }
 
@@ -115,6 +115,6 @@ class InitCommand extends Command
 
         $depmanentity = new DepManEntity(false);
         $depmanentity->initialize(realpath('.'), $name, $description, $license, $homepage, $yyp);
-        $output->writeln('GMDepMan file initialized.');
+        $output->writeln('Catalyst file initialized.');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace GMDepMan\Exception;
+namespace Catalyst\Exception;
 
 
 class MalformedProjectFileException extends \InvalidArgumentException
