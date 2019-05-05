@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: false
 
-    GMDepMan\:
+    Catalyst\:
         resource: '../src/*'
 
     Symfony\Component\Console\Application:

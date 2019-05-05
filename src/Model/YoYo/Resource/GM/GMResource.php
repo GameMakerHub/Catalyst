@@ -1,7 +1,7 @@
 <?php
 namespace Catalyst\Model\YoYo\Resource\GM;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Model\YoYo\Resource;
 use Catalyst\Traits\JsonUnpacker;
@@ -47,9 +47,9 @@ abstract class GMResource implements \JsonSerializable
     /**
      * GMResource constructor.
      * @param $yyFilePath|false
-     * @param DepManEntity $depManEntity
+     * @param CatalystEntity $depManEntity
      */
-    public function __construct(string $yyFilePath, DepManEntity $depManEntity = null, $load = true)
+    public function __construct(string $yyFilePath, CatalystEntity $depManEntity = null, $load = true)
     {
         $this->_filePath = $yyFilePath;
         if ($load) {

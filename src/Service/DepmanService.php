@@ -2,11 +2,11 @@
 
 namespace Catalyst\Service;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 
 class DepmanService
 {
-    /** @var DepManEntity */
+    /** @var CatalystEntity */
     private $thisDepMan;
 
     /** @var array */
@@ -17,7 +17,7 @@ class DepmanService
 
     public function __construct()
     {
-        $this->thisDepMan = new DepManEntity(realpath('.'));
+        $this->thisDepMan = new CatalystEntity(realpath('.'));
     }
 
     public function uninstallAll() {

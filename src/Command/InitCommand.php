@@ -3,7 +3,7 @@
 namespace Catalyst\Command;
 
 use Assert\Assertion;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -36,7 +36,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $GLOBALS['dry'] = false;
-        if ($this->storageService->fileExists('gmdepman.json')) {
+        if ($this->storageService->fileExists('catalyst.json')) {
             $output->writeln('A Catalyst file is already present.');
             return;
         }
@@ -74,7 +74,7 @@ class InitCommand extends Command
         // License
         $question = new ChoiceQuestion(
             'Please select the license',
-            DepManEntity::ALLOWED_LICENSES
+            CatalystEntity::ALLOWED_LICENSES
         );
         $question->setErrorMessage('License %s is invalid.');
 
@@ -113,7 +113,7 @@ class InitCommand extends Command
 
         $yyp = $helper->ask($input, $output, $question);
 
-        $depmanentity = new DepManEntity(false);
+        $depmanentity = new CatalystEntity(false);
         $depmanentity->initialize(realpath('.'), $name, $description, $license, $homepage, $yyp);
         $output->writeln('Catalyst file initialized.');
     }

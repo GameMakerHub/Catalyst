@@ -11,7 +11,7 @@
 
 ## About
 
-GMDepMan (Game Maker Dependency Manager) is a tool to manage dependencies within GameMakerStudio2 projects.
+Catalyst (Game Maker Dependency Manager) is a tool to manage dependencies within GameMakerStudio2 projects.
 If you need a library inside of your project you can use this tool to declare the dependency and install all dependencies.
 The dependencies will be recursively solved, so multiple libraries can require multiple dependencies, and they can be shared.
 
@@ -23,7 +23,7 @@ Inside the GameMaker project, all external files (vendored files) will reside in
 
 ### Sharing
 When other people check out your source, and it requires dependencies, it will not run. 
-They will first have to run `gmdepman install` to download and install the dependencies to the project.
+They will first have to run `catalyst install` to download and install the dependencies to the project.
 
 This way we can make sure that vendored code is not included in version control.
 Stating the obvious: files inside of the `vendor` folders should never be edited, as your changes are not included in VCS.
@@ -69,11 +69,11 @@ Run a `composer install` in this directory, and then you can use it.
 Imagine we have a project that requires some extended functions. 
 The library [gamemakerhub/extended-functions](https://github.com/GameMakerHub/extended-functions) has the functions we need.
 
-We first setup GMDepMan in our project;
+We first setup Catalyst in our project;
 
 ```bash
 $ cd projectPath
-$ gmdepman init
+$ catalyst init
 Please enter the name of your package, in "vendor/package" format: dukesoft/dscpu-mercy
 Optionally enter the description for your package (max 255): A library to help save resources on your CPU while running a game.
 Please select the license
@@ -85,25 +85,25 @@ Please select the license
  > 0
 Please enter URL of your repository: [https://github.com/dukesoft/DSCPU-Mercy]
 Please enter YYP file name: [DSCPU Mercy.yyp]
-GMDepMan file initialized.
+Catalyst file initialized.
 ```
 
-The `init` command will walk us through initialisation. You can also manually create a `gmdepman.json` file.
+The `init` command will walk us through initialisation. You can also manually create a `catalyst.json` file.
 
-After we've setup our GMDepMan in the project, we can start to require dependencies. For example:
+After we've setup our Catalyst in the project, we can start to require dependencies. For example:
 ```bash
-$ gmdepman require gamemakerhub/extended-functions@^1.0
+$ catalyst require gamemakerhub/extended-functions@^1.0
 Require version ^1.0 for gamemakerhub/extended-functions
-gmdepman.json has been updated
+catalyst.json has been updated
 ```
 
 This will search the repositories for the package `gamemakerhub/extended-functions` and a version that satisfies the constraint `^1.0`.
 
-After this, the requirement will be added to the gmdepman.json file (note that you can also do this manually).
+After this, the requirement will be added to the catalyst.json file (note that you can also do this manually).
 
 Now its time to install;
 ```bash
-$ gmdepman install
+$ catalyst install
 Installing gamemakerhub/extended-functions@1.0.1
 ```
 
@@ -117,17 +117,17 @@ The diff of the version control will only show a couple of main project files an
 
 | Argument | Options | Explaination | Example |
 |----------|---------|--------------|---------|
-| -h, --help | | Shows help | `gmdepman -h` |
-| -q, --quiet| | Do not output any message | `gmdepman -q` |
-| -V, --version| | Display this application version | `gmdepman --version` |
-| --ansi| | Force ANSI output | `gmdepman --ansi` |
-| --no-ansi| | Disable ANSI output | `gmdepman --no-ansi` |
-| -n, --no-interaction| | Do not ask any interactive question | `gmdepman -n` |
-| -v, -vv, -vvv, --verbose| | Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug | `gmdepman -vvv` |
+| -h, --help | | Shows help | `catalyst -h` |
+| -q, --quiet| | Do not output any message | `catalyst -q` |
+| -V, --version| | Display this application version | `catalyst --version` |
+| --ansi| | Force ANSI output | `catalyst --ansi` |
+| --no-ansi| | Disable ANSI output | `catalyst --no-ansi` |
+| -n, --no-interaction| | Do not ask any interactive question | `catalyst -n` |
+| -v, -vv, -vvv, --verbose| | Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug | `catalyst -vvv` |
 |----------|---------|--------------|---------|
-| clean | | Remove all installed dependencies | `gmdepman clean` |
-| help | | Displays help for a command | `gmdepman help install` |
-| init | | Initialize a project in the current folder | `gmdepman init` |
-| install | | Install all dependencies | `gmdepman install` |
-| require | | Require a package | `gmdepman require gamemakerhub/extended-functions@^1.0` |
-| tree | | Outputs a tree view of all assets in the project | `gmdepman tree` |
+| clean | | Remove all installed dependencies | `catalyst clean` |
+| help | | Displays help for a command | `catalyst help install` |
+| init | | Initialize a project in the current folder | `catalyst init` |
+| install | | Install all dependencies | `catalyst install` |
+| require | | Require a package | `catalyst require gamemakerhub/extended-functions@^1.0` |
+| tree | | Outputs a tree view of all assets in the project | `catalyst tree` |

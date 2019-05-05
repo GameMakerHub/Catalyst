@@ -3,7 +3,7 @@
 namespace Catalyst\Service;
 
 use Assert\Assertion;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Exception\PackageNotSatisfiableException;
 use Catalyst\Model\Repository;
@@ -17,9 +17,9 @@ class PackageService
     {
         return [
             //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\Catalyst\tests')
-            //new Repository(Repository::REPO_GMDEPMAN, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
+            //new Repository(Repository::REPO_catalyst, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
             //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
-            new Repository(Repository::REPO_GMDEPMAN, 'http://repo.gamemakerhub.net')
+            new Repository(Repository::REPO_CATALYST, 'http://repo.gamemakerhub.net')
         ];
     }
 
@@ -27,9 +27,9 @@ class PackageService
      * @param string $package
      * @param string $version
      * @param array|null $repositoriesOverride
-     * @return DepManEntity
+     * @return CatalystEntity
      */
-    public function getPackage(string $package, string $version, array $repositoriesOverride = []):DepManEntity {
+    public function getPackage(string $package, string $version, array $repositoriesOverride = []):CatalystEntity {
 
         $repositories = $repositoriesOverride + $this->getDefaultRepositories();
 
@@ -75,11 +75,11 @@ class PackageService
         return $versions;
     }
 
-    public function getPackageByPath(string $projectPath):DepManEntity {
+    public function getPackageByPath(string $projectPath):CatalystEntity {
         // Might be overkill, also in the depmanentity
         Assertion::directory($projectPath, $projectPath . ' does not exist');
-        Assertion::file($projectPath . '/gmdepman.json', 'Project does not contain a gmdepman.json file');
+        Assertion::file($projectPath . '/catalyst.json', 'Project does not contain a catalyst.json file');
 
-        return new DepManEntity($projectPath);
+        return new CatalystEntity($projectPath);
     }
 }

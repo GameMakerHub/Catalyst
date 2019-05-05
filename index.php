@@ -4,7 +4,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
 
-$kernel = new \GMDepMan\Kernel;
+$kernel = new \Catalyst\Kernel;
 $kernel->boot();
 
 $container = $kernel->getContainer();

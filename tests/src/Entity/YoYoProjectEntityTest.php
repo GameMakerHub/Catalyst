@@ -1,14 +1,14 @@
 <?php
-namespace GMDepMan\Tests\Entity;
+namespace Catalyst\Tests\Entity;
 
-use GMDepMan\Entity\DepManEntity;
-use GMDepMan\Entity\YoYoProjectEntity;
+use Catalyst\Entity\CatalystEntity;
+use Catalyst\Entity\YoYoProjectEntity;
 
 class YoYoProjectEntityTest extends \PHPUnit\Framework\TestCase
 {
     public function testLoadingProjectAndSavingJsonUntouched()
     {
-        $depManEntity = (new DepManEntity('./tests/projects/GMLProject'));
+        $depManEntity = (new CatalystEntity('./tests/projects/GMLProject'));
 
         $projectEntity = new YoYoProjectEntity();
         $projectEntity->load($depManEntity);

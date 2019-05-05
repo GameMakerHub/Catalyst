@@ -2,7 +2,7 @@
 namespace Catalyst\Model\YoYo\Resource;
 
 use Assert\Assertion;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
 use Catalyst\Model\YoYo\Resource\GM\GMResourceTypes;
 use Catalyst\Traits\JsonUnpacker;
@@ -24,7 +24,7 @@ class Value {
     /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource */
     private $resource;
 
-    public function unpack($originalData, DepManEntity $depmanEntity)
+    public function unpack($originalData, CatalystEntity $depmanEntity)
     {
         $this->traitUnpack($originalData, $depmanEntity);
 

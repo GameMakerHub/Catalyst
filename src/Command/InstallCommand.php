@@ -3,7 +3,7 @@
 namespace Catalyst\Command;
 
 use Composer\Semver\Semver;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Service\DepmanService;
 use Catalyst\Service\PackageService;
@@ -53,7 +53,7 @@ class InstallCommand extends Command
         $output->writeln('Uninstalling current packages...', Output::VERBOSITY_VERBOSE);
         $this->depmanService->uninstallAll();
 
-        $thisDepMan = new DepManEntity(realpath('.'));
+        $thisDepMan = new CatalystEntity(realpath('.'));
 
         $output->writeln('Package <fg=green>' . $thisDepMan->name() . '</>@<fg=cyan>' . $thisDepMan->version() . '</> depends on:', Output::VERBOSITY_VERBOSE);
         $this->solveDependencies($thisDepMan->require, $output, 0);
@@ -94,7 +94,7 @@ class InstallCommand extends Command
         }
     }
 
-    private function installDependencies(DepManEntity $thisDepMan, OutputInterface $output) {
+    private function installDependencies(CatalystEntity $thisDepMan, OutputInterface $output) {
         foreach ($this->dependencies as $package => $versions) {
             $versionSort = Semver::rsort($versions);
             $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $versionSort[0] . '</>');

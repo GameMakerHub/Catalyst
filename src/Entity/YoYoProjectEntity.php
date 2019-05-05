@@ -28,7 +28,7 @@ class YoYoProjectEntity {
     /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource[] */
     private $_children = [];
 
-    /** @var DepManEntity */
+    /** @var CatalystEntity */
     private $depManEntity;
 
     /** @var array */
@@ -39,7 +39,7 @@ class YoYoProjectEntity {
      * @param string $json
      * @return $this
      */
-    public function load(DepManEntity $depManEntity)
+    public function load(CatalystEntity $depManEntity)
     {
         $this->depManEntity = $depManEntity;
 
@@ -160,7 +160,7 @@ class YoYoProjectEntity {
         if (!$newChild instanceof Resource\GM\GMFolder) {
             throw new \InvalidArgumentException('Folder path is not a folder');
         }
-        $newUuid = \Ramsey\Uuid\Uuid::uuid5(DepManEntity::UUID_NS, $foldername);
+        $newUuid = \Ramsey\Uuid\Uuid::uuid5(CatalystEntity::UUID_NS, $foldername);
         $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
 
         $newFolder = Resource::createFolder($this->depManEntity, $newObj);

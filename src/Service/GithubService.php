@@ -16,7 +16,7 @@ class GithubService
         $this->client = new \GuzzleHttp\Client([
             'base_uri' => 'https://api.github.com/',
             'headers' => [
-                'User-Agent' => 'gmdepman/1.0',
+                'User-Agent' => 'catalyst/1.0',
                 'Accept'     => 'application/vnd.github.v3+json',
             ]
         ]);
@@ -24,7 +24,7 @@ class GithubService
         $this->fileClient = new \GuzzleHttp\Client([
             'base_uri' => 'https://raw.githubusercontent.com/',
             'headers' => [
-                'User-Agent' => 'gmdepman/1.0',
+                'User-Agent' => 'catalyst/1.0',
                 'Accept'     => 'application/vnd.github.v3+json',
             ]
         ]);
@@ -46,9 +46,9 @@ class GithubService
     public function getDependenciesFor(string $package, string $version):array {
 
         try {
-            $try = $this->fileClient->get($package.'/' . $version . '/gmdepman.json');
+            $try = $this->fileClient->get($package.'/' . $version . '/catalyst.json');
         } catch (ClientException $e) {
-            $try = $this->fileClient->get($package.'/v' . $version . '/gmdepman.json');
+            $try = $this->fileClient->get($package.'/v' . $version . '/catalyst.json');
         }
 
         $data = json_decode($try->getBody()->getContents());
@@ -103,7 +103,7 @@ class GithubService
     public function getDownloadedPackageFolder(string $zipballUrl):string {
         $cacheKey = sha1($zipballUrl);
 
-        $cacheFolder = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'gmdepman' . DIRECTORY_SEPARATOR;
+        $cacheFolder = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'catalyst' . DIRECTORY_SEPARATOR;
         $zipFile = $cacheFolder . $cacheKey. '.zip';
         $location = $cacheFolder . $cacheKey;
 

@@ -2,7 +2,7 @@
 namespace Catalyst\Model;
 
 use Composer\Semver\Semver;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Exception\PackageNotSatisfiableException;
 use Catalyst\Service\GithubService;
@@ -11,7 +11,7 @@ class Repository implements \JsonSerializable {
 
     const REPO_DIRECTORY = 'directory';
     const REPO_VCS = 'vcs';
-    const REPO_GMDEPMAN = 'gmdepman';
+    const REPO_CATALYST = 'catalyst';
 
     /** @var string */
     public $type;
@@ -51,23 +51,23 @@ class Repository implements \JsonSerializable {
         throw new PackageNotFoundException($packageName, $version);
     }
 
-    public function findPackage(string $packageName, string $version):DepManEntity
+    public function findPackage(string $packageName, string $version):CatalystEntity
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
-                    return new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    return new CatalystEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
                     break;
                 case self::REPO_VCS:
                     $zipBallUrl = $this->availablePackages[$packageName][$satisfieableVersions[0]];
                     $githubService = new GithubService();
-                    return new DepManEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return new CatalystEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
-                case self::REPO_GMDEPMAN:
+                case self::REPO_CATALYST:
                     $githubService = new GithubService();
                     $zipBallUrl = $githubService->getZipballUrl($this->availablePackages[$packageName]['source'], $satisfieableVersions[0]);
-                    return new DepManEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return new CatalystEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
             }
         }
@@ -81,14 +81,14 @@ class Repository implements \JsonSerializable {
         if (count($satisfieableVersions)) {
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
-                    $depManEntity = new DepManEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    $depManEntity = new CatalystEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
                     return $depManEntity->require;
                     break;
                 case self::REPO_VCS:
                     $githubService = new GithubService();
                     return $githubService->getDependenciesFor($packageName, $satisfieableVersions[0]);
                     break;
-                case self::REPO_GMDEPMAN:
+                case self::REPO_CATALYST:
                     return $this->availablePackages[$packageName]['versions'][$version];
                     break;
             }
@@ -110,8 +110,8 @@ class Repository implements \JsonSerializable {
             case self::REPO_VCS:
                 $this->scanGithubForPackages();
                 break;
-            case self::REPO_GMDEPMAN:
-                $this->scanGmdepmanForPackages();
+            case self::REPO_CATALYST:
+                $this->scanCatalystForPackages();
                 break;
         }
     }
@@ -121,14 +121,14 @@ class Repository implements \JsonSerializable {
         throw new \Exception('Redo in new structure');
         $packagePaths = [];
         foreach (glob($this->uri . '/*/*', GLOB_ONLYDIR) as $projectPath) {
-            if (file_exists($projectPath . '/gmdepman.json')) {
+            if (file_exists($projectPath . '/catalyst.json')) {
                 $packagePaths[] = $projectPath;
             }
         }
 
         foreach ($packagePaths as $packagePath) {
             try {
-                $jsonData = json_decode(file_get_contents($packagePath . '/gmdepman.json'));
+                $jsonData = json_decode(file_get_contents($packagePath . '/catalyst.json'));
                 if ($jsonData->name && $jsonData->version) {
                     if (!array_key_exists($jsonData->name, $this->availablePackages)) {
                         $this->availablePackages[$jsonData->name] = [];
@@ -152,13 +152,13 @@ class Repository implements \JsonSerializable {
         $this->availablePackages[$packageName] = $githubService->getTags($packageName);
     }
 
-    private function scanGmdepmanForPackages(): void
+    private function scanCatalystForPackages(): void
     {
         $httpClient = new \GuzzleHttp\Client([
             'base_uri' => $this->uri . '/',
             'headers' => [
-                'User-Agent' => 'gmdepman/1.0',
-                'Accept'     => 'application/vnd.gmdepman.v1+json',
+                'User-Agent' => 'catalyst/1.0',
+                'Accept'     => 'application/vnd.catalyst.v1+json',
             ]
         ]);
 

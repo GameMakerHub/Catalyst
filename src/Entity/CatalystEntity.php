@@ -1,17 +1,13 @@
 <?php
 namespace Catalyst\Entity;
 
-use Assert\Assert;
 use Assert\Assertion;
-use Assert\AssertionFailedException;
-use Composer\Semver\Semver;
-use Composer\Semver\VersionParser;
 use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DepManEntity {
+class CatalystEntity {
 
     const UUID_NS = '00000000-1337-fafa-0000-dededededede';
 
@@ -96,7 +92,6 @@ class DepManEntity {
     }
 
     /**
-     * DepManEntity constructor.
      * @param string|false $projectPath
      */
     public function __construct($projectPath)
@@ -109,29 +104,29 @@ class DepManEntity {
         $this->projectPath = $projectPath;
 
         try {
-            Assertion::file($this->projectPath . '/gmdepman.json');
+            Assertion::file($this->projectPath . '/catalyst.json');
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('gmdepman file is not found. Initialize first!');
+            throw new \RuntimeException('catalyst file is not found. Initialize first!');
         }
 
         // Load config from file
-        $config = json_decode(file_get_contents($this->projectPath . '/gmdepman.json'));
+        $config = json_decode(file_get_contents($this->projectPath . '/catalyst.json'));
         if (null === $config) {
-            throw new MalformedProjectFileException('gmdepman.json is malformed');
+            throw new MalformedProjectFileException('catalyst.json is malformed');
         }
 
         $this->yyp = $config->yyp ?? null;
         $this->projectEntity = (new YoYoProjectEntity())->load($this);
 
         $this->name = $config->name;
-        if (empty($this->name)) { throw new MalformedProjectFileException('gmdepman.json missing name'); }
+        if (empty($this->name)) { throw new MalformedProjectFileException('catalyst.json missing name'); }
         $this->description = $config->description ?? null;
         $this->license = $config->license ?? null;
         $this->homepage = $config->homepage ?? null;
         $this->version = $config->version ?? null;
         $this->require = (array) ($config->require ?? []);
 
-        if (empty($this->version)) { throw new MalformedProjectFileException('gmdepman.json missing version'); }
+        if (empty($this->version)) { throw new MalformedProjectFileException('catalyst.json missing version'); }
     }
 
     public function projectEntity():YoYoProjectEntity
@@ -154,7 +149,7 @@ class DepManEntity {
         return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    public function installPackage(DepManEntity $newPackage, OutputInterface $output)
+    public function installPackage(CatalystEntity $newPackage, OutputInterface $output)
     {
         // Loop through all files and copy / add them to this project
         $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
@@ -173,13 +168,13 @@ class DepManEntity {
 
     /**
      * @param OutputInterface $output
-     * @param DepManEntity $newPackage
+     * @param CatalystEntity $newPackage
      * @param \Catalyst\Model\YoYo\Resource\GM\GMResource[] $children
      * @param int $level
      * @param GMFolder|null $rootFolder
      * @throws \Exception
      */
-    private function loopIn(OutputInterface $output, DepManEntity $newPackage, array $children, $level = 0, GMFolder $rootFolder = null) {
+    private function loopIn(OutputInterface $output, CatalystEntity $newPackage, array $children, $level = 0, GMFolder $rootFolder = null) {
         foreach ($children as $child) {
             $name = '?';
 
@@ -270,12 +265,12 @@ class DepManEntity {
     public function save()
     {
         if (!$GLOBALS['dry']) {
-            file_put_contents($this->projectPath . '/gmdepman.json', $this->getJson());
+            file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
             $this->saveIgnoreFile();
         }
     }
 
-    const IGNORE_TOKEN = '### GMDEPMAN ###';
+    const IGNORE_TOKEN = '### CATALYST ###';
 
     /**
      * @todo this is horrible and slow, but does the trick for now.
@@ -290,7 +285,7 @@ class DepManEntity {
             $contents = file_get_contents($ignoreFile);
         }
 
-        preg_match('~(### GMDEPMAN ###)[\s\S]+(### GMDEPMAN ###)~', $contents, $matches);
+        preg_match('~(### CATALYST ###)[\s\S]+(### CATALYST ###)~', $contents, $matches);
 
         if (count($matches) == 0) {
             $contents .= PHP_EOL . $newContent;

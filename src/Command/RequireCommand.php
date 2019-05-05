@@ -2,7 +2,7 @@
 
 namespace Catalyst\Command;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,7 +34,7 @@ class RequireCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $GLOBALS['dry'] = false;
-        $thisDepMan = new DepManEntity(realpath('.'));
+        $thisDepMan = new CatalystEntity(realpath('.'));
 
         $version = '*';
         preg_match('~^([a-z0-9-]+\/[a-z0-9-]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
@@ -65,6 +65,6 @@ class RequireCommand extends Command
         $thisDepMan->require($package, $version);
 
         $thisDepMan->save();
-        $output->writeln('<fg=green>gmdepman.json has been updated</>');
+        $output->writeln('<fg=green>catalyst.json has been updated</>');
     }
 }

@@ -2,7 +2,7 @@
 namespace Catalyst\Model\YoYo;
 
 use Assert\Assertion;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
 use Catalyst\Model\YoYo\Resource\GM\GMResourceTypes;
@@ -27,10 +27,10 @@ class Resource implements \JsonSerializable {
     /** @var array */
     private $children;
 
-    /** @var DepManEntity */
+    /** @var CatalystEntity */
     private $depManEntity;
 
-    public function __construct(DepManEntity $depManEntity, \stdClass $gmJsonResource, $gmResource = null)
+    public function __construct(CatalystEntity $depManEntity, \stdClass $gmJsonResource, $gmResource = null)
     {
         $this->depManEntity = $depManEntity;
         $this->id = $gmJsonResource->Value->id;
@@ -87,7 +87,7 @@ class Resource implements \JsonSerializable {
         return $jsonObj;
     }
 
-    public static function createFolder(DepManEntity $depManEntity, GMFolder $resource):self {
+    public static function createFolder(CatalystEntity $depManEntity, GMFolder $resource):self {
         $jsonObj = self::makeJsonObject((string) $resource->id, (string) $resource->id, GMResourceTypes::GM_FOLDER, $resource->getFilePath());
 
         return new self(

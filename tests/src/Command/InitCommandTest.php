@@ -1,8 +1,8 @@
 <?php
-namespace GMDepMan\Tests\Command;
+namespace Catalyst\Tests\Command;
 
-use GMDepMan\Command\InitCommand;
-use GMDepMan\Service\StorageService;
+use Catalyst\Command\InitCommand;
+use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -36,9 +36,9 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('GMDepMan file initialized', $output);
+        $this->assertStringContainsString('Catalyst file initialized', $output);
 
         //@todo
-        unlink('gmdepman.json');
+        unlink('catalyst.json');
     }
 }

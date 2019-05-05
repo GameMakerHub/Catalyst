@@ -13,7 +13,7 @@ $definition
 ;
 
 // $this is a reference to the current loader
-$this->registerClasses($definition, 'GMDepMan\\', '../src/*');
+$this->registerClasses($definition, 'Catalyst\\', '../src/*');
 
 // Public
 // To use as default template

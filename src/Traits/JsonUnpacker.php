@@ -1,11 +1,11 @@
 <?php
 namespace Catalyst\Traits;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 
 trait JsonUnpacker {
 
-    public function unpack($originalData, DepManEntity $depmanEntity)
+    public function unpack($originalData, CatalystEntity $depmanEntity)
     {
         foreach ($originalData as $key => $data) {
 

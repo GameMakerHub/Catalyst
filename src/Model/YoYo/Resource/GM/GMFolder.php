@@ -1,7 +1,7 @@
 <?php
 namespace Catalyst\Model\YoYo\Resource\GM;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Model\Uuid;
 
 class GMFolder extends GMResource {

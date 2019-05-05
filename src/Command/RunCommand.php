@@ -3,7 +3,7 @@
 namespace Catalyst\Command;
 
 use Composer\Semver\Semver;
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Service\PackageService;
 use Symfony\Component\Console\Command\Command;

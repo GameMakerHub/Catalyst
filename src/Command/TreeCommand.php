@@ -2,7 +2,7 @@
 
 namespace Catalyst\Command;
 
-use Catalyst\Entity\DepManEntity;
+use Catalyst\Entity\CatalystEntity;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -27,7 +27,7 @@ class TreeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $depmanentity = new DepManEntity(realpath('.'));
+        $depmanentity = new CatalystEntity(realpath('.'));
 
         $project = $depmanentity->projectEntity();
 
