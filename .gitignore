@@ -14,6 +14,8 @@ clover.xml
 # Symfone Cache and logs
 /var/
 
+# Packed data for installers (made on request)
+dist/packed
 
 
 
