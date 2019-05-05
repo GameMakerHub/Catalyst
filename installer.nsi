@@ -23,7 +23,7 @@
   Name "${PRODUCT}"
 
   ;Define the directory where the installer should be saved
-  OutFile ".\dist\gmh_catalyst_${VERSION}_setup.exe"
+  OutFile ".\dist\gmh_catalyst_setup_${VERSION}.exe"
 
 
   ;Define the default installation folder (Windows ProgramFiles example)
@@ -62,7 +62,7 @@
   ;Use optional a custom picture for the 'Welcome' and 'Finish' page:
   !define MUI_HEADERIMAGE_RIGHT
   !define MUI_WELCOMEFINISHPAGE_BITMAP ".\files\installer.bmp"  # for the Installer
-  !define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\files\uninstaller.bmp"  # for the later created UnInstaller
+  !define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\files\installer.bmp"  # for the later created UnInstaller
 
   ;Optional no descripton for all components
   !define MUI_COMPONENTSPAGE_NODESC
@@ -91,7 +91,7 @@
 
   ;At start will be searched if the current system language is in this list,
   ;if not the first language in this list will be chosen as language
-  !insertmacro MUI_LANGUAGE "English"
+!insertmacro MUI_LANGUAGE "English"
   !insertmacro MUI_LANGUAGE "French"
   !insertmacro MUI_LANGUAGE "German"
   !insertmacro MUI_LANGUAGE "Spanish"
@@ -179,7 +179,7 @@ Section "GMH Catalyst CLI"
 
   ;Create optional start menu shortcut for uninstaller and Main component
   CreateDirectory "$SMPROGRAMS\${INSTALLDIR}"
-  CreateShortCut "$SMPROGRAMS\${INSTALLDIR}\Catalyst.lnk" "$INSTDIR\catalyst.cmd" "" "$INSTDIR\catalyst.cmd" 0
+  CreateShortCut "$SMPROGRAMS\${INSTALLDIR}\Catalyst.lnk" "$INSTDIR\bin\catalyst_help.cmd" "" "$INSTDIR\icon.ico" 0
   CreateShortCut "$SMPROGRAMS\${INSTALLDIR}\Uninstall ${PRODUCT}.lnk" "$INSTDIR\uninstaller.exe" "" "$INSTDIR\uninstaller.exe" 0
 
   ;Create uninstaller
@@ -266,11 +266,13 @@ FunctionEnd
 ;--------------------------------
 ;After Installation Function
 
-;Function .onInstSuccess
+Function .onInstSuccess
 
   ;Open 'Thank you for installing' site or something else
   ;ExecShell "open" "${AFTER_INSTALLATION_URL}"
+  Abort
+  Quit
 
-;FunctionEnd
+FunctionEnd
 
 

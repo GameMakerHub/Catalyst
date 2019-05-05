@@ -26,6 +26,16 @@ final class Kernel extends BaseKernel
         //$loader->load(__DIR__ . '/../config/services.php'); //@todo, so we can remove YAML
     }
 
+    public function getCacheDir()
+    {
+        return sys_get_temp_dir().'/gmh_catalyst/cache';
+    }
+
+    public function getLogDir()
+    {
+        return sys_get_temp_dir().'/gmh_catalyst/log';
+    }
+
     protected function build(ContainerBuilder $containerBuilder): void
     {
         $containerBuilder->addCompilerPass(new CollectCommandsToApplicationCompilerPass);
