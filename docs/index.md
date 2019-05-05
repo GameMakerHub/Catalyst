@@ -11,7 +11,7 @@
 
 ## About
 
-Catalyst (Game Maker Dependency Manager) is a tool to manage dependencies within GameMakerStudio2 projects.
+Catalyst is a tool to manage dependencies within GameMakerStudio2 projects, and speed up certain processes.
 If you need a library inside of your project you can use this tool to declare the dependency and install all dependencies.
 The dependencies will be recursively solved, so multiple libraries can require multiple dependencies, and they can be shared.
 
@@ -31,6 +31,11 @@ Stating the obvious: files inside of the `vendor` folders should never be edited
 ## Setup
 
 ### Windows
+You can download a ready-to-run installer from here: https://github.com/GameMakerHub/Catalyst/releases
+
+This installer will install a minimal version of PHP inside the Catalyst folder, as it needs PHP to run.
+
+#### Windows (from source)
 You want to install PHP7.0+ and you might want to install a tool like Git Bash (that also has MINGW). 
 This way you have a nice Linux-style CLI which you can work with.
 
@@ -44,7 +49,6 @@ where `/c/php7.3/php.exe` is your PHP's location ofcourse.
 
 You also need to make sure you have added the following lines to the php.ini if they don't yet exist:
 ```ini
-extension=php_gd2.dll
 extension=php_curl.dll
 extension=php_mbstring.dll
 extension=php_openssl.dll
@@ -56,14 +60,16 @@ You also need to install composer (or download the .phar file into this director
 
 ### Linux and OSX
 
-Make sure you have PHP7.3 and Composer installed.
-
-Run a `composer install` in this directory, and then you can use it.
+Make sure you have PHP7.3 and Composer installed. Clone this repository, run a `composer install` in this directory, 
+and then you can use it.
 
 ## Usage
 
-`./index.php -h` will display help. If you can't link the PHP executable you'll have to manually call it like so;
-`/c/php7.3/php.exe index.php -h`
+The windows installer adds `catalyst` to the path by default. You can run `catalyst` by typing it anywhere in the command line.
+
+If you haven't got catalyst in your path (linux or OSX), you can execute the `index.php` file manually. 
+
+`catalyst help` will display all commands and information
 
 ### Example
 Imagine we have a project that requires some extended functions. 

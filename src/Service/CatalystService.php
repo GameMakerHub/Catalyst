@@ -4,10 +4,10 @@ namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
 
-class DepmanService
+class CatalystService
 {
     /** @var CatalystEntity */
-    private $thisDepMan;
+    private $thisCatalyst;
 
     /** @var array */
     private $keysToRemove = [];
@@ -17,32 +17,32 @@ class DepmanService
 
     public function __construct()
     {
-        $this->thisDepMan = new CatalystEntity(realpath('.'));
+        $this->thisCatalyst = new CatalystEntity(realpath('.'));
     }
 
     public function uninstallAll() {
-        $project = $this->thisDepMan->projectEntity();
+        $project = $this->thisCatalyst->projectEntity();
 
         //$output->writeln('<fg=green>-</> ROOT');
         $this->loopIn($project->getChildren(), 0);
 
         foreach ($this->keysToRemove as $key) {
-            $this->thisDepMan->projectEntity()->removeResource($key);
+            $this->thisCatalyst->projectEntity()->removeResource($key);
         }
 
         foreach ($this->idsToRemove as $id) {
-            foreach ($this->thisDepMan->projectEntity()->getChildren() as $child) {
+            foreach ($this->thisCatalyst->projectEntity()->getChildren() as $child) {
                 $child->removeChild($id);
             }
-            foreach ($this->thisDepMan->projectEntity()->script_order as $key => $val) {
+            foreach ($this->thisCatalyst->projectEntity()->script_order as $key => $val) {
                 if ($val == $id) {
-                    unset($this->thisDepMan->projectEntity()->script_order[$key]);
+                    unset($this->thisCatalyst->projectEntity()->script_order[$key]);
                 }
             }
         }
 
-        $this->thisDepMan->projectEntity()->save();
-        $this->thisDepMan->save();
+        $this->thisCatalyst->projectEntity()->save();
+        $this->thisCatalyst->save();
     }
 
     /**

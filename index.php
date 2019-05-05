@@ -8,5 +8,13 @@ $kernel = new \Catalyst\Kernel;
 $kernel->boot();
 
 $container = $kernel->getContainer();
+
+//Override symfony's settings for the help generation...
+
+$_SERVER['PHP_SELF'] = 'catalyst';
+
+/** @var Application $application */
 $application = $container->get(Application::class);
+$application->setName('GameMakerHub Catalyst');
+$application->setVersion('0.1.0');
 $application->run();

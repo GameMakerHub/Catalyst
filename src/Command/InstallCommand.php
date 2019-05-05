@@ -5,7 +5,7 @@ namespace Catalyst\Command;
 use Composer\Semver\Semver;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\UnresolveableDependenciesException;
-use Catalyst\Service\DepmanService;
+use Catalyst\Service\CatalystService;
 use Catalyst\Service\PackageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,13 +23,13 @@ class InstallCommand extends Command
     /** @var PackageService */
     private $packageService;
 
-    /** @var DepmanService */
-    private $depmanService;
+    /** @var CatalystService */
+    private $catalystService;
 
-    public function __construct(PackageService $packageService, DepmanService $depmanService)
+    public function __construct(PackageService $packageService, CatalystService $catalystService)
     {
         $this->packageService = $packageService;
-        $this->depmanService = $depmanService;
+        $this->catalystService = $catalystService;
 
         parent::__construct();
     }
@@ -51,7 +51,7 @@ class InstallCommand extends Command
         }
 
         $output->writeln('Uninstalling current packages...', Output::VERBOSITY_VERBOSE);
-        $this->depmanService->uninstallAll();
+        $this->catalystService->uninstallAll();
 
         $thisDepMan = new CatalystEntity(realpath('.'));
 
