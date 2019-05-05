@@ -2,6 +2,8 @@
 # GMDepMan
 > A Game Maker Studio 2 dependency manager.
 
+PLEASE NOTE THAT THIS IS STILL IN DEVELOPMENT AND WILL BREAK YOUR PROJECT
+
 [![Build Status](https://travis-ci.org/GameMakerHub/GMDepMan.svg?branch=master)](https://travis-ci.org/GameMakerHub/GMDepMan)
 [![Coverage](https://codecov.io/gh/GameMakerHub/GMDepMan/branch/master/graph/badge.svg)](https://codecov.io/gh/GameMakerHub/GMDepMan)
 [![HitCount](http://hits.dwyl.io/GameMakerHub/GMDepMan.svg)](http://hits.dwyl.io/GameMakerHub/GMDepMan)
