@@ -17,7 +17,7 @@ class CatalystService
 
     public function __construct()
     {
-        $this->thisCatalyst = new CatalystEntity(realpath('.'));
+        //$this->thisCatalyst = new CatalystEntity(realpath('.'));
     }
 
     public function uninstallAll() {

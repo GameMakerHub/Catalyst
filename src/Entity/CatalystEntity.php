@@ -264,10 +264,8 @@ class CatalystEntity {
      */
     public function save()
     {
-        if (!$GLOBALS['dry']) {
-            file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
-            $this->saveIgnoreFile();
-        }
+        file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
+        $this->saveIgnoreFile();
     }
 
     const IGNORE_TOKEN = '### CATALYST ###';

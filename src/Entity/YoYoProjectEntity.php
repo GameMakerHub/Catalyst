@@ -6,6 +6,7 @@ use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource;
+use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 use Ramsey\Uuid\UuidInterface;
 
@@ -29,33 +30,32 @@ class YoYoProjectEntity {
     private $_children = [];
 
     /** @var CatalystEntity */
-    private $depManEntity;
+    private $catalystEntity;
 
     /** @var array */
     public $script_order;
 
-    /**
-     * Load a JSON string in YYP format
-     * @param string $json
-     * @return $this
-     */
-    public function load(CatalystEntity $depManEntity)
+    /** @var StorageService */
+    private $storageService;
+
+    public function load(CatalystEntity $catalystEntity, StorageService $storageService)
     {
-        $this->depManEntity = $depManEntity;
+        $this->catalystEntity = $catalystEntity;
+        $this->storageService = $storageService;
 
         try {
-            Assertion::file($depManEntity->getYypFilename());
+            Assertion::file($catalystEntity->getYypFilename());
         } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('Project file ' . $depManEntity->getYypFilename() . ' does not exist');
+            throw new \RuntimeException('Project file ' . $catalystEntity->getYypFilename() . ' does not exist');
         }
 
-        $projectContents = file_get_contents($depManEntity->getYypFilename());
+        $projectContents = file_get_contents($catalystEntity->getYypFilename());
         $this->originalData = json_decode($projectContents);
 
         // Load all the resources into a map
         foreach ($this->originalData->resources as $resource) {
             try {
-                $this->resources[$resource->Key] = new Resource($depManEntity, $resource);
+                $this->resources[$resource->Key] = new Resource($catalystEntity, $resource);
             } catch (FileNotFoundException $e) {
                 //Ignore, probably a vendored file
             }
@@ -163,10 +163,10 @@ class YoYoProjectEntity {
         $newUuid = \Ramsey\Uuid\Uuid::uuid5(CatalystEntity::UUID_NS, $foldername);
         $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
 
-        $newFolder = Resource::createFolder($this->depManEntity, $newObj);
+        $newFolder = Resource::createFolder($this->catalystEntity, $newObj);
 
         $this->addResource($newFolder);
-        $this->depManEntity->addIgnore($newObj->getFilePath());
+        $this->catalystEntity->addIgnore($newObj->getFilePath());
         $newChild->addChild($newObj);
         $newChild->markEdited();
         return $newObj;
@@ -231,9 +231,7 @@ class YoYoProjectEntity {
                 $resource->gmResource()->save();
             }
         }
-        //if (!$GLOBALS['dry']) {
-        file_put_contents($this->depManEntity->getYypFilename(), $this->getJson());
-        //}
+        $this->storageService->writeFile($this->catalystEntity->getYypFilename(), $this->getJson());
         return true;
     }
 }
