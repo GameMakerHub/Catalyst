@@ -3,6 +3,8 @@ git:
   submodules: false
 php:
   - 7.3
+  - 7.2
+  - nightly
 install:
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --prefer-source --dev
