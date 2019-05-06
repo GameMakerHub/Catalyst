@@ -118,6 +118,9 @@ The project should reload, and you should now see the extra functions from the `
 
 The diff of the version control will only show a couple of main project files and views - and the .gitignore file.
 
+The views are the "root" folders in which a new `vendor` folder has been made. Files in the `vendor` folder should not be tracked, because they are "external dependencies" that are being _used_ by your project. This also means that you should not edit files in the vendor folder. If you re-install, update or clone your repository, those changes will not be there. If you need custom functionality - write around it, extend, or better yet: update the library, and contribute to the world of open-source software :)
+
+Most of the files will not show up in source control as added - that is because the `.gitignore` file has been edited by Catalyst, so that those files do not show up in your repository. Due to GMS2's directory setup it unfortunately is not possible to ignore all vendored files on directory-level, and thus they have to be ignored file-by-file.
 
 ### Arguments
 
