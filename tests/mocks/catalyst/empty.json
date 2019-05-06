@@ -1,0 +1,7 @@
+{
+    "name": "project/name",
+    "description": "A description for the project",
+    "license": "MIT",
+    "homepage": "https://github.com/my/repository",
+    "yyp": "somefile.yyp"
+}

@@ -2,6 +2,7 @@
 namespace Catalyst\Tests\Command;
 
 use Catalyst\Command\InitCommand;
+use Catalyst\Service\CatalystService;
 use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -14,8 +15,8 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->application = new Application();
-        //$this->storageService = new Mockery
-        $this->application->add(new InitCommand(new StorageService()));
+
+        $this->application->add(new InitCommand(new CatalystService()));
     }
 
     public function testExecute()
