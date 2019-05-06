@@ -204,12 +204,7 @@ class CatalystEntity implements SaveableEntityInterface {
         if (count($this->require)) { $jsonObj->require = $this->require; }
         if (count($this->repositories)) { $jsonObj->repositories = $this->repositories; }
 
-        // Abusing nl2br to make sure we have CRLF (windows) line endings
-        return str_replace(
-            ["\r", "\n", '<br />'],
-            ['', '', "\r\n"],
-            nl2br(json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
-        );
+        return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     /**
