@@ -26,6 +26,7 @@ class HelpCommandTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Catalyst', $output);
+        $this->assertStringContainsString('command displays help for a given command', $output);
+        $this->assertStringNotContainsString(' php ', $output);
     }
 }
