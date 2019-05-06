@@ -4,6 +4,7 @@ namespace Catalyst\Command;
 
 use Assert\Assertion;
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Service\CatalystService;
 use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -19,9 +20,13 @@ class InitCommand extends Command
     /** @var StorageService */
     private $storageService;
 
-    public function __construct(StorageService $packageService)
+    /** @var CatalystService */
+    private $catalystService;
+
+    public function __construct(StorageService $storageService, CatalystService $catalystService)
     {
-        $this->storageService = $packageService;
+        $this->storageService = $storageService;
+        $this->catalystService = $catalystService;
 
         parent::__construct();
     }
@@ -35,9 +40,8 @@ class InitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $GLOBALS['dry'] = false;
-        if ($this->storageService->fileExists('catalyst.json')) {
-            $output->writeln('A Catalyst file is already present.');
+        if ($this->catalystService->existsHere()) {
+            $output->writeln('<info>A Catalyst file is already present in this directory.</info>');
             return;
         }
 
@@ -113,8 +117,17 @@ class InitCommand extends Command
 
         $yyp = $helper->ask($input, $output, $question);
 
-        $depmanentity = new CatalystEntity(false);
-        $depmanentity->initialize(realpath('.'), $name, $description, $license, $homepage, $yyp);
-        $output->writeln('Catalyst file initialized.');
+        $this->catalystService->createNew(
+            '.',
+            $name,
+            $description,
+            $license,
+            $homepage,
+            $yyp
+        );
+
+        $this->catalystService->persist();
+
+        $output->writeln('Catalyst file initialized!');
     }
 }

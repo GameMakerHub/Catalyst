@@ -2,12 +2,17 @@
 namespace Catalyst\Entity;
 
 use Assert\Assertion;
+use Catalyst\Exception\MalformedJsonException;
 use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Model\YoYo\Resource\GM\GMFolder;
+use Catalyst\Interfaces\SaveableEntityInterface;
+use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CatalystEntity {
+class CatalystEntity implements SaveableEntityInterface {
+
+    const IGNORE_TOKEN = '### CATALYST ###';
 
     const UUID_NS = '00000000-1337-fafa-0000-dededededede';
 
@@ -60,81 +65,134 @@ class CatalystEntity {
     private $yyp;
 
     /** @var string */
-    private $projectPath;
+    private $path;
 
-    /** @var string */
-    private $version;
+    /** @var array */
+    private $require = [];
 
     /** @var array */
     private $repositories = [];
 
-    public function initialize(string $projectPath, string $name, string $description, string $license, string $homepage, string $yyp)
-    {
-        $this->projectPath = $projectPath;
+    private function __construct(
+        string $path,
+        string $name,
+        string $description,
+        string $license,
+        string $homepage,
+        string $yyp,
+        array $require,
+        array $repositories
+    ) {
+        $this->path = realpath($path);
         $this->name = $name;
         $this->description = $description;
         $this->license = $license;
         $this->homepage = $homepage;
         $this->yyp = $yyp;
-        $this->version = '0.0.1';
-        $this->require = [];
-        $this->repositories = [];
 
-        $this->save();
+        $this->require = $require;
+        $this->repositories = $repositories;
+
+        //@todo
+        //$this->projectEntity = (new YoYoProjectEntity())->load($this);
     }
 
-    public function hasPackage(string $packageName):bool {
+    public static function createNew(
+        string $path,
+        string $name,
+        string $description,
+        string $license,
+        string $homepage,
+        string $yyp
+    ) {
+        return new self($path, $name, $description, $license, $homepage, $yyp, [], []);
+    }
+
+    public static function createFromPath($path, StorageService $storageService)
+    {
+        try {
+            $config = $storageService->getJson($path . '/catalyst.json');
+        } catch (\InvalidArgumentException $e) {
+            throw new \RuntimeException('Catalyst file is not found in "' . $path . '".');
+        } catch (MalformedJsonException $e) {
+            throw new \RuntimeException('catalyst.json is malformed');
+        }
+
+        return new self(
+            $path,
+            $config->name ?? null,
+            $config->description ?? null,
+            $config->license ?? null,
+            $config->homepage ?? null,
+            $config->yyp ?? null,
+            (array) ($config->require ?? []),
+            (array) ($config->repositories ?? [])
+        );
+    }
+
+    public function hasPackage(string $packageName) : bool {
         return array_key_exists($packageName, $this->require);
     }
 
-    public function require(string $package, string $version) {
+    public function addRequire(string $package, string $version) {
         $this->require[$package] = $version;
     }
 
-    /**
-     * @param string|false $projectPath
-     */
-    public function __construct($projectPath)
+    /* GETTER METHODS */
+
+    public function path() : string
     {
-        if (false === $projectPath) {
-            return;
-        }
-
-        Assertion::directory($projectPath);
-        $this->projectPath = $projectPath;
-
-        try {
-            Assertion::file($this->projectPath . '/catalyst.json');
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('catalyst file is not found. Initialize first!');
-        }
-
-        // Load config from file
-        $config = json_decode(file_get_contents($this->projectPath . '/catalyst.json'));
-        if (null === $config) {
-            throw new MalformedProjectFileException('catalyst.json is malformed');
-        }
-
-        $this->yyp = $config->yyp ?? null;
-        $this->projectEntity = (new YoYoProjectEntity())->load($this);
-
-        $this->name = $config->name;
-        if (empty($this->name)) { throw new MalformedProjectFileException('catalyst.json missing name'); }
-        $this->description = $config->description ?? null;
-        $this->license = $config->license ?? null;
-        $this->homepage = $config->homepage ?? null;
-        $this->version = $config->version ?? null;
-        $this->require = (array) ($config->require ?? []);
-
-        if (empty($this->version)) { throw new MalformedProjectFileException('catalyst.json missing version'); }
+        return $this->path;
     }
 
-    public function projectEntity():YoYoProjectEntity
+    public function projectEntity() : YoYoProjectEntity
     {
         return $this->projectEntity;
     }
 
-    public function getJson():string
+    public function name() : string
+    {
+        return $this->name;
+    }
+
+    public function description(): string
+    {
+        return $this->description;
+    }
+
+    public function license(): string
+    {
+        return $this->license;
+    }
+
+    public function homepage(): string
+    {
+        return $this->homepage;
+    }
+
+    public function yyp(): string
+    {
+        return $this->yyp;
+    }
+
+    public function require(): array
+    {
+        return $this->require;
+    }
+
+    public function repositories(): array
+    {
+        return $this->repositories;
+    }
+
+    /* @see SaveableEntityInterface METHODS */
+
+    public function getFilePath(): string
+    {
+        return $this->path . '/catalyst.json';
+    }
+
+    public function getFileContents() : string
     {
         $jsonObj = new \stdClass();
 
@@ -143,12 +201,20 @@ class CatalystEntity {
         $jsonObj->license = $this->license;
         $jsonObj->homepage = $this->homepage;
         $jsonObj->yyp = $this->yyp;
-        $jsonObj->version = $this->version;
         if (count($this->require)) { $jsonObj->require = $this->require; }
+        if (count($this->repositories)) { $jsonObj->repositories = $this->repositories; }
 
-        return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        // Abusing nl2br to make sure we have CRLF (windows) line endings
+        return str_replace(
+            ["\r", "\n", '<br />'],
+            ['', '', "\r\n"],
+            nl2br(json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+        );
     }
 
+    /**
+     * @deprecated
+     */
     public function installPackage(CatalystEntity $newPackage, OutputInterface $output)
     {
         // Loop through all files and copy / add them to this project
@@ -221,6 +287,9 @@ class CatalystEntity {
 
     private $ignored = [];
 
+    /**
+     * @deprecated
+     */
     public function addIgnore($path)
     {
         $path = str_replace('\\', '/', $path);
@@ -230,6 +299,7 @@ class CatalystEntity {
     }
 
     /**
+     * @deprecated
      * @todo remove placeholder code
      * @param $src
      * @param $dst
@@ -249,28 +319,36 @@ class CatalystEntity {
         closedir($dir);
     }
 
-    public function getProjectPath():string
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getProjectPath() : string
     {
         return realpath($this->projectPath);
     }
 
-    public function getYypFilename():string
+    /**
+     * @deprecated
+     * @return string
+     */
+    public function getYypFilename() : string
     {
         return realpath($this->projectPath) . '/' . $this->yyp;
     }
 
     /**
+     * @deprecated
      * Persist the files and write to disk
      */
     public function save()
     {
-        file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
-        $this->saveIgnoreFile();
+        //file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
+        //$this->saveIgnoreFile();
     }
 
-    const IGNORE_TOKEN = '### CATALYST ###';
-
     /**
+     * @deprecated
      * @todo this is horrible and slow, but does the trick for now.
      */
     private function saveIgnoreFile()
@@ -294,13 +372,5 @@ class CatalystEntity {
         file_put_contents($ignoreFile, $contents);
     }
 
-    public function version()
-    {
-        return $this->version;
-    }
 
-    public function name()
-    {
-        return $this->name;
-    }
 }

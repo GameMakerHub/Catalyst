@@ -26,9 +26,9 @@ class InstallCommand extends Command
     /** @var CatalystService */
     private $catalystService;
 
-    public function __construct(PackageService $packageService, CatalystService $catalystService)
+    public function __construct(PackageService $storageService, CatalystService $catalystService)
     {
-        $this->packageService = $packageService;
+        $this->packageService = $storageService;
         $this->catalystService = $catalystService;
 
         parent::__construct();

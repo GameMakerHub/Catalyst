@@ -3,6 +3,7 @@
 namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\SaveableEntityInterface;
 
 class CatalystService
 {
@@ -15,9 +16,36 @@ class CatalystService
     /** @var array */
     private $idsToRemove = [];
 
-    public function __construct()
+    /** @var StorageService */
+    private $storageService;
+
+    public function __construct(StorageService $storageService)
     {
-        //$this->thisCatalyst = new CatalystEntity(realpath('.'));
+        $this->storageService = $storageService;
+    }
+
+    public function persist() : void
+    {
+        $this->storageService->persist();
+    }
+
+    public function createNew($name, $description, $license, $homepage, $yyp) : CatalystEntity
+    {
+        $entity = CatalystEntity::createNew(
+            '.', $name, $description, $license, $homepage, $yyp
+        );
+
+        $this->storageService->saveEntity($entity);
+    }
+
+    public function existsHere()
+    {
+        return $this->existsAt('.');
+    }
+
+    public function existsAt(string $path)
+    {
+        return $this->storageService->fileExists($path . '/catalyst.json');
     }
 
     public function uninstallAll() {

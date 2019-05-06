@@ -16,9 +16,9 @@ class RequireCommand extends Command
     /** @var PackageService */
     private $packageService;
 
-    public function __construct(PackageService $packageService)
+    public function __construct(PackageService $storageService)
     {
-        $this->packageService = $packageService;
+        $this->packageService = $storageService;
 
         parent::__construct();
     }

@@ -2,8 +2,13 @@
     "name": "gamemakerhub/catalyst",
     "description": "A tool for Game Maker Studio 2 to manage dependencies and speed up your process",
     "type": "project",
+    "config": {
+        "platform": {
+            "php": "7.2"
+        }
+    },
     "require": {
-        "php": "^7",
+        "php": "^7.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "^4.2",
@@ -31,7 +36,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Catalyst\\Tests\\": "tests/"
+            "Catalyst\\Tests\\": "tests/src/"
         }
     },
     "minimum-stability": "stable",
