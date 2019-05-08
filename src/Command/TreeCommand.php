@@ -3,6 +3,7 @@
 namespace Catalyst\Command;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Service\CatalystService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,6 +12,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class TreeCommand extends Command
 {
     protected static $defaultName = 'tree';
+
+    /** @var CatalystService */
+    protected $catalystService;
+
+    public function __construct(CatalystService $catalystService)
+    {
+        $this->catalystService = $catalystService;
+
+        parent::__construct();
+    }
 
     protected function configure()
     {
@@ -27,11 +38,14 @@ class TreeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $depmanentity = new CatalystEntity(realpath('.'));
-
-        $project = $depmanentity->projectEntity();
+        $catalyst = $this->catalystService->load(realpath('.'));
 
         $output->writeln('<fg=green>-</> ROOT');
+        foreach ($catalyst->getYYPProject()->resourceTree() as $item) {
+
+        }
+
+
         $this->loopIn($input, $output, $project->getChildren(), 0);
     }
 

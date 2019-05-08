@@ -2,7 +2,7 @@
 namespace Catalyst\Tests\Entity;
 
 use Catalyst\Entity\CatalystEntity;
-use Catalyst\Entity\YoYoProjectEntity;
+use Catalyst\Entity\OLDYoYoProjectEntity;
 
 class YoYoProjectEntityTest extends \PHPUnit\Framework\TestCase
 {

@@ -3,7 +3,7 @@
 namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
-use Catalyst\SaveableEntityInterface;
+use Catalyst\Interfaces\SaveableEntityInterface;
 
 class CatalystService
 {
@@ -29,25 +29,40 @@ class CatalystService
         $this->storageService->persist();
     }
 
-    public function createNew($name, $description, $license, $homepage, $yyp) : CatalystEntity
-    {
+    public function createNew(
+        string $name,
+        string $description,
+        string $license,
+        string $homepage,
+        string $yyp
+    ) : CatalystEntity {
         $entity = CatalystEntity::createNew(
             '.', $name, $description, $license, $homepage, $yyp
         );
 
         $this->storageService->saveEntity($entity);
+        return $entity;
     }
 
-    public function existsHere()
+    public function load(string $path) : CatalystEntity
+    {
+        $entity = CatalystEntity::createFromPath($path, $this->storageService);
+        return $entity;
+    }
+
+    public function existsHere() : bool
     {
         return $this->existsAt('.');
     }
 
-    public function existsAt(string $path)
+    public function existsAt(string $path) : bool
     {
         return $this->storageService->fileExists($path . '/catalyst.json');
     }
 
+    /**
+     * @todo
+     */
     public function uninstallAll() {
         $project = $this->thisCatalyst->projectEntity();
 

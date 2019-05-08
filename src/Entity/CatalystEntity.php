@@ -1,11 +1,9 @@
 <?php
 namespace Catalyst\Entity;
 
-use Assert\Assertion;
 use Catalyst\Exception\MalformedJsonException;
-use Catalyst\Exception\MalformedProjectFileException;
-use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Catalyst\Interfaces\SaveableEntityInterface;
+use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,7 +44,7 @@ class CatalystEntity implements SaveableEntityInterface {
         'proprietary'
     ];
 
-    /** @var YoYoProjectEntity */
+    /** @var OLDYoYoProjectEntity */
     private $projectEntity;
 
     /** @var string */
@@ -73,6 +71,9 @@ class CatalystEntity implements SaveableEntityInterface {
     /** @var array */
     private $repositories = [];
 
+    /** @var OLDYoYoProjectEntity */
+    private $YoYoProjectEntity;
+
     private function __construct(
         string $path,
         string $name,
@@ -93,8 +94,7 @@ class CatalystEntity implements SaveableEntityInterface {
         $this->require = $require;
         $this->repositories = $repositories;
 
-        //@todo
-        //$this->projectEntity = (new YoYoProjectEntity())->load($this);
+        $this->YoYoProjectEntity = OLDYoYoProjectEntity::createFromFile($this->yyp);
     }
 
     public static function createNew(
@@ -140,14 +140,14 @@ class CatalystEntity implements SaveableEntityInterface {
 
     /* GETTER METHODS */
 
+    public function YoYoProjectEntity() : OLDYoYoProjectEntity
+    {
+        return $this->YoYoProjectEntity;
+    }
+
     public function path() : string
     {
         return $this->path;
-    }
-
-    public function projectEntity() : YoYoProjectEntity
-    {
-        return $this->projectEntity;
     }
 
     public function name() : string

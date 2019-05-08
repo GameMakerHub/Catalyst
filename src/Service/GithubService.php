@@ -3,7 +3,7 @@
 namespace Catalyst\Service;
 
 use Assert\Assertion;
-use Catalyst\Entity\YoYoProjectEntity;
+use Catalyst\Entity\OLDYoYoProjectEntity;
 use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Output\Output;
 

@@ -13,6 +13,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class OLDYoYoProjectEntity implements SaveableEntityInterface {
 
+    use JsonUnpacker;
+
     /** @var string */
     private $path;
 

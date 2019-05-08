@@ -27,12 +27,8 @@ class Resource implements \JsonSerializable {
     /** @var array */
     private $children;
 
-    /** @var CatalystEntity */
-    private $depManEntity;
-
-    public function __construct(CatalystEntity $depManEntity, \stdClass $gmJsonResource, $gmResource = null)
+    public function __construct(\stdClass $gmJsonResource, $gmResource = null)
     {
-        $this->depManEntity = $depManEntity;
         $this->id = $gmJsonResource->Value->id;
         $this->key = $gmJsonResource->Key;
         $this->resourcePath = $gmJsonResource->Value->resourcePath;
@@ -46,7 +42,7 @@ class Resource implements \JsonSerializable {
 
         $className = GMResourceTypes::TYPEMAP[$this->resourceType];
         if ($gmResource === null) {
-            $this->gmResource = new $className($this->resourcePath, $this->depManEntity);
+            $this->gmResource = new $className($this->resourcePath);
         } else {
             $this->gmResource = $gmResource;
         }
@@ -87,11 +83,10 @@ class Resource implements \JsonSerializable {
         return $jsonObj;
     }
 
-    public static function createFolder(CatalystEntity $depManEntity, GMFolder $resource):self {
+    public static function createFolder(GMFolder $resource):self {
         $jsonObj = self::makeJsonObject((string) $resource->id, (string) $resource->id, GMResourceTypes::GM_FOLDER, $resource->getFilePath());
 
         return new self(
-            $depManEntity,
             $jsonObj,
             $resource
         );
