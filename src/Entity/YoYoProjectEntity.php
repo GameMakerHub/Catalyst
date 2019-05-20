@@ -7,6 +7,7 @@ use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Interfaces\SaveableEntityInterface;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource;
+use Catalyst\Service\JsonService;
 use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 use Ramsey\Uuid\UuidInterface;
@@ -135,7 +136,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         $newObject->resources = array_values($this->resources);
         $newObject->script_order = $this->script_order;
 
-        return str_replace("\n", "\r\n", json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        return JsonService::encode($newObject);
     }
 
 }

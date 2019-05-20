@@ -18,13 +18,16 @@ class JsonService
 
     public static function encode($data): string
     {
-        return str_replace(
-            "\n",
-            "\r\n",
-            json_encode(
-                $data,
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-            )
+        $isWindows = strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0;
+
+        $str = json_encode(
+            $data,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
+        if ($isWindows) {
+            $str = str_replace("\n", "\r\n", $str);
+        }
+        
+        return $str;
     }
 }
