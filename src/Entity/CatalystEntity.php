@@ -94,7 +94,7 @@ class CatalystEntity implements SaveableEntityInterface {
         $this->require = $require;
         $this->repositories = $repositories;
 
-        $this->YoYoProjectEntity = OLDYoYoProjectEntity::createFromFile($this->yyp);
+        $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->yyp);
     }
 
     public static function createNew(
@@ -108,10 +108,10 @@ class CatalystEntity implements SaveableEntityInterface {
         return new self($path, $name, $description, $license, $homepage, $yyp, [], []);
     }
 
-    public static function createFromPath($path, StorageService $storageService)
+    public static function createFromPath($path)
     {
         try {
-            $config = $storageService->getJson($path . '/catalyst.json');
+            $config = StorageService::getInstance()->getJson($path . '/catalyst.json');
         } catch (\InvalidArgumentException $e) {
             throw new \RuntimeException('Catalyst file is not found in "' . $path . '".');
         } catch (MalformedJsonException $e) {
@@ -140,7 +140,7 @@ class CatalystEntity implements SaveableEntityInterface {
 
     /* GETTER METHODS */
 
-    public function YoYoProjectEntity() : OLDYoYoProjectEntity
+    public function YoYoProjectEntity() : YoYoProjectEntity
     {
         return $this->YoYoProjectEntity;
     }

@@ -11,7 +11,12 @@ use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 use Ramsey\Uuid\UuidInterface;
 
-class OLDYoYoProjectEntity implements SaveableEntityInterface {
+/**
+ * Class OLDYoYoProjectEntity
+ * @package Catalyst\Entity
+ * @deprecated
+ */
+class OLDYoYoProjectEntity {
 
     use JsonUnpacker;
 
@@ -49,6 +54,7 @@ class OLDYoYoProjectEntity implements SaveableEntityInterface {
 
     public function load(CatalystEntity $catalystEntity, StorageService $storageService)
     {
+        throw new \Exception('old');
         $this->catalystEntity = $catalystEntity;
         $this->storageService = $storageService;
 
@@ -61,7 +67,7 @@ class OLDYoYoProjectEntity implements SaveableEntityInterface {
         $projectContents = file_get_contents($catalystEntity->getYypFilename());
         $this->originalData = json_decode($projectContents);
 
-        $this->originalData = $this->storageService->getJson($)
+        $this->originalData = $this->storageService->getJson();
 
         // Load all the resources into a map
         foreach ($this->originalData->resources as $resource) {

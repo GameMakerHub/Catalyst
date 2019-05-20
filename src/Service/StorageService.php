@@ -7,7 +7,9 @@ use Catalyst\Interfaces\SaveableEntityInterface;
 
 class StorageService
 {
-    public function __construct()
+    private static $instance = null;
+
+    private function __construct()
     {
         if (!array_key_exists('storage', $GLOBALS)) {
             $GLOBALS['storage'] = [];
@@ -15,6 +17,21 @@ class StorageService
         if (!array_key_exists('writes', $GLOBALS['storage'])) {
             $GLOBALS['storage']['writes'] = [];
         }
+    }
+
+    // for testing and mocking purposes
+    public static function setInstance(StorageService $instance)
+    {
+        self::$instance = $instance;
+    }
+
+    public static function getInstance(): StorageService
+    {
+        if (self::$instance == null) {
+            self::$instance = new StorageService();
+        }
+
+        return self::$instance;
     }
 
     public function fileExists(string $file):bool {
@@ -28,7 +45,7 @@ class StorageService
 
     public function saveEntity(SaveableEntityInterface $entity)
     {
-        $this->writeFile($entity->getFilePath(), $entity->getFileContents());
+        self::getInstance()->writeFile($entity->getFilePath(), $entity->getFileContents());
     }
 
     public function persist() {
@@ -39,17 +56,17 @@ class StorageService
         $GLOBALS['storage']['writes'] = [];
     }
 
-    public function getContents($path)
+    public function getContents($path): string
     {
         return file_get_contents($path);
     }
 
-    public function getJson($path) : \stdClass
+    public function getJson($path): \stdClass
     {
-        $output = json_decode($this->getContents($path));
-        if (null === $output) {
-            throw new MalformedJsonException($path . ' is not a valid JSON file.');
+        try {
+            return JsonService::decode(self::getInstance()->getContents($path));
+        } catch (MalformedJsonException $e) {
+            throw new MalformedJsonException($path . ' is not a valid JSON file: ' . $e->getMessage());
         }
-        return $output;
     }
 }

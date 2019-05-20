@@ -16,17 +16,9 @@ class CatalystService
     /** @var array */
     private $idsToRemove = [];
 
-    /** @var StorageService */
-    private $storageService;
-
-    public function __construct(StorageService $storageService)
-    {
-        $this->storageService = $storageService;
-    }
-
     public function persist() : void
     {
-        $this->storageService->persist();
+        StorageService::getInstance()->persist();
     }
 
     public function createNew(
@@ -40,13 +32,13 @@ class CatalystService
             '.', $name, $description, $license, $homepage, $yyp
         );
 
-        $this->storageService->saveEntity($entity);
+        StorageService::getInstance()->saveEntity($entity);
         return $entity;
     }
 
     public function load(string $path) : CatalystEntity
     {
-        $entity = CatalystEntity::createFromPath($path, $this->storageService);
+        $entity = CatalystEntity::createFromPath($path);
         return $entity;
     }
 
@@ -57,7 +49,7 @@ class CatalystService
 
     public function existsAt(string $path) : bool
     {
-        return $this->storageService->fileExists($path . '/catalyst.json');
+        return StorageService::getInstance()->fileExists($path . '/catalyst.json');
     }
 
     /**

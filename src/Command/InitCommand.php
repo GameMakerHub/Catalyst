@@ -17,15 +17,11 @@ class InitCommand extends Command
 {
     protected static $defaultName = 'init';
 
-    /** @var StorageService */
-    private $storageService;
-
     /** @var CatalystService */
     private $catalystService;
 
-    public function __construct(StorageService $storageService, CatalystService $catalystService)
+    public function __construct(CatalystService $catalystService)
     {
-        $this->storageService = $storageService;
         $this->catalystService = $catalystService;
 
         parent::__construct();

@@ -3,22 +3,17 @@ namespace Catalyst\Tests\Entity;
 
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Entity\OLDYoYoProjectEntity;
+use Catalyst\Entity\YoYoProjectEntity;
 
 class YoYoProjectEntityTest extends \PHPUnit\Framework\TestCase
 {
-    public function testLoadingProjectAndSavingJsonUntouched()
+    public function testGetJsonReturnsSame()
     {
-        $this->markAsRisky();
-        /*
-        $depManEntity = (new CatalystEntity('./tests/projects/GMLProject'));
+        $subject = YoYoProjectEntity::createFromFile(__DIR__ . '/../../projects/GMLProject/GMLProject.yyp');
 
-        $projectEntity = new YoYoProjectEntity();
-        $projectEntity->load($depManEntity);
-
-        $json = file_get_contents('./tests/projects/GMLProject/GMLProject.yyp');
-
-        // assert that your calculator added the numbers correctly!
-        $this->assertJsonStringEqualsJsonString($json, $projectEntity->getJson());
-        */
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/../../projects/GMLProject/GMLProject.yyp'),
+            $subject->getJson()
+        );
     }
 }

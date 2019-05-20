@@ -2,35 +2,36 @@
 namespace Catalyst\Model;
 
 class Uuid implements \JsonSerializable {
-    /** @var \Ramsey\Uuid\UuidInterface */
+
+    /** @var \Ramsey\Uuid\Uuid */
     public $value;
 
-    public function __construct()
+    public static function createFromString(string $value)
     {
-
+        return new self($value);
     }
 
-    public function __toString()
-    {
-        return (string) $this->value;
-    }
-
-    public function jsonSerialize()
-    {
-        return (string) $this;
-    }
-
-    public function serialize()
-    {
-        return (string) $this;
-    }
-
-    public function unpack($value)
+    private function __construct($value)
     {
         $this->value = \Ramsey\Uuid\Uuid::fromString($value);
     }
 
-    public function equals(\Ramsey\Uuid\Uuid $uuid):bool {
-        return $this->value->equals($uuid);
+    public function __toString(): string
+    {
+        return (string) $this->value;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return (string) $this;
+    }
+
+    public function internalValue(): \Ramsey\Uuid\Uuid
+    {
+        return $this->value;
+    }
+
+    public function equals(Uuid $uuid):bool {
+        return $this->value->equals($uuid->internalValue());
     }
 }

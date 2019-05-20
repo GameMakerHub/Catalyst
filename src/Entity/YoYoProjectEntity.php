@@ -11,10 +11,10 @@ use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 use Ramsey\Uuid\UuidInterface;
 
-class OLDYoYoProjectEntity implements SaveableEntityInterface {
+class YoYoProjectEntity implements SaveableEntityInterface {
 
     /** @var string */
-    private $path;
+    private $filePath;
 
     /** @var \stdClass */
     private $originalData;
@@ -22,163 +22,108 @@ class OLDYoYoProjectEntity implements SaveableEntityInterface {
     /** @var \Catalyst\Model\Uuid */
     public $id;
 
+    /** @var string */
+    public $modelName;
+
+    /** @var string */
+    public $mvc;
+
     /** @var bool */
-    public $IsDnDProject = false;
+    public $IsDnDProject;
+
+    /** @var string[] */
+    public $configs;
+
+    /** @var bool */
+    public $option_ecma;
+
+    /** @var \stdClass */ //@todo maybe another YoYoProjectEntity ?
+    public $parentProject;
 
     /** @var \Catalyst\Model\YoYo\Resource[] */
     public $resources;
 
-    /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource[] */
-    private $_children = [];
-
-    /** @var CatalystEntity */
-    private $catalystEntity;
-
-    /** @var array */
+    /** @var string[] */
     public $script_order;
 
-    /** @var StorageService */
-    private $storageService;
+    /** @var string */
+    public $tutorial;
 
-    private function __construct()
-    {
+    private function __construct(
+        string $filePath,
+        \stdClass $originalData,
+        Uuid $id,
+        string $modelName,
+        string $mvc,
+        bool $IsDnDProject,
+        array $configs,
+        bool $option_ecma,
+        \stdClass $parentProject,
+        array $resources,
+        array $script_order,
+        string $tutorial
+    ) {
+        Assertion::allIsInstanceOf($resources, Resource::class);
 
+        $this->filePath = $filePath;
+        $this->originalData = $originalData;
+        $this->id = $id;
+        $this->modelName = $modelName;
+        $this->mvc = $mvc;
+        $this->IsDnDProject = $IsDnDProject;
+        $this->configs = $configs;
+        $this->option_ecma = $option_ecma;
+        $this->parentProject = $parentProject;
+        $this->script_order = $script_order;
+        $this->tutorial = $tutorial;
+        $this->resources = $resources;
     }
 
-    public function load(CatalystEntity $catalystEntity, StorageService $storageService)
+    public static function createFromFile($filePath)
     {
-        $this->catalystEntity = $catalystEntity;
-        $this->storageService = $storageService;
-
         try {
-            Assertion::file($catalystEntity->getYypFilename());
-        } catch (\InvalidArgumentException $e) {
-            throw new \RuntimeException('Project file ' . $catalystEntity->getYypFilename() . ' does not exist');
-        }
+            Assertion::file($filePath);
 
-        $projectContents = file_get_contents($catalystEntity->getYypFilename());
-        $this->originalData = json_decode($projectContents);
+            // Load file
+            $originalData = StorageService::getInstance()->getJson($filePath);
 
-        $this->originalData = $this->storageService->getJson($)
-
-        // Load all the resources into a map
-        foreach ($this->originalData->resources as $resource) {
-            try {
-                $this->resources[$resource->Key] = new Resource($catalystEntity, $resource);
-            } catch (FileNotFoundException $e) {
-                //Ignore, probably a vendored file
-            }
-        }
-
-        // Script order (todo for when installing)
-        $this->script_order = $this->originalData->script_order;
-
-        // This is somewhat the same, but unused for now, so skipperino
-        /*
-        foreach ($this->originalData->parentProject->alteredResources as $resource) {
-            $this->resources[$resource->Key] = new Resource($depManEntity, $resource);
-        }
-        */
-
-        // Add children
-        foreach ($this->resources as $item) {
-            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == Resource\GM\GMResourceTypes::GM_OPTIONS) {
-                continue;
+            // Load resources
+            $resources = [];
+            foreach ($originalData->resources as $resource) {
+                $resources[$resource->Key] = Resource::createFromObject($resource);
             }
 
-            if (isset($item->gmResource()->children)) {
-                foreach ($item->gmResource()->children as $childKey) {
-                    if (!array_key_exists($childKey, $this->resources)) {
-                        continue;//ignore because of installing stuff
-                        throw new MalformedProjectFileException('Resource with GUID ' . $childKey . ' was not found, but appears to be a child of some resource.');
-                    }
-                    $item->gmResource()->addChild($this->resources[$childKey]->gmResource());
-                }
-            }
-
-            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == Resource\GM\GMResourceTypes::GM_ROOT) {
-                $this->_children = $item->gmResource()->getChildren();
-            }
+            return new self(
+                $filePath,
+                $originalData,
+                Uuid::createFromString($originalData->id),
+                $originalData->modelName,
+                $originalData->mvc,
+                $originalData->IsDnDProject,
+                $originalData->configs,
+                $originalData->option_ecma,
+                $originalData->parentProject,
+                $resources,
+                $originalData->script_order,
+                $originalData->tutorial
+            );
+        } catch (\Exception $e) {
+            throw new MalformedProjectFileException(
+                'YYP file could not be loaded: ' . $e->getMessage(),
+                $e->getCode(),
+                $e
+            );
         }
-
-        return $this;
     }
 
-    public function gmFolderExists($foldername):bool
+    public function getFileContents(): string
     {
-        return $this->getGmFolderByName($foldername) instanceof Resource\GM\GMResource;
+        return $this->getJson();
     }
 
-    public function getGmFolderByName($foldername)
+    public function getFilePath(): string
     {
-        $folders = explode('/', $foldername);
-        $children = $this->getChildren();
-        while (count($folders)) {
-            $looknow = array_shift($folders);
-            $newChild = false;
-            foreach ($children as $child) {
-                //echo 'matching ' . (isset($child->folderName) ? $child->folderName : $child->name ) . ' ('.$child->isFolder().') vs ' . $looknow . PHP_EOL;
-                if ($child->isFolder() && $child->folderName == $looknow) {
-                    $newChild = $child;
-                    break;
-                }
-            }
-            if ($newChild == false) {
-                return false;
-            }
-            $children = $newChild->getChildren();
-        }
-        $newChild->setFullName($foldername);
-        return $newChild;
-    }
-
-    /**
-     * @param $foldername
-     * @return bool|Resource\GM\GMFolder
-     * @throws \Exception
-     */
-    public function createGmFolder($foldername)
-    {
-        if ($this->gmFolderExists($foldername)) {
-            //Already exists
-            return $this->getGmFolderByName($foldername);
-        }
-
-        // Check parents
-        $parentFolder = substr($foldername, 0, strrpos($foldername, '/', 0));
-        if (!$this->gmFolderExists($parentFolder)) {
-            $this->createGmFolder($parentFolder);
-        }
-
-        $folders = explode('/', $foldername);
-        $children = $this->getChildren();
-        while (count($folders) > 1) {
-            $looknow = array_shift($folders);
-            $newChild = false;
-            foreach ($children as $child) {
-                if ($child->isFolder() && $child->folderName == $looknow) {
-                    $newChild = $child;
-                    break;
-                }
-            }
-            if ($newChild == false) {
-                return false;
-            }
-            $children = $newChild->getChildren();
-        }
-        if (!$newChild instanceof Resource\GM\GMFolder) {
-            throw new \InvalidArgumentException('Folder path is not a folder');
-        }
-        $newUuid = \Ramsey\Uuid\Uuid::uuid5(CatalystEntity::UUID_NS, $foldername);
-        $newObj = Resource\GM\GMFolder::createNew($newUuid, $folders[0], $newChild->filterType, $foldername);
-
-        $newFolder = Resource::createFolder($newObj);
-
-        $this->addResource($newFolder);
-        //$this->catalystEntity->addIgnore($newObj->getFilePath());
-        $newChild->addChild($newObj);
-        $newChild->markEdited();
-        return $newObj;
+        return $this->filePath;
     }
 
     /**
@@ -193,54 +138,4 @@ class OLDYoYoProjectEntity implements SaveableEntityInterface {
         return str_replace("\n", "\r\n", json_encode($newObject, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
-    public function removeResource($id)
-    {
-        unset($this->resources[$id]);
-
-        foreach ($this->_children as $key => $value) {
-            if ((string) $value->id == (string) $id) {
-                unset($this->_children[$key]);
-            }
-        }
-
-    }
-
-    public function addResource(Resource $resource)
-    {
-        foreach ($this->resources as $test) {
-            if ($test->key() == $resource->key()) {
-                var_dump($resource->key());
-                throw new \Exception('ERROR: Resource with same key already exists in project: ');
-            }
-        }
-
-        $this->resources[] = $resource;
-    }
-
-    /**
-     * @return Resource[]
-     */
-    public function getResources():array
-    {
-        return $this->resources;
-    }
-
-    /**
-     * @return \Catalyst\Model\YoYo\Resource\GM\GMResource[]
-     */
-    public function getChildren():array
-    {
-        return $this->_children;
-    }
-
-    public function save()
-    {
-        foreach ($this->resources as $resource) {
-            if ($resource->gmResource()->isEdited()) {
-                $resource->gmResource()->save();
-            }
-        }
-        //$this->storageService->writeFile($this->catalystEntity->getYypFilename(), $this->getJson());
-        return true;
-    }
 }

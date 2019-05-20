@@ -41,12 +41,10 @@ class TreeCommand extends Command
         $catalyst = $this->catalystService->load(realpath('.'));
 
         $output->writeln('<fg=green>-</> ROOT');
-        foreach ($catalyst->getYYPProject()->resourceTree() as $item) {
-
+        foreach ($catalyst->YoYoProjectEntity()->resources as $resource) {
+            $output->writeln('<fg=yellow>  -</> ['.$resource->key().']' . "\t");
         }
 
-
-        $this->loopIn($input, $output, $project->getChildren(), 0);
     }
 
     private function loopIn(InputInterface $input, OutputInterface $output, array $children, $level = 0) {
