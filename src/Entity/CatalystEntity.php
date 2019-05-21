@@ -130,7 +130,7 @@ class CatalystEntity implements SaveableEntityInterface {
         );
     }
 
-    public function hasPackage(string $packageName) : bool {
+    public function hasPackage(string $packageName): bool {
         return array_key_exists($packageName, $this->require);
     }
 
@@ -140,17 +140,17 @@ class CatalystEntity implements SaveableEntityInterface {
 
     /* GETTER METHODS */
 
-    public function YoYoProjectEntity() : YoYoProjectEntity
+    public function YoYoProjectEntity(): YoYoProjectEntity
     {
         return $this->YoYoProjectEntity;
     }
 
-    public function path() : string
+    public function path(): string
     {
         return $this->path;
     }
 
-    public function name() : string
+    public function name(): string
     {
         return $this->name;
     }

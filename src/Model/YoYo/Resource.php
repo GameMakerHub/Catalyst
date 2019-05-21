@@ -2,6 +2,7 @@
 namespace Catalyst\Model\YoYo;
 
 use Catalyst\Model\Uuid;
+use Catalyst\Model\YoYo\Resource\GM\GMResource;
 
 class Resource implements \JsonSerializable {
 
@@ -27,7 +28,12 @@ class Resource implements \JsonSerializable {
         $this->value = $value;
     }
 
-    public function key():Uuid
+    public function gmResource(): GMResource
+    {
+        return $this->value->gmResource();
+    }
+
+    public function key(): Uuid
     {
         return $this->key;
     }

@@ -27,7 +27,7 @@ class JsonService
         if ($isWindows) {
             $str = str_replace("\n", "\r\n", $str);
         }
-        
+
         return $str;
     }
 }

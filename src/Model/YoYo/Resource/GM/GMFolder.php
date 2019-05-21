@@ -3,6 +3,7 @@ namespace Catalyst\Model\YoYo\Resource\GM;
 
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Model\Uuid;
+use Catalyst\Service\GMResourceService;
 
 class GMFolder extends GMResource {
     /** @var Uuid[] */
@@ -21,7 +22,7 @@ class GMFolder extends GMResource {
         $newObj->id->value = $uuid;
         $newObj->name = (string) $newObj->id;
         $newObj->filterType = $forType;
-        $newObj->modelName = GMResourceTypes::GM_FOLDER;
+        $newObj->modelName = GMResourceService::GM_FOLDER;
         $newObj->folderName = $folderName;
         $newObj->setFullName($fullName);
         $newObj->markEdited();

@@ -2,6 +2,7 @@
 
 namespace Catalyst\Service;
 
+use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Exception\MalformedJsonException;
 use Catalyst\Interfaces\SaveableEntityInterface;
 
@@ -11,18 +12,13 @@ class StorageService
 
     private function __construct()
     {
+        //@todo remove GLOBALS usage because we're in a singleton anyway
         if (!array_key_exists('storage', $GLOBALS)) {
             $GLOBALS['storage'] = [];
         }
         if (!array_key_exists('writes', $GLOBALS['storage'])) {
             $GLOBALS['storage']['writes'] = [];
         }
-    }
-
-    // for testing and mocking purposes
-    public static function setInstance(StorageService $instance)
-    {
-        self::$instance = $instance;
     }
 
     public static function getInstance(): StorageService
@@ -32,6 +28,13 @@ class StorageService
         }
 
         return self::$instance;
+    }
+
+    public static function assertFileExists(string $file):bool {
+        if (!self::getInstance()->fileExists($file)) {
+            throw new FileNotFoundException('File does not exist or is not a file: ' . $file);
+        }
+        return true;
     }
 
     public function fileExists(string $file):bool {
@@ -58,6 +61,7 @@ class StorageService
 
     public function getContents($path): string
     {
+        self::assertFileExists($path);
         return file_get_contents($path);
     }
 

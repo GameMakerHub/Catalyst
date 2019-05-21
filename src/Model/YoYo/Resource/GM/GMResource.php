@@ -3,7 +3,10 @@ namespace Catalyst\Model\YoYo\Resource\GM;
 
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\FileNotFoundException;
+use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource;
+use Catalyst\Service\GMResourceService;
+use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 
 abstract class GMResource implements \JsonSerializable
@@ -44,21 +47,67 @@ abstract class GMResource implements \JsonSerializable
     /** @var Resource */
     private $_yypResource;
 
-    /**
-     * GMResource constructor.
-     * @param $yyFilePath|false
-     * @param CatalystEntity $depManEntity
-     */
-    public function __construct(string $yyFilePath, CatalystEntity $depManEntity = null, $load = true)
+    public static function createFromObject(string $_filePath, \stdClass $object): GMResource
     {
-        $this->_filePath = $yyFilePath;
-        if ($load) {
-            $actualFile = $depManEntity->getProjectPath() . '/' . str_replace('\\', '/', $yyFilePath);
-            if (!file_exists($actualFile)) {
-                //Skipping because its probably a vendored file
-                throw new FileNotFoundException($actualFile . ' was not found');
+        foreach ($object as $key => $data) {
+            $propertyType = GMResourceService::getPropertyForKey($key, self::class);
+            if (false === $propertyType) {
+                //throw new \RuntimeException('Class ' . self::class . ' missing property ' . $key);
+                $keyValues[$key] = $data; // Don't want to define every complete GM resource in PHP.. Unless we need it.
+                continue;
             }
-            $this->unpack(json_decode(file_get_contents($actualFile)), $depManEntity);
+
+            if (substr($propertyType, -2, 2) == '[]') {
+                // This is an array of data!
+                $keyValues[$key] = [];
+
+                /** @var GMResource $newClass */
+                $newClass = substr($propertyType, 0, -2);
+                foreach ($data as $newItem) {
+                    $keyValues[$key][] = $newClass::createFromObject($newItem);
+                }
+                continue;
+            } else {
+                switch ($propertyType) {
+                    case 'bool':
+                        $keyValues[$key] = (bool) $data;
+                        break;
+                    case 'string':
+                        $keyValues[$key] = (string) $data;
+                        break;
+                    case '\\' . Uuid::class:
+                        $keyValues[$key] = Uuid::createFromString($data);
+                        break;
+                    default:
+                        throw new \RuntimeException(
+                            sprintf(
+                                'Unknown property type %s for %s (%s)',
+                                $propertyType,
+                                self::class,
+                                $key
+                            )
+                        );
+                        break;
+                }
+            }
+        }
+
+        return new static(
+            $_filePath,
+            $keyValues
+        );
+    }
+
+    public static function createFromFile(string $_filePath): GMResource
+    {
+        return self::createFromObject($_filePath, StorageService::getInstance()->getJson($_filePath));
+    }
+
+    private function __construct(string $_filePath, $keyValues)
+    {
+        $this->_filePath = $_filePath;
+        foreach ($keyValues as $key => $value) {
+            $this->{$key} = $value;
         }
     }
 
@@ -109,7 +158,7 @@ abstract class GMResource implements \JsonSerializable
 
     public function isFolder():bool
     {
-        return $this->modelName == GMResourceTypes::GM_FOLDER;
+        return $this->modelName == GMResourceService::GM_FOLDER;
     }
 
     public function markEdited():void

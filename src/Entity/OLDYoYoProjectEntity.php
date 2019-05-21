@@ -90,7 +90,7 @@ class OLDYoYoProjectEntity {
 
         // Add children
         foreach ($this->resources as $item) {
-            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == Resource\GM\GMResourceTypes::GM_OPTIONS) {
+            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == \Catalyst\Service\GMResourceService::GM_OPTIONS) {
                 continue;
             }
 
@@ -104,7 +104,7 @@ class OLDYoYoProjectEntity {
                 }
             }
 
-            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == Resource\GM\GMResourceTypes::GM_ROOT) {
+            if (isset($item->gmResource()->filterType) && $item->gmResource()->filterType == \Catalyst\Service\GMResourceService::GM_ROOT) {
                 $this->_children = $item->gmResource()->getChildren();
             }
         }

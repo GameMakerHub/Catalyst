@@ -2,7 +2,7 @@
 
 namespace Catalyst\Command;
 
-use Catalyst\Entity\CatalystEntity;
+use Assert\AssertionFailedException;
 use Catalyst\Service\CatalystService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,11 +38,16 @@ class TreeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $catalyst = $this->catalystService->load(realpath('.'));
+        try {
+            $catalyst = $this->catalystService->load(realpath('.'));
+        } catch (\Exception $e) {
+            $output->writeLn('<fg=red>ERROR LOADING CATALYST PROJECT FILE: </>' . $e->getMessage());
+            return 127;
+        }
 
         $output->writeln('<fg=green>-</> ROOT');
         foreach ($catalyst->YoYoProjectEntity()->resources as $resource) {
-            $output->writeln('<fg=yellow>  -</> ['.$resource->key().']' . "\t");
+            $output->writeln('<fg=green>  - ['.$resource->gmResource()->modelName.']</>  - ' . $resource->gmResource()->localisedFolderName . " / " . $resource->gmResource()->name . "\t");
         }
 
     }

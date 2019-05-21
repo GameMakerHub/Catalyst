@@ -1,11 +1,9 @@
 <?php
 namespace Catalyst\Traits;
 
-use Catalyst\Entity\CatalystEntity;
-
 trait JsonUnpacker {
 
-    public function unpack($originalData, CatalystEntity $depmanEntity)
+    public function unpack($originalData)
     {
         foreach ($originalData as $key => $data) {
 
@@ -19,7 +17,7 @@ trait JsonUnpacker {
                     foreach ($data as $newItem) {
                         /** @var JsonUnpacker $newValue */
                         $newValue = new $newClass();
-                        $newValue->unpack($newItem, $depmanEntity);
+                        $newValue->unpack($newItem);
                         $this->{$key}[] = $newValue;
                     }
                     continue;
@@ -28,7 +26,7 @@ trait JsonUnpacker {
                     if (!in_array($propertyType, ['bool', 'string'])) {
                         /** @var JsonUnpacker $value */
                         $value = new $propertyType();
-                        $value->unpack($data, $depmanEntity);
+                        $value->unpack($data);
                     }
 
                     $this->{$key} = $value;
@@ -41,22 +39,4 @@ trait JsonUnpacker {
         }
     }
 
-    /**
-     * @todo cache results
-     * @param $key
-     * @return mixed
-     * @throws \ReflectionException
-     */
-    private function getPropertyForKey($key) {
-        $refClass = new \ReflectionClass(self::class);
-        foreach ($refClass->getProperties() as $refProperty) {
-            if (preg_match('/@var\s+([^\s]+)/', $refProperty->getDocComment(), $matches)) {
-                list(, $type) = $matches;
-                if ($key == $refProperty->getName()) {
-                    return $type;
-                }
-            }
-        }
-        return false;
-    }
 }

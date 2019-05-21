@@ -4,7 +4,7 @@ namespace Catalyst\Model\YoYo\Resource;
 use Assert\Assertion;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
-use Catalyst\Model\YoYo\Resource\GM\GMResourceTypes;
+use Catalyst\Service\GMResourceService;
 use Catalyst\Traits\JsonUnpacker;
 
 class Value {
@@ -33,12 +33,12 @@ class Value {
         }
 
         Assertion::keyExists(
-            GMResourceTypes::TYPEMAP,
+            GMResourceService::TYPEMAP,
             $this->resourceType,
             'Type "' . $this->resourceType . '" not found in typemap'
         );
 
-        $className = GMResourceTypes::TYPEMAP[$this->resourceType];
+        $className = GMResourceService::TYPEMAP[$this->resourceType];
         $this->resource = new $className($depmanEntity->getProjectPath() . '/' . $this->resourcePath, $depmanEntity);
     }
 
