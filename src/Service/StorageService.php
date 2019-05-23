@@ -8,6 +8,7 @@ use Catalyst\Interfaces\SaveableEntityInterface;
 
 class StorageService
 {
+    /** @var StorageService */
     private static $instance = null;
 
     private function __construct()
@@ -19,6 +20,14 @@ class StorageService
         if (!array_key_exists('writes', $GLOBALS['storage'])) {
             $GLOBALS['storage']['writes'] = [];
         }
+    }
+
+    /**
+     * @deprecated ONLY FOR TEST USAGE
+     */
+    public static function setInstance($instance)
+    {
+        self::$instance = $instance;
     }
 
     public static function getInstance(): StorageService

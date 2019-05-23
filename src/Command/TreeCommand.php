@@ -2,7 +2,6 @@
 
 namespace Catalyst\Command;
 
-use Assert\AssertionFailedException;
 use Catalyst\Service\CatalystService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

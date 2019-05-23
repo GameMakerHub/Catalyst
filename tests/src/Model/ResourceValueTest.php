@@ -3,8 +3,11 @@ namespace Catalyst\Tests\Model;
 
 use Catalyst\Model\YoYo\ResourceValue;
 use Catalyst\Service\JsonService;
+use Catalyst\Service\StorageService;
+use Catalyst\Tests\MockStorageTestCase;
+use Mockery\MockInterface;
 
-class ResourceValueTest extends \PHPUnit\Framework\TestCase
+class ResourceValueTest extends MockStorageTestCase
 {
     private $jsonString = <<<EOL
 {
@@ -18,6 +21,14 @@ EOL;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
+        $this->mockStorage
+            ->shouldReceive('getJson')
+            ->once()
+            ->with('views\\0bb36c74-dc11-4a76-8ff5-0d89046b21bf.yy')
+            ->andReturn(new \stdClass());
+
         $this->subject = ResourceValue::createFromObject(JsonService::decode($this->jsonString));
     }
 

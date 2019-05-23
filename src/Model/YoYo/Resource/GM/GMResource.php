@@ -49,6 +49,8 @@ abstract class GMResource implements \JsonSerializable
 
     public static function createFromObject(string $_filePath, \stdClass $object): GMResource
     {
+        $keyValues = [];
+
         foreach ($object as $key => $data) {
             $propertyType = GMResourceService::getPropertyForKey($key, self::class);
             if (false === $propertyType) {
