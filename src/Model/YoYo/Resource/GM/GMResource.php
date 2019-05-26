@@ -1,17 +1,13 @@
 <?php
 namespace Catalyst\Model\YoYo\Resource\GM;
 
-use Catalyst\Entity\CatalystEntity;
-use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Model\Uuid;
-use Catalyst\Model\YoYo\Resource;
 use Catalyst\Service\GMResourceService;
 use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 
-abstract class GMResource implements \JsonSerializable
+abstract class GMResource
 {
-
     use JsonUnpacker;
 
     /** @var \Catalyst\Model\Uuid */
@@ -35,17 +31,14 @@ abstract class GMResource implements \JsonSerializable
     /** @var string */
     public $filterType;
 
-    /** @var array */
-    private $_children = [];
-
-    /** @var bool */
-    private $_edited = false;
+    /** @var string */
+    public $folderName;
 
     /** @var string */
     private $_filePath;
 
-    /** @var Resource */
-    private $_yypResource;
+    /** @var GMResource[] */
+    private $_gmChildrenResources = [];
 
     public static function createFromObject(string $_filePath, \stdClass $object): GMResource
     {
@@ -66,6 +59,7 @@ abstract class GMResource implements \JsonSerializable
                 /** @var GMResource $newClass */
                 $newClass = substr($propertyType, 0, -2);
                 foreach ($data as $newItem) {
+                    die('TODO ' . __FILE__ . ':' . __LINE__);
                     $keyValues[$key][] = $newClass::createFromObject($newItem);
                 }
                 continue;
@@ -113,138 +107,40 @@ abstract class GMResource implements \JsonSerializable
         }
     }
 
-    public function addChild(GMResource $child)
+    public function getName(): string
     {
-        if (!isset($this->children)) {
-            throw new \Exception('Cannot add child to resource that has no children property');
-        }
-        if (array_search((string) $child->id, $this->children) === false) {
-            $this->children[] = (string) $child->id;
+        if ($this->isFolder()) {
+            return $this->folderName;
         }
 
-        $this->_children[] = $child;
-    }
-
-    public function removeChild(string $id)
-    {
-        if (!isset($this->children)) {
-            return;
+        if ($this->localisedFolderName != '') {
+            return $this->localisedFolderName;
         }
-
-        foreach ($this->_children as $key => $child) {
-            if ($child->id == $id) {
-                echo 'Deleting ' . $id . ' from ' . $this->id . '('.$key.')' . PHP_EOL;
-
-                foreach ($this->children as $key2 => $child2) {
-                    if ($child2 == $id) {
-                        unset($this->children[$key2]);
-                    }
-                }
-
-                unset($this->_children[$key]);
-                $this->markEdited();
-            }
-        }
-
+        
+        return $this->name;
     }
 
-    public function addChildren(array $children)
+    public function linkChildResource(GMResource $GMResource)
     {
-        $this->_children = $children;
+        $this->_gmChildrenResources[] = $GMResource;
     }
 
-    public function getChildren()
+    /**
+     * @return GMResource[]
+     */
+    public function getChildResources(): array
     {
-        return $this->_children;
+        return $this->_gmChildrenResources;
     }
 
-    public function isFolder():bool
+    public function isFolder(): bool
     {
         return $this->modelName == GMResourceService::GM_FOLDER;
     }
 
-    public function markEdited():void
-    {
-        $this->_edited = true;
-    }
-
-    public function isEdited():bool
-    {
-        return $this->_edited;
-    }
-
-    public function getFilePath()
+    public function getFilePath(): string
     {
         return $this->_filePath;
     }
 
-    public function jsonSerialize()
-    {
-        //Creating a new object to get the order of the JSON file OK, so the diff doesn't explode
-        $newObj = new \stdClass();
-        $newObj->id = $this->id;
-        $newObj->modelName = $this->modelName;
-        $newObj->mvc = $this->mvc;
-        $newObj->name = $this->name;
-        if (isset($this->children)) {
-            $newObj->children = $this->children;
-        }
-        $newObj->filterType = $this->filterType;
-        if (isset($this->folderName)) {
-            $newObj->folderName = $this->folderName;
-        }
-        $newObj->isDefaultView = $this->isDefaultView;
-        if (isset($this->localisedFolderName)) {
-            $newObj->localisedFolderName = $this->localisedFolderName;
-        }
-
-        return $newObj;
-    }
-
-    public function getJson()
-    {
-        return str_replace("\n", "\r\n", json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    }
-
-    public function save()
-    {
-        //var_dump($this->getJson(), $this->getFilePath());
-        if (!$GLOBALS['dry']) {
-            file_put_contents($this->getFilePath(), $this->getJson());
-        }
-    }
-
-    public function getYypResource()
-    {
-        return $this->_yypResource;
-    }
-
-    public function setYypResource(Resource $yypResource)
-    {
-        $this->_yypResource = $yypResource;
-    }
-
-    public function delete()
-    {
-        //echo 'TO RM:  ' . $this->getFilePath() . '('.dirname($this->getFilePath()).')';
-        if ($this instanceof GMFolder) {
-            unlink($this->getFilePath());
-        } else {
-            $this->rrmdir(dirname($this->getFilePath()));
-        }
-
-    }
-
-    private function rrmdir($path) {
-        // Open the source directory to read in files
-        $i = new \DirectoryIterator($path);
-        foreach($i as $f) {
-            if($f->isFile()) {
-                unlink($f->getRealPath());
-            } else if(!$f->isDot() && $f->isDir()) {
-                $this->rrmdir($f->getRealPath());
-            }
-        }
-        rmdir($path);
-    }
 }

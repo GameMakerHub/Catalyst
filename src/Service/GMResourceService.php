@@ -21,6 +21,7 @@ use Catalyst\Model\YoYo\Resource\GM\Options\GMHtml5Options;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMIosOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMLinuxOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMMacOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMMainOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
 
 class GMResourceService {
@@ -44,6 +45,7 @@ class GMResourceService {
     const GM_INCLUDED_FILE = 'GMIncludedFile';
     const GM_NOTES = 'GMNotes';
 
+    const GM_OPTIONS_MAIN = 'GMMainOptions';
     const GM_OPTIONS_HTML5 = 'GMHtml5Options';
     const GM_OPTIONS_IOS = 'GMiOSOptions';
     const GM_OPTIONS_AMAZON_FIRE = 'GMAmazonFireOptions';
@@ -71,6 +73,7 @@ class GMResourceService {
         self::GM_INCLUDED_FILE => GMIncludedFile::class,
         self::GM_NOTES => GMNotes::class,
 
+        self::GM_OPTIONS_MAIN => GMMainOptions::class,
         self::GM_OPTIONS_HTML5 => GMHtml5Options::class,
         self::GM_OPTIONS_ANDROID => GMAndroidOptions::class,
         self::GM_OPTIONS_IOS => GMIosOptions::class,

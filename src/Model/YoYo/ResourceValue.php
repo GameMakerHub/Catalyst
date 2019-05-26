@@ -4,6 +4,7 @@ namespace Catalyst\Model\YoYo;
 use Assert\Assertion;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMMainOptions;
 use Catalyst\Service\GMResourceService;
 use Catalyst\Service\StorageService;
 
@@ -38,7 +39,7 @@ class ResourceValue implements \JsonSerializable {
         Assertion::keyExists(
             GMResourceService::TYPEMAP,
             $resourceType,
-            'Resource type "' . $this->resourceType . '" not found in typemap'
+            'Resource type "' . $resourceType . '" not found in typemap'
         );
 
         $this->id = $id;
@@ -49,7 +50,6 @@ class ResourceValue implements \JsonSerializable {
         $className = GMResourceService::TYPEMAP[$this->resourceType];
 
         $this->_gmResource = $className::createFromFile($this->resourcePath);
-
     }
 
     public function id(): Uuid

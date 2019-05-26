@@ -12,6 +12,9 @@ class Resource implements \JsonSerializable {
     /** @var ResourceValue */
     private $value;
 
+    /** @var string[] */
+    private $configDeltas = [];
+
     public static function createFromObject(\stdClass $gmJsonResource): Resource
     {
         return new static(
@@ -43,6 +46,9 @@ class Resource implements \JsonSerializable {
         $jsonObj = new \stdClass();
         $jsonObj->Key = (string) $this->key;
         $jsonObj->Value = $this->value->jsonSerialize();
+        if (count($this->configDeltas)) {
+            $jsonObj->configDeltas = $this->configDeltas;
+        }
 
         return $jsonObj;
     }

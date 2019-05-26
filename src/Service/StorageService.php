@@ -82,4 +82,16 @@ class StorageService
             throw new MalformedJsonException($path . ' is not a valid JSON file: ' . $e->getMessage());
         }
     }
+
+    public function rrmdir($path) {
+        $i = new \DirectoryIterator($path);
+        foreach($i as $f) {
+            if($f->isFile()) {
+                unlink($f->getRealPath());
+            } else if(!$f->isDot() && $f->isDir()) {
+                $this->rrmdir($f->getRealPath());
+            }
+        }
+        rmdir($path);
+    }
 }

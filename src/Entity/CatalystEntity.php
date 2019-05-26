@@ -228,6 +228,7 @@ class CatalystEntity implements SaveableEntityInterface {
     }
 
     /**
+     * @deprecated
      * @param OutputInterface $output
      * @param CatalystEntity $newPackage
      * @param \Catalyst\Model\YoYo\Resource\GM\GMResource[] $children
