@@ -41,6 +41,11 @@ class Resource implements \JsonSerializable {
         return $this->key;
     }
 
+    public function value(): ResourceValue
+    {
+        return $this->value;
+    }
+
     public function jsonSerialize(): \stdClass
     {
         $jsonObj = new \stdClass();

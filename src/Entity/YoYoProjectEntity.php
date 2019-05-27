@@ -153,7 +153,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         foreach ($this->resources as $resource) {
             if ($resource->gmResource()->isFolder()) {
                 if ($resource->gmResource()->filterType == GMResourceService::GM_ROOT) {
-                    return $resource;
+                    return $resource->value();
                 }
             }
         }

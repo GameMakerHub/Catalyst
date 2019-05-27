@@ -2,6 +2,7 @@
 
 namespace Catalyst\Command;
 
+use Catalyst\Model\YoYo\Resource\GM\GMResource;
 use Catalyst\Service\CatalystService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +45,35 @@ class TreeCommand extends Command
             return 127;
         }
 
+        $showId = false;
+
         $output->writeln('<fg=green>-</> ROOT');
+        $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId) {
+            $number = 1;
+            $parentCount = count($resource->getChildResources());
+            foreach ($resource->getChildResources() as $resource) {
+                $lineCharacter = '├';
+                if ($parentCount == $number) {
+                    $lineCharacter = '└';
+                }
+                $output->writeln(
+                    sprintf(
+                        '%s─── <fg=%s>%s</> %s',
+                        str_repeat('│    ', $level) . $lineCharacter,
+                        $resource->isFolder() ? 'yellow' : 'green',
+                        $resource->getName(),
+                        $showId ? '[<fg=cyan>'.$resource->id.'</>]' : ''
+                    )
+                );
+                if ($resource->isFolder()) {
+                    $loop($resource, $level+1);
+                }
+                $number++;
+            }
+        };
+
+        $loop($catalyst->YoYoProjectEntity()->getRoot()->gmResource(), 0);
+
         /*
         $loop = function ($children, $level) {
             foreach ($children as $child) {
