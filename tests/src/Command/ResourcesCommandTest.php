@@ -1,22 +1,22 @@
 <?php
 namespace Catalyst\Tests\Command;
 
-use Catalyst\Command\ListCommand;
+use Catalyst\Command\ResourcesCommand;
 use Catalyst\Service\CatalystService;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ListCommandTest extends CommandTestCase
+class ResourcesCommandTest extends CommandTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        $this->initCommand(new ListCommand(new CatalystService()));
+        $this->initCommand(new ResourcesCommand(new CatalystService()));
     }
 
     public function testExecute()
     {
         chdir(__DIR__ . '/../../projects/GMLProject');
-        $command = $this->application->find('list');
+        $command = $this->application->find('resources');
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([

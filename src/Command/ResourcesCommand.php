@@ -7,9 +7,9 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ListCommand extends Command
+class ResourcesCommand extends Command
 {
-    protected static $defaultName = 'list';
+    protected static $defaultName = 'resources';
 
     /** @var CatalystService */
     protected $catalystService;
@@ -24,8 +24,8 @@ class ListCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('List the projects assets')
-            ->setHelp('List all project assets');
+            ->setDescription('List the projects resources')
+            ->setHelp('List all project resources');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

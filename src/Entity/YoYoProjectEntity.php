@@ -166,9 +166,12 @@ class YoYoProjectEntity implements SaveableEntityInterface {
     public function getJson()
     {
         $newObject = $this->originalData;
-        $newObject->resources = array_values($this->resources);
-        $newObject->script_order = $this->script_order;
 
+        $resourcesClone = $this->resources;
+        array_pop($resourcesClone);
+        $newObject->resources = array_values($resourcesClone);
+
+        $newObject->script_order = $this->script_order;
         return JsonService::encode($newObject);
     }
 
