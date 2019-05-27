@@ -38,7 +38,6 @@ class ListCommand extends Command
         }
 
         foreach ($catalyst->YoYoProjectEntity()->resources as $resource) {
-
             $output->writeln(
                 sprintf(
                     '[<fg=cyan>%s</>] [<fg=green>%s</><fg=red>%s</>] - %s',

@@ -47,7 +47,7 @@ class TreeCommand extends Command
 
         $showId = false;
 
-        $output->writeln('<fg=green>-</> ROOT');
+        $output->writeln(sprintf('<fg=yellow>┌</> <fg=magenta>%s</>', $catalyst->name()));
         $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId) {
             $number = 1;
             $parentCount = count($resource->getChildResources());
