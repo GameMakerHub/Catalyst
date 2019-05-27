@@ -29,15 +29,21 @@ class TreeCommand extends Command
             ->setDescription('List the project as a tree')
             ->setHelp('List project assets')
             ->addOption(
-                'show-all',
-                'a',
+                'id',
+                'i',
                 InputOption::VALUE_NONE,
-                'Also list empty root folders'
+                'Show GUID of resource'
+            )->addOption(
+                'type',
+                't',
+                InputOption::VALUE_NONE,
+                'Show type of resource'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
         try {
             $catalyst = $this->catalystService->load(realpath('.'));
         } catch (\Exception $e) {
@@ -45,10 +51,11 @@ class TreeCommand extends Command
             return 127;
         }
 
-        $showId = false;
+        $showId = $input->getOption('id');
+        $showType = $input->getOption('type');
 
-        $output->writeln(sprintf('<fg=yellow>┌</> <fg=magenta>%s</>', $catalyst->name()));
-        $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId) {
+        $output->writeln(sprintf('┌ <fg=magenta>%s</>', $catalyst->name()));
+        $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId, $showType) {
             $number = 1;
             $parentCount = count($resource->getChildResources());
             foreach ($resource->getChildResources() as $resource) {
@@ -58,11 +65,12 @@ class TreeCommand extends Command
                 }
                 $output->writeln(
                     sprintf(
-                        '%s─── <fg=%s>%s</> %s',
+                        '%s─── <fg=%s>%s</> %s %s',
                         str_repeat('│    ', $level) . $lineCharacter,
                         $resource->isFolder() ? 'yellow' : 'green',
                         $resource->getName(),
-                        $showId ? '[<fg=cyan>'.$resource->id.'</>]' : ''
+                        $showId ? '[<fg=cyan>'.$resource->id.'</>]' : '',
+                        $showType ? '[<fg=magenta>'.$resource->getTypeName().'</>]' : ''
                     )
                 );
                 if ($resource->isFolder()) {

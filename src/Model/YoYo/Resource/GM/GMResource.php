@@ -40,6 +40,11 @@ abstract class GMResource
     /** @var GMResource[] */
     private $_gmChildrenResources = [];
 
+    public function getTypeName(): string
+    {
+        return substr(get_class($this), strrpos(get_class($this), '\GM', 0)+3, strlen(get_class($this)));
+    }
+
     public static function createFromObject(string $_filePath, \stdClass $object): GMResource
     {
         $keyValues = [];
