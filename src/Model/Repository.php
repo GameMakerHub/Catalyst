@@ -75,7 +75,7 @@ class Repository implements \JsonSerializable {
         throw new PackageNotSatisfiableException($packageName, $version);
     }
 
-    public function findPackageDependencies(string $packageName, string $version):array
+    public function findPackageDependencies(string $packageName, string $version): array
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {

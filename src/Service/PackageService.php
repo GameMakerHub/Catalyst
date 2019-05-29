@@ -23,12 +23,6 @@ class PackageService
         ];
     }
 
-    /**
-     * @param string $package
-     * @param string $version
-     * @param array|null $repositoriesOverride
-     * @return CatalystEntity
-     */
     public function getPackage(string $package, string $version, array $repositoriesOverride = []):CatalystEntity {
 
         $repositories = $repositoriesOverride + $this->getDefaultRepositories();
@@ -43,7 +37,7 @@ class PackageService
         throw new PackageNotFoundException($package, $version);
     }
 
-    public function getPackageDependencies(string $package, string $version, array $repositoriesOverride = [])
+    public function getPackageDependencies(string $package, string $version, array $repositoriesOverride = []): array
     {
         $repositories = $repositoriesOverride + $this->getDefaultRepositories();
 
