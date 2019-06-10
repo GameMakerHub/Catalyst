@@ -2,6 +2,7 @@
 
 namespace Catalyst\Command;
 
+use Catalyst\Service\InstallService;
 use Composer\Semver\Semver;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\UnresolveableDependenciesException;
@@ -26,10 +27,17 @@ class InstallCommand extends Command
     /** @var CatalystService */
     private $catalystService;
 
-    public function __construct(PackageService $storageService, CatalystService $catalystService)
-    {
-        $this->packageService = $storageService;
+    /** @var InstallService */
+    private $installService;
+
+    public function __construct(
+        PackageService $packageService,
+        CatalystService $catalystService,
+        InstallService $installService
+    ) {
+        $this->packageService = $packageService;
         $this->catalystService = $catalystService;
+        $this->installService = $installService;
 
         parent::__construct();
     }
@@ -45,12 +53,10 @@ class InstallCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $thisProject = $this->catalystService->load();
-        $output->writeln('Uninstalling current packages...');
 
-        $packagesToInstall = $this->packageService->solveDependencies($thisProject->require());
-        foreach ($packagesToInstall as $package => $version) {
-            $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $version . '</>...');
-        }
+        $this->installService->setOutput($output);
+        $this->installService->install($thisProject);
+
 
 
         //$this->catalystService->uninstallAll();

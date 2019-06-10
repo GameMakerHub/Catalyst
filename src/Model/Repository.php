@@ -56,23 +56,23 @@ class Repository implements \JsonSerializable {
         throw new PackageNotFoundException($packageName, $version);
     }
 
-    public function findPackage(string $packageName, string $version):CatalystEntity
+    public function findPackage(string $packageName, string $version): CatalystEntity
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
-                    return new CatalystEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    return CatalystEntity::createFromPath($this->availablePackages[$packageName][$satisfieableVersions[0]]);
                     break;
                 case self::REPO_VCS:
                     $zipBallUrl = $this->availablePackages[$packageName][$satisfieableVersions[0]];
                     $githubService = new GithubService();
-                    return new CatalystEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
                 case self::REPO_CATALYST:
                     $githubService = new GithubService();
                     $zipBallUrl = $githubService->getZipballUrl($this->availablePackages[$packageName]['source'], $satisfieableVersions[0]);
-                    return new CatalystEntity($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl));
                     break;
             }
         }
@@ -86,8 +86,8 @@ class Repository implements \JsonSerializable {
         if (count($satisfieableVersions)) {
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
-                    $depManEntity = new CatalystEntity($this->availablePackages[$packageName][$satisfieableVersions[0]]);
-                    return $depManEntity->require;
+                    $catalystFile = CatalystEntity::createFromPath($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    return $catalystFile->require();
                     break;
                 case self::REPO_VCS:
                     $githubService = new GithubService();

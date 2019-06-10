@@ -2,6 +2,7 @@
 namespace Catalyst\Entity;
 
 use Assert\Assertion;
+use Assert\AssertionFailedException;
 use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Interfaces\SaveableEntityInterface;
@@ -99,6 +100,8 @@ class YoYoProjectEntity implements SaveableEntityInterface {
 
             // Load file
             $originalData = StorageService::getInstance()->getJson($filePath);
+            $backupdir = getcwd();
+            chdir(dirname($filePath));
 
             // Load resources
             $resources = [];
@@ -114,6 +117,8 @@ class YoYoProjectEntity implements SaveableEntityInterface {
                     }
                 }
             }
+
+            chdir($backupdir);
 
             return new self(
                 $filePath,

@@ -103,7 +103,7 @@ class GithubService
     public function getDownloadedPackageFolder(string $zipballUrl):string {
         $cacheKey = sha1($zipballUrl);
 
-        $cacheFolder = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'catalyst' . DIRECTORY_SEPARATOR;
+        $cacheFolder = implode(DIRECTORY_SEPARATOR, [$GLOBALS['SYMFONY_KERNEL']->getCacheDir(), '/../', 'packages', '']);
         $zipFile = $cacheFolder . $cacheKey. '.zip';
         $location = $cacheFolder . $cacheKey;
 

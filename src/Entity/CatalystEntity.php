@@ -94,7 +94,7 @@ class CatalystEntity implements SaveableEntityInterface {
         $this->require = $require;
         $this->repositories = $repositories;
 
-        $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->yyp);
+        $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->path . DIRECTORY_SEPARATOR . $this->yyp);
     }
 
     public static function createNew(

@@ -67,8 +67,13 @@ class PackageService
         return $versions;
     }
 
-    public function solveDependencies($requirements, $finalPackages = [])
+    public function solveDependencies(CatalystEntity $project, $finalPackages = [])
     {
+        $requirements = $project->require();
+        foreach ($project->repositories() as $repository) {
+            $this->addRepository($repository);
+        }
+
         // First find all available versions of all required packages
         foreach ($requirements as $package => $version) {
             $finalPackages[$package] = $this->getSatisfiableVersions($package, $version);
