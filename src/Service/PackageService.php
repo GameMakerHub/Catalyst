@@ -2,32 +2,39 @@
 
 namespace Catalyst\Service;
 
-use Assert\Assertion;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
-use Catalyst\Exception\PackageNotSatisfiableException;
 use Catalyst\Model\Repository;
+use Composer\Semver\Semver;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageService
 {
-    /**
-     * @return Repository[]
-     */
-    public function getDefaultRepositories():array
+    /** @var Repository[] */
+    private $repositories;
+
+    public function __construct()
     {
-        return [
-            //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\Catalyst\tests')
-            //new Repository(Repository::REPO_catalyst, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
-            //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
-            new Repository(Repository::REPO_CATALYST, 'http://repo.gamemakerhub.net')
-        ];
+        // Add default repositories
+        //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\Catalyst\tests')
+        //new Repository(Repository::REPO_catalyst, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
+        //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
+        $this->addRepository(new Repository(Repository::REPO_CATALYST, 'http://repo.gamemakerhub.net'));
     }
 
-    public function getPackage(string $package, string $version, array $repositoriesOverride = []):CatalystEntity {
+    public function clearRepositories(): void
+    {
+        $this->repositories = [];
+    }
 
-        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
+    public function addRepository(Repository $repository): void
+    {
+        $this->repositories[] = $repository;
+    }
 
-        foreach ($repositories as $repository) {
+    public function getPackage(string $package, string $version): CatalystEntity
+    {
+        foreach ($this->repositories as $repository) {
             try {
                 return $repository->findPackage($package, $version);
             } catch (PackageNotFoundException $e) {
@@ -37,11 +44,9 @@ class PackageService
         throw new PackageNotFoundException($package, $version);
     }
 
-    public function getPackageDependencies(string $package, string $version, array $repositoriesOverride = []): array
+    public function getPackageDependencies(string $package, string $version): array
     {
-        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
-
-        foreach ($repositories as $repository) {
+        foreach ($this->repositories as $repository) {
             try {
                 return $repository->findPackageDependencies($package, $version);
             } catch (PackageNotFoundException $e) {
@@ -51,29 +56,65 @@ class PackageService
         throw new PackageNotFoundException($package, $version);
     }
 
-    /**
-     * @param string $package
-     * @param string $version
-     * @param array|null $repositoriesOverride
-     * @return array
-     */
-    public function getSatisfiableVersions(string $package, string $version, array $repositoriesOverride = []):array {
-
-        $repositories = $repositoriesOverride + $this->getDefaultRepositories();
+    public function getSatisfiableVersions(string $package, string $version): array
+    {
         $versions = [];
 
-        foreach ($repositories as $repository) {
+        foreach ($this->repositories as $repository) {
             $versions += $repository->getSatisfiableVersions($package, $version);
         }
 
         return $versions;
     }
 
-    public function getPackageByPath(string $projectPath):CatalystEntity {
-        // Might be overkill, also in the depmanentity
-        Assertion::directory($projectPath, $projectPath . ' does not exist');
-        Assertion::file($projectPath . '/catalyst.json', 'Project does not contain a catalyst.json file');
+    public function solveDependencies($requirements, $finalPackages = [])
+    {
+        // First find all available versions of all required packages
+        foreach ($requirements as $package => $version) {
+            $finalPackages[$package] = $this->getSatisfiableVersions($package, $version);
+            if (count($finalPackages[$package]) == 0) {
+                throw new UnsatisfiedDependencyException(
+                    sprintf('No version for constraint "%s" for package "%s" can be found', $version, $package)
+                );
+            }
+        }
 
-        return new CatalystEntity($projectPath);
+        // Now find the depdencies' dependencies recursively
+        $addedNewPackage = true;
+        while ($addedNewPackage) {
+            $addedNewPackage = false;
+            foreach ($finalPackages as $package => $versions) {
+                if (count($versions) == 0) {
+                    throw new UnsatisfiedDependencyException(
+                        $package . ' cant be satisfied, due to a dependency constraint'
+                    );
+                }
+                $testVersion = 0;
+                $deps = $this->getPackageDependencies($package, $versions[$testVersion]);
+                foreach ($deps as $depPackage => $depVersionConstraint) {
+                    if (array_key_exists($depPackage, $finalPackages)) {
+                        //Apply constraint on current list
+                        $finalPackages[$depPackage] = Semver::satisfiedBy($finalPackages[$depPackage], $depVersionConstraint);
+                    } else {
+                        //Add new pacakge to list
+                        $finalPackages[$depPackage] = $this->getSatisfiableVersions($depPackage, $depVersionConstraint);
+                        $addedNewPackage = true;
+                    }
+                }
+            }
+        }
+
+        // Now pick the latest available version
+        $result = [];
+        foreach ($finalPackages as $package => $versions) {
+            if (count($versions) == 0) {
+                throw new UnsatisfiedDependencyException(
+                    $package . ' cant be satisfied, due to a dependency constraint'
+                );
+            }
+            $result[$package] = $versions[0];
+        }
+
+        return $result;
     }
 }

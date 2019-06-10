@@ -44,14 +44,17 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('dry-run')) {
-            $GLOBALS['dry'] = true;
-        } else {
-            $GLOBALS['dry'] = false;
+        $thisProject = $this->catalystService->load();
+        $output->writeln('Uninstalling current packages...');
+
+        $packagesToInstall = $this->packageService->solveDependencies($thisProject->require());
+        foreach ($packagesToInstall as $package => $version) {
+            $output->writeln('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $version . '</>...');
         }
 
-        $output->writeln('Uninstalling current packages...', Output::VERBOSITY_VERBOSE);
-        $this->catalystService->uninstallAll();
+
+        //$this->catalystService->uninstallAll();
+        die;
 
         $thisDepMan = new CatalystEntity(realpath('.'));
 
@@ -59,8 +62,6 @@ class InstallCommand extends Command
         $this->solveDependencies($thisDepMan->require, $output, 0);
 
         //$requiredPackage = $this->packageService->getPackage($input->getArgument('package'));
-
-
 
         $this->installDependencies($thisDepMan, $output);
 

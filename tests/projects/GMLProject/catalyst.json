@@ -6,6 +6,6 @@
     "yyp": "GMLProject.yyp",
     "require": {
         "gamemakerhub/extended-functions": "*",
-        "dukesoft/dscpu-mercy": "^1.1"
+        "dukesoft/dscpu-mercy": ">=1.1"
     }
 }

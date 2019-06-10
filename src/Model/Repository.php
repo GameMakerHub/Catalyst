@@ -31,6 +31,12 @@ class Repository implements \JsonSerializable {
         $this->uri = $uri;
     }
 
+    public function setAvailablePackages($data)
+    {
+        $this->scannedPackages = true;
+        $this->availablePackages = $data;
+    }
+
     public function jsonSerialize()
     {
         return $this;
@@ -43,7 +49,6 @@ class Repository implements \JsonSerializable {
         if (!array_key_exists($packageName, $this->availablePackages)) {
             throw new PackageNotFoundException($packageName, $version);
         }
-
         $satisfied = Semver::satisfiedBy(array_keys($this->availablePackages[$packageName]['versions']), $version);
         if (count($satisfied)) {
             return Semver::rsort($satisfied);
