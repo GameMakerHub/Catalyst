@@ -26,7 +26,9 @@
                 }
             }
         ],
-        "hiddenResources": [],
+        "hiddenResources": [
+            
+        ],
         "projectPath": "${base_project}"
     },
     "resources": [
@@ -164,6 +166,14 @@
                 "id": "2f9d2d3b-1068-404b-a644-e07927ba2ec5",
                 "resourcePath": "notes\\note_inside_group.yy",
                 "resourceType": "GMNotes"
+            }
+        },
+        {
+            "Key": "93566aad-c3b3-48a9-8fa7-9c5ee19f74ac",
+            "Value": {
+                "id": "efb69792-5035-4de8-be68-3aca6b3a9b7f",
+                "resourcePath": "options\\tvos\\options_tvos.yy",
+                "resourceType": "GMtvOSOptions"
             }
         },
         {
