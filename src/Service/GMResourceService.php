@@ -22,6 +22,7 @@ use Catalyst\Model\YoYo\Resource\GM\Options\GMIosOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMLinuxOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMMacOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMMainOptions;
+use Catalyst\Model\YoYo\Resource\GM\Options\GMTVOSOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
 
 class GMResourceService {
@@ -53,6 +54,7 @@ class GMResourceService {
     const GM_OPTIONS_WINDOWS = 'GMWindowsOptions';
     const GM_OPTIONS_ANDROID = 'GMAndroidOptions';
     const GM_OPTIONS_MAC = 'GMMacOptions';
+    const GM_OPTIONS_TVOS = 'GMtvOSOptions';
 
     const GM_EXTENSION = 'GMExtension';
 
@@ -81,6 +83,7 @@ class GMResourceService {
         self::GM_OPTIONS_LINUX => GMLinuxOptions::class,
         self::GM_OPTIONS_WINDOWS => GMWindowsOptions::class,
         self::GM_OPTIONS_MAC => GMMacOptions::class,
+        self::GM_OPTIONS_TVOS => GMTVOSOptions::class,
 
         self::GM_EXTENSION => GMExtension::class,
     ];
