@@ -24,6 +24,21 @@ class JsonService
             $data,
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
+
+        /*
+         * @todo - find out manually how far this is indentend, and then add the spaces accordingly.
+         * Looks like right now its only in 1 spot so the one liner with fixed indentation should work
+
+        $pos = strpos($str, "[]");
+        while ($pos !== false) {
+            $oldstr = $str;
+            $str = substr($oldstr, 0, $pos) . "[FOUNDHERE]" . substr($oldstr, $pos+2);
+            $pos = strpos($str, "[]");
+        }
+
+        */
+        $str = str_replace("[]", "[\n            \n        ]", $str);
+
         if ($isWindows) {
             $str = str_replace("\n", "\r\n", $str);
         }
