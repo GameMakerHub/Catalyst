@@ -44,6 +44,18 @@ class PackageService
         throw new PackageNotFoundException($package, $version);
     }
 
+    public function packageExists(string $package, string $version): bool
+    {
+        foreach ($this->repositories as $repository) {
+            try {
+                return $repository->packageExists($package, $version);
+            } catch (PackageNotFoundException $e) {
+            }
+        }
+
+        throw new PackageNotFoundException($package, $version);
+    }
+
     public function getPackageDependencies(string $package, string $version): array
     {
         foreach ($this->repositories as $repository) {

@@ -6,7 +6,6 @@ use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Model\Repository;
 use Catalyst\Service\PackageService;
-use Mockery\Mock;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageServiceTest extends \PHPUnit\Framework\TestCase

@@ -114,7 +114,6 @@ class InitCommand extends Command
         $yyp = $helper->ask($input, $output, $question);
 
         $this->catalystService->createNew(
-            '.',
             $name,
             $description,
             $license,

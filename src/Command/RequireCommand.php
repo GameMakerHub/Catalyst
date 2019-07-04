@@ -3,7 +3,9 @@
 namespace Catalyst\Command;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Service\CatalystService;
 use Catalyst\Service\PackageService;
+use Catalyst\Service\StorageService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,9 +18,13 @@ class RequireCommand extends Command
     /** @var PackageService */
     private $packageService;
 
-    public function __construct(PackageService $storageService)
+    /** @var CatalystService */
+    private $catalystService;
+
+    public function __construct(PackageService $packageService, CatalystService $catalystService)
     {
-        $this->packageService = $storageService;
+        $this->packageService = $packageService;
+        $this->catalystService = $catalystService;
 
         parent::__construct();
     }
@@ -31,10 +37,14 @@ class RequireCommand extends Command
             ->addArgument('package', InputArgument::REQUIRED, 'GDM Package name or URI');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $GLOBALS['dry'] = false;
-        $thisDepMan = new CatalystEntity(realpath('.'));
+        try {
+            $catalyst = $this->catalystService->load(realpath('.'));
+        } catch (\Exception $e) {
+            $output->writeLn('<fg=red>ERROR LOADING CATALYST PROJECT FILE: </>' . $e->getMessage());
+            return 127;
+        }
 
         $version = '*';
         preg_match('~^([a-z0-9-]+\/[a-z0-9-]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
@@ -48,23 +58,27 @@ class RequireCommand extends Command
             $version = substr($matches[2], 1, strlen($matches[2])-1);
         }
 
-        if ($package == $thisDepMan->name()) {
+        if ($package == $catalyst->name()) {
             $output->writeln('<bg=red>Package can not require itself</>');
             return 1;
         }
 
         $output->writeln('Require version <fg=green>' . $version . '</> for <fg=green>' . $package . '</>');
 
-        if ($thisDepMan->hasPackage($package)) {
+        if ($catalyst->hasPackage($package)) {
             $output->writeln('<bg=red>' . $package . ' is already required</>');
             return 1;
         }
 
-        $this->packageService->getPackage($package, $version);
+        $this->packageService->packageExists($package, $version);
 
-        $thisDepMan->require($package, $version);
+        $catalyst->addRequire($package, $version);
 
-        $thisDepMan->save();
+        StorageService::getInstance()->saveEntity($catalyst);
+        $this->catalystService->persist();
+
         $output->writeln('<fg=green>catalyst.json has been updated</>');
+
+        return 0;
     }
 }

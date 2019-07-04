@@ -64,7 +64,7 @@ class GithubService
     }
 
     public function downloadZipball(string $url, string $location) {
-        if (!dir(dirname($location))) {
+        if (!@dir(dirname($location))) {
             mkdir(dirname($location), 0777, true);
         }
         $file_path = fopen($location,'w');

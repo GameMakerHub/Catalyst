@@ -43,7 +43,6 @@ class TreeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         try {
             $catalyst = $this->catalystService->load(realpath('.'));
         } catch (\Exception $e) {

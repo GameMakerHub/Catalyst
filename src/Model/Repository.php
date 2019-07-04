@@ -56,6 +56,16 @@ class Repository implements \JsonSerializable {
         throw new PackageNotFoundException($packageName, $version);
     }
 
+    public function packageExists(string $packageName, string $version): bool
+    {
+        $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
+        if (count($satisfieableVersions)) {
+            return true;
+        }
+
+        throw new PackageNotSatisfiableException($packageName, $version);
+    }
+
     public function findPackage(string $packageName, string $version): CatalystEntity
     {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
