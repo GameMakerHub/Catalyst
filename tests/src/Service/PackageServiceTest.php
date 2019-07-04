@@ -2,9 +2,11 @@
 
 namespace Catalyst\Tests\Service;
 
+use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Model\Repository;
 use Catalyst\Service\PackageService;
+use Mockery\Mock;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageServiceTest extends \PHPUnit\Framework\TestCase
@@ -29,7 +31,17 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
     public function testDependencyResolvingSimple($requirements, $expected)
     {
         $this->prepareRepository($this->getSimpleRepository());
-        $this->assertSame($expected, $this->subject->solveDependencies($requirements));
+        $mockProject = \Mockery::mock(CatalystEntity::class);
+
+        $mockProject->shouldReceive('require')
+            ->once()
+            ->andReturn($requirements);
+
+        $mockProject->shouldReceive('repositories')
+            ->once()
+            ->andReturn([]);
+
+        $this->assertSame($expected, $this->subject->solveDependencies($mockProject));
     }
 
     public static function provideSimpleResolveTestPackages()
@@ -50,22 +62,9 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
             'latest major 1 version but under 1.3' => [
                 '$requirements' => ['dukesoft/test-package' => '1.* < 1.3'],
                 '$expected' => ['dukesoft/test-package' => 'v1.1.2']
-            ]
-        ];
-    }
+            ],
 
-    /**
-     * @dataProvider provideSimpleNestedDependencies
-     */
-    public function testSimpleNestedDependencies($requirements, $expected)
-    {
-        $this->prepareRepository($this->getSimpleRepository());
-        $this->assertSame($expected, $this->subject->solveDependencies($requirements));
-    }
-
-    public static function provideSimpleNestedDependencies()
-    {
-        return [
+            // Nested
             'Static references' => [
                 '$requirements' => ['othervendor/test-package' => '1.0.1'],
                 '$expected' => [
@@ -80,21 +79,8 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
                     'dukesoft/anotherpackage' => '1.5.1',
                 ]
             ],
-        ];
-    }
 
-    /**
-     * @dataProvider provideNestedDependencies
-     */
-    public function testNestedDependencies($requirements, $expected)
-    {
-        $this->prepareRepository($this->getSimpleRepository());
-        $this->assertEquals($expected, $this->subject->solveDependencies($requirements));
-    }
-
-    public static function provideNestedDependencies()
-    {
-        return [
+            //More nested
             'Static references 2 levels nesting' => [
                 '$requirements' => ['othervendor/nesting-package' => '*'],
                 '$expected' => [
@@ -107,16 +93,16 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
                 '$requirements' => ['othervendor/nesting-package' => '*', 'dukesoft/anotherpackage' => '~1.2.0'],
                 '$expected' => [
                     'othervendor/nesting-package' => '1.3.2',
-                    'othervendor/test-package' => 'v1.0.2',
                     'dukesoft/anotherpackage' => '1.2.1',
+                    'othervendor/test-package' => 'v1.0.2',
                 ]
             ],
             'Other constraints' => [
                 '$requirements' => ['othervendor/nesting-package' => '>=1', 'dukesoft/anotherpackage' => '<=1.4.0'],
                 '$expected' => [
                     'othervendor/nesting-package' => '1.3.2',
-                    'othervendor/test-package' => 'v1.0.2',
                     'dukesoft/anotherpackage' => '1.2.1',
+                    'othervendor/test-package' => 'v1.0.2',
                 ]
             ],
             '4 layer constraints' => [
@@ -127,9 +113,9 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
                 ],
                 '$expected' => [
                     'othervendor/nesting-package' => '1.3.2',
-                    'othervendor/test-package' => 'v1.0.2',
                     'dukesoft/anotherpackage' => '1.2.0',
                     'othervendor/another-package' => '1.0.1',
+                    'othervendor/test-package' => 'v1.0.2',
                 ]
             ],
         ];
@@ -142,7 +128,17 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException($expectedException);
         $this->prepareRepository($this->getSimpleRepository());
-        $this->subject->solveDependencies($requirements);
+        $mockProject = \Mockery::mock(CatalystEntity::class);
+
+        $mockProject->shouldReceive('require')
+            ->once()
+            ->andReturn($requirements);
+
+        $mockProject->shouldReceive('repositories')
+            ->once()
+            ->andReturn([]);
+
+        $this->subject->solveDependencies($mockProject);
     }
 
     public static function provideNotSolveable()
