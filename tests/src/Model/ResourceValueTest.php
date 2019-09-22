@@ -29,6 +29,12 @@ EOL;
             ->with('views\\0bb36c74-dc11-4a76-8ff5-0d89046b21bf.yy')
             ->andReturn(new \stdClass());
 
+        $this->mockStorage
+            ->shouldReceive('getContents')
+            ->once()
+            ->with('views\\0bb36c74-dc11-4a76-8ff5-0d89046b21bf.yy')
+            ->andReturn('default_content');
+
         $this->subject = ResourceValue::createFromObject(JsonService::decode($this->jsonString));
     }
 

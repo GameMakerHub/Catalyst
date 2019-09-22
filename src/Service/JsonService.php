@@ -25,20 +25,34 @@ class JsonService
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
 
-        /*
-         * @todo - find out manually how far this is indentend, and then add the spaces accordingly.
-         * Looks like right now its only in 1 spot so the one liner with fixed indentation should work
-
+        // Find any empty arrays and indent them like GM does - GM likes to format them with empty newlines and spaces
+        // in it. If we do this, we can keep the diffs to a minimum.
         $pos = strpos($str, "[]");
         while ($pos !== false) {
+            $searchNewlinePos = $pos;
+            // Walk back until we find a newline, and count the spaces
+            $curToken = substr($str, $searchNewlinePos, 1);
+            $spaceCount = 0;
+            while ($curToken != "\n") {
+                if ($curToken == ' ') { //Increase the spacecount if we find a space
+                    $spaceCount ++;
+                } else { //Reset it
+                    $spaceCount = 0;
+                }
+
+                $searchNewlinePos--;
+                $curToken = substr($str, $searchNewlinePos, 1);
+            }
+
             $oldstr = $str;
-            $str = substr($oldstr, 0, $pos) . "[FOUNDHERE]" . substr($oldstr, $pos+2);
+            $newString = "[\n"
+                . str_repeat(' ', $spaceCount + 4)
+                . "\n"
+                . str_repeat(' ', $spaceCount) . ']';
+            $str = substr($oldstr, 0, $pos) . $newString . substr($oldstr, $pos+2);
+
             $pos = strpos($str, "[]");
         }
-
-        */
-        ///@todo make sure identation is correct based on spaces in beginning of line
-        $str = str_replace("[]", "[\n        \n    ]", $str);
 
         if ($isWindows) {
             $str = str_replace("\n", "\r\n", $str);

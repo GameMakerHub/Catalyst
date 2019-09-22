@@ -37,7 +37,8 @@ class StorageServiceTest extends \PHPUnit\Framework\TestCase
     public function testWriteFile()
     {
         $this->subject->writeFile('filename.json', '{content}');
-        $this->assertPrepareWriteFile('filename.json', '{content}');
+        $expectedFullPath = str_replace('\\','/', getcwd() . '/');
+        $this->assertPrepareWriteFile($expectedFullPath . 'filename.json', '{content}');
     }
 
     public function testSaveEntity()
