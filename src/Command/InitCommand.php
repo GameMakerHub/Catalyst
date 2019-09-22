@@ -41,6 +41,14 @@ class InitCommand extends Command
             return;
         }
 
+        if (count(glob("*.yyp")) == 0) {
+            $output->writeln(
+                '<info>No .yyp project file was found in this directory. '
+                . 'Please initialize in the root of your project!</info>'
+            );
+            return;
+        }
+
         // Ask for package name
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
@@ -90,9 +98,11 @@ class InitCommand extends Command
         } catch (\Exception $e) {
             $madeUrl = null;
         }
-        $question = new Question('Please enter URL of your repository: ['.$madeUrl.'] ', $madeUrl);
+        $question = new Question('Please enter URL of your repository (optional): ['.$madeUrl.'] ', $madeUrl);
         $question->setValidator(function ($answer) {
-            Assertion::url($answer);
+            if (strlen($answer)) {
+                Assertion::url($answer);
+            }
             return $answer;
         });
 
