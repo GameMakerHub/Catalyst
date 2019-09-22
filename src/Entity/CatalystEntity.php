@@ -283,9 +283,6 @@ class CatalystEntity implements SaveableEntityInterface {
 
     private $ignored = [];
 
-    /**
-     * @deprecated
-     */
     public function addIgnore($path)
     {
         $path = str_replace('\\', '/', $path);
@@ -334,27 +331,28 @@ class CatalystEntity implements SaveableEntityInterface {
     }
 
     /**
-     * @deprecated
-     * Persist the files and write to disk
+     * Store the new file information
      */
     public function save()
     {
-        //file_put_contents($this->projectPath . '/catalyst.json', $this->getJson());
-        //$this->saveIgnoreFile();
+        // Store the YYP file
+        StorageService::getInstance()->saveEntity($this->YoYoProjectEntity());
+
+        // Write the ignore file
+        $this->saveIgnoreFile();
     }
 
     /**
-     * @deprecated
      * @todo this is horrible and slow, but does the trick for now.
      */
     private function saveIgnoreFile()
     {
         $newContent = self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->ignored) . PHP_EOL . self::IGNORE_TOKEN;
 
-        $ignoreFile = $this->projectPath . '/.gitignore';
+        $ignoreFile = $this->path() . '/.gitignore';
         $contents = '';
-        if (file_exists($ignoreFile)) {
-            $contents = file_get_contents($ignoreFile);
+        if (StorageService::getInstance()->fileExists($ignoreFile)) {
+            $contents = StorageService::getInstance()->getContents($ignoreFile);
         }
 
         preg_match('~(### CATALYST ###)[\s\S]+(### CATALYST ###)~', $contents, $matches);
@@ -365,7 +363,7 @@ class CatalystEntity implements SaveableEntityInterface {
             $contents = str_replace($matches[0], $newContent, $contents);
         }
 
-        file_put_contents($ignoreFile, $contents);
+        StorageService::getInstance()->writeFile($ignoreFile, $contents);
     }
 
 

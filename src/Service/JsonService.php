@@ -37,7 +37,8 @@ class JsonService
         }
 
         */
-        $str = str_replace("[]", "[\n            \n        ]", $str);
+        ///@todo make sure identation is correct based on spaces in beginning of line
+        $str = str_replace("[]", "[\n        \n    ]", $str);
 
         if ($isWindows) {
             $str = str_replace("\n", "\r\n", $str);

@@ -31,6 +31,15 @@ class ResourceValue implements \JsonSerializable {
         );
     }
 
+    public static function createFromGMResource(GMResource $GMResource): ResourceValue
+    {
+        return new static(
+            Uuid::createFromString($GMResource->id), //@todo maybe make this a random value?
+            $GMResource->getFilePath(),
+            'GM' . $GMResource->getTypeName()
+        );
+    }
+
     private function __construct(
         Uuid $id,
         string $resourcePath,

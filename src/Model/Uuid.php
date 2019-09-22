@@ -11,6 +11,11 @@ class Uuid implements \JsonSerializable {
         return new self($value);
     }
 
+    public static function createRandom()
+    {
+        return new self((string) \Ramsey\Uuid\Uuid::uuid4());
+    }
+
     private function __construct($value)
     {
         $this->value = \Ramsey\Uuid\Uuid::fromString($value);

@@ -3,6 +3,7 @@
 namespace Catalyst\Command;
 
 use Catalyst\Service\InstallService;
+use Catalyst\Service\StorageService;
 use Composer\Semver\Semver;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\UnresolveableDependenciesException;
@@ -57,8 +58,10 @@ class InstallCommand extends Command
         $this->installService->setOutput($output);
         $this->installService->install($thisProject);
 
+        $thisProject->save();
 
-
+        StorageService::getInstance()->persist($input->getOption('dry-run'));
+        //$thisProject->save();
         //$this->catalystService->uninstallAll();
         die;
 

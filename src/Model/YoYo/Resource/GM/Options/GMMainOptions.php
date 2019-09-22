@@ -10,6 +10,6 @@ class GMMainOptions extends GMResource {
         $stdClass = new \stdClass();
         $stdClass->name = '~MAIN OPTIONS FILE~';
         $stdClass->is_options_file = true;
-        return self::createFromObject($_filePath, $stdClass);
+        return self::createFromObject($_filePath, $stdClass, '');
     }
 }

@@ -39,19 +39,30 @@ class StorageService
         return self::$instance;
     }
 
-    public static function assertFileExists(string $file):bool {
-        if (!self::getInstance()->fileExists($file)) {
-            throw new FileNotFoundException('File does not exist or is not a file: ' . $file);
+    public static function assertFileExists(string $filename):bool {
+        $filename = StorageService::getInstance()->makeRealFilename($filename);
+        if (!self::getInstance()->fileExists($filename)) {
+            throw new FileNotFoundException('File does not exist or is not a file: ' . $filename);
         }
         return true;
     }
 
-    public function fileExists(string $file):bool {
-        return file_exists($file) && is_file($file);
+    public function fileExists(string $filename):bool {
+        $filename = $this->makeRealFilename($filename);
+        if (isset($GLOBALS['storage']['writes'][$filename])) {
+            return true;
+        }
+        return file_exists($filename) && is_file($filename);
+    }
+
+    public function writeYYFile(string $filename, \stdClass $content)
+    {
+        $this->writeFile($filename, JsonService::encode($content));
     }
 
     public function writeFile(string $filename, string $contents)
     {
+        $filename = $this->makeRealFilename($filename);
         $GLOBALS['storage']['writes'][$filename] = $contents;
     }
 
@@ -60,18 +71,51 @@ class StorageService
         self::getInstance()->writeFile($entity->getFilePath(), $entity->getFileContents());
     }
 
-    public function persist() {
+    public function persist($dryRun = false) {
         //Should persist all changes on disk
         foreach ($GLOBALS['storage']['writes'] as $filename => $contents) {
-            file_put_contents($filename, $contents);
+            if ($dryRun) {
+                echo 'Dry-run: not writing to ' . $filename . PHP_EOL;
+            } else {
+                @mkdir(dirname($filename), 0777, true);
+                file_put_contents($filename, $contents);
+            }
         }
         $GLOBALS['storage']['writes'] = [];
     }
 
+    public function getFromWriteStorage($filename)
+    {
+        $filename = $this->makeRealFilename($filename);
+        if (isset($GLOBALS['storage']['writes'][$filename])) {
+            return $GLOBALS['storage']['writes'][$filename];
+        }
+        throw new \Exception('File not written in storage: ' . $filename);
+    }
+
+    private function makeRealFilename($filename)
+    {
+        if (!$this->pathIsAbsolute($filename)) {
+            //echo 'Relative path detected: ' . $filename . ' - prepending ' . getcwd() . PHP_EOL;
+            $filename = getcwd() . '/' . $filename;
+        }
+        return str_replace('\\', '/', $filename);
+    }
+
+    private function pathIsAbsolute($path) {
+        if($path === null || $path === '') return false;
+        return $path[0] === DIRECTORY_SEPARATOR || preg_match('~\A[A-Z]:(?![^/\\\\])~i',$path) > 0;
+    }
+
     public function getContents($path): string
     {
-        self::assertFileExists($path);
-        return file_get_contents($path);
+        $path = str_replace('\\', '/', $path);
+        try {
+            return $this->getFromWriteStorage($path);
+        } catch (\Exception $e) {
+            self::assertFileExists($path);
+            return file_get_contents($path);
+        }
     }
 
     public function getJson($path): \stdClass
@@ -84,6 +128,7 @@ class StorageService
     }
 
     public function rrmdir($path) {
+        // @todo make this work with persist as well
         $i = new \DirectoryIterator($path);
         foreach($i as $f) {
             if($f->isFile()) {
@@ -93,5 +138,42 @@ class StorageService
             }
         }
         rmdir($path);
+    }
+
+    public function recursiveCopy($from, $to)
+    {
+        $from = $this->getAbsoluteFilename($from);
+        $to = $this->getAbsoluteFilename($to);
+        foreach (glob($from . '/*') as $filename) {
+            $target = $this->makeRealFilename($to . '/' . basename($filename));
+            $GLOBALS['storage']['writes'][$target] = file_get_contents($filename);
+            //echo 'Copy from ' . $filename . ' to ' . $target . PHP_EOL;
+        }
+    }
+
+    public function getAbsoluteFilename($filename) {
+        $path = [];
+        $filename = str_replace('\\', '/', $filename);
+        foreach(explode('/', $filename) as $part) {
+            // ignore parts that have no value
+            if (empty($part) || $part === '.') continue;
+
+            if ($part !== '..') {
+                // cool, we found a new part
+                array_push($path, $part);
+            }
+            else if (count($path) > 0) {
+                // going back up? sure
+                array_pop($path);
+            } else {
+                // now, here we don't like
+                throw new \Exception('Climbing above the root is not permitted.');
+            }
+        }
+
+        // prepend my root directory
+        //array_unshift($path, '');
+
+        return join('/', $path);
     }
 }

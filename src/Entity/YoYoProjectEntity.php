@@ -87,6 +87,9 @@ class YoYoProjectEntity implements SaveableEntityInterface {
             $gmResource = $resource->gmResource();
             if ($gmResource->isFolder()) {
                 foreach ($gmResource->children as $childId) {
+                    if (!isset($this->resources[$childId])) {
+                        throw new \Exception('Could not find child ID ' . $childId . ' in resource list;');
+                    }
                     $gmResource->linkChildResource($this->resources[$childId]->gmResource());
                 }
             }
@@ -143,6 +146,113 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         }
     }
 
+    public function resourceNameExists($resourceName)
+    {
+        foreach ($this->resources as $item) {
+            if ($item->value()->gmResource()->name == $resourceName) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function uuidExists(Uuid $uuid): bool
+    {
+        foreach ($this->resources as $item) {
+            if ($item->key()->equals($uuid)) {
+                return true;
+            }
+            if ($item->value()->id()->equals($uuid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function getFreeUuid(): Uuid
+    {
+        $newUuid = Uuid::createRandom();
+        while ($this->uuidExists($newUuid)) {
+            $newUuid = Uuid::createRandom();
+            //If this creates an infinite loop you have a real shitload of entities
+        }
+        return Uuid::createFromString($newUuid);
+    }
+
+    public function createFolder(string $folderName, $type)
+    {
+        // Early return if it exists
+        $folder = $this->getByInternalPath($folderName);
+        if ($folder !== false) {
+            //echo '--Full path exists: ' . $folderName . PHP_EOL;
+            return $folder;
+        }
+
+        // It doesn't exist, try to make the folder structure
+        $folderDirectory = explode('/', $folderName);
+        $realPath = '';
+
+        foreach ($folderDirectory as $directory) {
+            $realPath .= '/' . $directory;
+            //echo ' Checking for ' . $realPath . PHP_EOL;
+            $folder = $this->getByInternalPath($realPath);
+            if ($folder === false) {
+                //echo '   that does not exist, make it and add it to our parent: ' . $parent->folderName . PHP_EOL;
+
+                $folder = Resource\GM\GMFolder::createNew($this->getFreeUuid(), $realPath, $type);
+
+                $parent->addNewChildResource($folder);
+                $this->addResource($folder);
+                echo 'Adding ' . $folder->folderName . ' to ' . $parent->folderName . PHP_EOL;
+            }
+            $parent = $folder;
+        }
+
+        return $folder;
+    }
+
+    public function addResource(Resource\GM\GMResource $gmResource)
+    {
+        $resource = Resource::createFromGMResource($gmResource);
+        $this->resources[(string) $resource->key()] = $resource;
+        StorageService::getInstance()->writeFile($resource->gmResource()->getFilePath(), $resource->gmResource()->getJson());
+    }
+
+    /**
+     * @param $realPath
+     * @return bool|Resource\GM\GMResource
+     */
+    public function getByInternalPath($realPath)
+    {
+        $count = 0;
+        if (strpos($realPath, '/') === 0) {
+            $realPath = substr($realPath, 1, strlen($realPath)-1);
+        }
+
+        $folderDirectory = explode('/', $realPath);
+        foreach ($folderDirectory as $directory) {
+            if ($count == 0) {
+                // first
+                $resource = $this->getRoot()->gmResource()->findChildResourceByName($directory);
+            } else {
+                $resource = $resource->findChildResourceByName($directory);
+            }
+
+            if ($resource === false) {
+                return false;
+            }
+
+            $count++;
+        }
+
+        return $resource;
+    }
+
+    public function createFolderIfNotExists(string $folderName, $type)
+    {
+        return $this->createFolder($folderName, $type);
+    }
+
     public function getFileContents(): string
     {
         return $this->getJson();
@@ -175,6 +285,16 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         $resourcesClone = $this->resources;
         array_pop($resourcesClone);
         $newObject->resources = array_values($resourcesClone);
+
+        // Remove Main Options that might have been added
+        $newObject->resources = array_filter($newObject->resources, function($value) {
+            if ($value->gmResource()->getTypeName() == 'MainOptions') {
+                return false;
+            }
+            return true;
+        });
+
+        $newObject->resources = array_values($newObject->resources);
 
         $newObject->script_order = $this->script_order;
         return JsonService::encode($newObject);

@@ -15,11 +15,28 @@ class Resource implements \JsonSerializable {
     /** @var string[] */
     private $configDeltas = [];
 
-    public static function createFromObject(\stdClass $gmJsonResource): Resource
+    /**
+     * @param GMResource $GMResource
+     * @return Resource
+     */
+    public static function createFromObject(\stdClass $gmJsonResource)
     {
         return new static(
             Uuid::createFromString($gmJsonResource->Key),
             ResourceValue::createFromObject($gmJsonResource->Value)
+        );
+    }
+
+    /**
+     * @param GMResource $GMResource
+     * @return Resource
+     */
+    public static function createFromGMResource(GMResource $GMResource)
+    {
+        $resourceValue = ResourceValue::createFromGMResource($GMResource);
+        return new static(
+            Uuid::createFromString($GMResource->id),
+            $resourceValue
         );
     }
 
