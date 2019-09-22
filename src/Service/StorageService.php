@@ -96,7 +96,6 @@ class StorageService
     private function makeRealFilename($filename)
     {
         if (!$this->pathIsAbsolute($filename)) {
-            //echo 'Relative path detected: ' . $filename . ' - prepending ' . getcwd() . PHP_EOL;
             $filename = getcwd() . '/' . $filename;
         }
         return str_replace('\\', '/', $filename);
@@ -140,14 +139,21 @@ class StorageService
         rmdir($path);
     }
 
+    public function copy($from, $to)
+    {
+        $from = $this->getAbsoluteFilename($from);
+        $to = $this->makeRealFilename($to);
+        $GLOBALS['storage']['writes'][$to] = file_get_contents($from);
+    }
+
     public function recursiveCopy($from, $to)
     {
         $from = $this->getAbsoluteFilename($from);
         $to = $this->getAbsoluteFilename($to);
         foreach (glob($from . '/*') as $filename) {
+            //@todo check if this works with nested folders -- I dont think it does.
             $target = $this->makeRealFilename($to . '/' . basename($filename));
             $GLOBALS['storage']['writes'][$target] = file_get_contents($filename);
-            //echo 'Copy from ' . $filename . ' to ' . $target . PHP_EOL;
         }
     }
 
@@ -170,9 +176,6 @@ class StorageService
                 throw new \Exception('Climbing above the root is not permitted.');
             }
         }
-
-        // prepend my root directory
-        //array_unshift($path, '');
 
         return join('/', $path);
     }

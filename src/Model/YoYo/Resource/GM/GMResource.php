@@ -167,8 +167,7 @@ abstract class GMResource
 
         $this->children[] = (string) $GMResource->id;
         $this->linkChildResource($GMResource);
-        //echo 'Added child resource ' . $GMResource->getName() . ' to ' . $this->getName() . '('.$this->_filePath.')' . PHP_EOL;
-        $this->_originalContents = ''; //Reset so it gets written
+        $this->_originalContents = ''; //Reset so it gets overwritten / regenerated
         StorageService::getInstance()->writeFile($this->_filePath, $this->getJson());
     }
 

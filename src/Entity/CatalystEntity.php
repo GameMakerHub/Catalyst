@@ -207,80 +207,6 @@ class CatalystEntity implements SaveableEntityInterface {
         return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    /**
-     * @deprecated
-     */
-    public function installPackage(CatalystEntity $newPackage, OutputInterface $output)
-    {
-        // Loop through all files and copy / add them to this project
-        $this->loopIn($output, $newPackage, $newPackage->projectEntity()->getChildren(),0);
-
-        // Copy the datafiles needed
-        foreach (glob($newPackage->getProjectPath() . '/datafiles/*') as $datafile) {
-            @mkdir($this->getProjectPath() . '/datafiles');
-            $destFile =  '/datafiles/' . basename($datafile);
-            copy($datafile, $this->getProjectPath() . $destFile);
-            $this->addIgnore($destFile);
-        }
-
-        $this->projectEntity()->save();
-        $this->save();
-    }
-
-    /**
-     * @deprecated
-     * @param OutputInterface $output
-     * @param CatalystEntity $newPackage
-     * @param \Catalyst\Model\YoYo\Resource\GM\GMResource[] $children
-     * @param int $level
-     * @param GMFolder|null $rootFolder
-     * @throws \Exception
-     */
-    private function loopIn(OutputInterface $output, CatalystEntity $newPackage, array $children, $level = 0, GMFolder $rootFolder = null) {
-        foreach ($children as $child) {
-            $name = '?';
-
-            $isFolder = false;
-            if (isset($child->folderName)) {
-                $name = $child->folderName;
-                $isFolder = true;
-                if ($name == self::$vendorFolderName || ($level == 0 && !in_array($name, self::$rootFolderCopyOnly) )) {
-                    continue;
-                }
-            } else if (isset($child->name)) {
-                $name = $child->name;
-            }
-
-            $hasChildren = count($child->getChildren()) >= 1;
-            if ($isFolder && $hasChildren) {
-                if ($level == 0) {
-                    $nextFolder = $this->projectEntity()->createGmFolder($name . '/vendor/' . $newPackage->name());
-                } else {
-                    $nextFolder = $this->projectEntity()->createGmFolder($rootFolder->getFullName() . '/' . $name);
-                    $this->addIgnore($nextFolder->getFilePath());
-                }
-                $output->writeln('    '. str_repeat('|  ', $level).'\__ <fg=cyan>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']', Output::VERBOSITY_VERY_VERBOSE);
-                $this->loopIn($output, $newPackage, $child->getChildren(), $level+1, $nextFolder);
-            }
-
-            if (!$isFolder) {
-                $output->writeln('    ' . str_repeat('|  ', $level).'\__ <fg=green>' . $name . '</>['.$child->id.','.$child->getYypResource()->key().']', Output::VERBOSITY_VERY_VERBOSE);
-                $rootFolder->markEdited();
-                $rootFolder->addChild($child);
-
-                $resource = $child->getYypResource();
-
-                $this->recurse_copy(
-                    $newPackage->getProjectPath() . '/' . $resource->resourcePathRoot(),
-                    $this->getProjectPath() . '/' . $resource->resourcePathRoot()
-                );
-
-                $this->projectEntity->addResource($resource);
-                $this->addIgnore($resource->resourcePathRoot());
-            }
-        }
-    }
-
     private $ignored = [];
 
     public function addIgnore($path)
@@ -289,27 +215,6 @@ class CatalystEntity implements SaveableEntityInterface {
         if (!in_array($path, $this->ignored)) {
             $this->ignored[] = $path;
         }
-    }
-
-    /**
-     * @deprecated
-     * @todo remove placeholder code
-     * @param $src
-     * @param $dst
-     */
-    private function recurse_copy($src,$dst) {
-        $dir = opendir($src);
-        @mkdir($dst, 0777, true);
-        while(false !== ( $file = readdir($dir)) ) {
-            if (( $file != '.' ) && ( $file != '..' )) {
-                if ( is_dir($src . '/' . $file) ) {
-                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
-                } else {
-                    copy($src . '/' . $file,$dst . '/' . $file);
-                }
-            }
-        }
-        closedir($dir);
     }
 
     /**

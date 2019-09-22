@@ -3,7 +3,6 @@
 namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
-use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -28,11 +27,12 @@ class InstallService
         $this->output = $output;
     }
 
-    public function install(CatalystEntity $project)
+    public function install(CatalystEntity &$project)
     {
         $this->project = $project;
+        $this->writeLine('Resolving dependencies and building installation list...');
         $packagesToInstall = $this->packageService->solveDependencies($project);
-
+        $this->writeLine('Done!');
         foreach ($packagesToInstall as $package => $version) {
             $this->writeLine('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $version . '</>...');
             $package = $this->packageService->getPackage($package, $version);
@@ -43,43 +43,21 @@ class InstallService
 
     private function loop(GMResource $resource, CatalystEntity $packageToInstall, $level = 0, $targetDirectory = '')
     {
-        //$number = 1;
-        //$parentCount = count($resource->getChildResources());
         foreach ($resource->getChildResources() as $resource) {
-            //echo '    Checking child resource ' . $resource->getName() . PHP_EOL;
-
-            //$lineCharacter = '├';
-            //if ($parentCount == $number) {
-            //    $lineCharacter = '└';
-            //}
-
-            /*$this->writeLine(
-                sprintf(
-                    '%s─── <fg=%s>%s</> %s %s %s',
-                    str_repeat('│    ', $level) . $lineCharacter,
-                    $resource->isFolder() ? 'yellow' : 'green',
-                    $resource->getName(),
-                    $targetDirectory,
-                    '[<fg=cyan>'.$resource->id.'</>]',
-                    '[<fg=magenta>'.$resource->getTypeName().'</>]'
-                )
-            );*/
-
 
             if ($resource->isFolder()) {
+                // Loop through if this is a folder
                 if ($level == 0) {
                     $this->loop($resource, $packageToInstall, $level+1, $resource->getName() . '/vendor/' . $packageToInstall->name());
                 } else {
                     $this->loop($resource, $packageToInstall, $level+1, $targetDirectory . '/' . $resource->getName());
                 }
             } else {
-                if ($resource->isOption() || $resource->isIncludedFile()) {
+                // This is an actual resource
+                if ($resource->isOption()) {
                     //@todo add isConfig ?
-                    //@todo add handler for included files
                     continue;
                 }
-                $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($targetDirectory, $resource->getTypeName());
-                echo 'Trying to add ' . $resource->getTypeName() . ' ('.$resource->name.') to ' . $targetDirectory . PHP_EOL;
 
                 if ($this->project->YoYoProjectEntity()->resourceNameExists($resource->name)) {
                     throw new \Exception(
@@ -97,22 +75,41 @@ class InstallService
                     );
                 }
 
+                // Write the actual files
+                if ($resource->isIncludedFile()) {
+                    $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($this->project, $resource->filePath, $resource->getTypeName());
+
+                    // Copy the .yy file
+                    StorageService::getInstance()->copy($packageToInstall->path() . '/' . $resource->getFilePath(), $resource->getFilePath());
+                    $this->project->addIgnore($resource->getFilePath());
+
+                    // Copy the datafile
+                    $dataFilePath = $resource->filePath . '/' .$resource->fileName;
+                    StorageService::getInstance()->copy(
+                        $packageToInstall->path() . '/' . $dataFilePath,
+                        $dataFilePath
+                    );
+                    $this->project->addIgnore($dataFilePath);
+                } else {
+                    // Add it into the vendor folder
+                    $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($this->project, $targetDirectory, $resource->getTypeName());
+
+                    // Stored in a folder with potentially multiple files
+                    $localizedPath = $resource->getFilePath() . '/../';
+                    StorageService::getInstance()->recursiveCopy($packageToInstall->path() . '/' . $localizedPath, $localizedPath);
+
+                    // Add the file to the ignore list
+                    $fullPath = StorageService::getInstance()->getAbsoluteFilename($localizedPath);
+                    $this->project->addIgnore($fullPath);
+                }
+
                 // Link the resource to the folder
                 $folder->addNewChildResource($resource);
 
-                // Write the actual file
-                StorageService::getInstance()->recursiveCopy($packageToInstall->path() . '/' . $resource->getFilePath() . '/../', $resource->getFilePath() . '/../');
-
                 // Add the file to the project
                 $this->project->YoYoProjectEntity()->addResource($resource);
-
-                // Add the file to the ignore list
-                $fullPath = StorageService::getInstance()->getAbsoluteFilename($resource->getFilePath() . '/../');
-                $this->project->addIgnore($fullPath);
             }
-            //$number++;
         }
-        //echo ' End of loop!' . PHP_EOL;
     }
 
     private function writeLine($string)

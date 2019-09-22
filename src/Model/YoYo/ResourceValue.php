@@ -4,9 +4,7 @@ namespace Catalyst\Model\YoYo;
 use Assert\Assertion;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
-use Catalyst\Model\YoYo\Resource\GM\Options\GMMainOptions;
 use Catalyst\Service\GMResourceService;
-use Catalyst\Service\StorageService;
 
 class ResourceValue implements \JsonSerializable {
 
@@ -34,7 +32,7 @@ class ResourceValue implements \JsonSerializable {
     public static function createFromGMResource(GMResource $GMResource): ResourceValue
     {
         return new static(
-            Uuid::createFromString($GMResource->id), //@todo maybe make this a random value?
+            Uuid::createFromString($GMResource->id), //@todo maybe make this a random value? might clash... I dont know
             $GMResource->getFilePath(),
             'GM' . $GMResource->getTypeName()
         );

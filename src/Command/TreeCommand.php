@@ -64,7 +64,7 @@ class TreeCommand extends Command
                 }
                 $output->writeln(
                     sprintf(
-                        '%s─── <fg=%s>%s</> %s %s',
+                        '%s─── <fg=%s>%s</> %s %s %s',
                         str_repeat('│    ', $level) . $lineCharacter,
                         $resource->isFolder() ? 'yellow' : 'green',
                         $resource->getName(),
@@ -80,53 +80,5 @@ class TreeCommand extends Command
         };
 
         $loop($catalyst->YoYoProjectEntity()->getRoot()->gmResource(), 0);
-
-        /*
-        $loop = function ($children, $level) {
-            foreach ($children as $child) {
-                $name = '?';
-                if (isset($child->folderName)) {
-                    $name = $child->folderName;
-                } else if (isset($child->name)) {
-                    $name = $child->name;
-                }
-                $hasChildren = count($child->getChildren()) >= 1;
-                if ($level > 0 || ($hasChildren || $input->getOption('show-all'))) {
-                    $output->writeln('<fg=green>' . str_repeat('|  ', $level).'\__</> ' . $name);
-                }
-
-                if ($hasChildren) {
-                    $this->loopIn($input, $output, $child->getChildren(), $level+1);
-                }
-            }
-        };
-
-        $loop($catalyst->YoYoProjectEntity()->_root, 0);
-        */
-        //$catalyst->YoYoProjectEntity()->getRoot()->gmResource()->isFolder()
-        /*foreach ( as $resource) {
-            $output->writeln('[<fg=cyan>'.$resource->gmResource()->id.'</>] [<fg=green>'.$resource->gmResource()->modelName.'</><fg=red>/'.$resource->gmResource()->filterType.'</>] - ' . $resource->gmResource()->getName() . "\t");
-        }*/
-        //$output->writeln('[<fg=cyan>'.$resource->gmResource()->id.'</>] [<fg=green>'.$resource->gmResource()->modelName.'</><fg=red>/'.$resource->gmResource()->filterType.'</>] - ' . $resource->gmResource()->getName() . "\t");
-
-    }
-
-    private function loopIn(InputInterface $input, OutputInterface $output, array $children, $level = 0) {
-        foreach ($children as $child) {
-            $name = '?';
-            if (isset($child->folderName)) {
-                $name = $child->folderName;
-            } else if (isset($child->name)) {
-                $name = $child->name;
-            }
-            $hasChildren = count($child->getChildren()) >= 1;
-            if ($level > 0 || ($hasChildren || $input->getOption('show-all'))) {
-                $output->writeln('<fg=green>' . str_repeat('|  ', $level).'\__</> ' . $name);
-            }
-
-            if ($hasChildren) {
-                $this->loopIn($input, $output, $child->getChildren(), $level+1);
-            }
-        }
     }
 }

@@ -2,8 +2,6 @@
 namespace Catalyst\Entity;
 
 use Assert\Assertion;
-use Assert\AssertionFailedException;
-use Catalyst\Exception\FileNotFoundException;
 use Catalyst\Exception\MalformedProjectFileException;
 use Catalyst\Interfaces\SaveableEntityInterface;
 use Catalyst\Model\Uuid;
@@ -12,8 +10,6 @@ use Catalyst\Model\YoYo\ResourceValue;
 use Catalyst\Service\GMResourceService;
 use Catalyst\Service\JsonService;
 use Catalyst\Service\StorageService;
-use Catalyst\Traits\JsonUnpacker;
-use Ramsey\Uuid\UuidInterface;
 
 class YoYoProjectEntity implements SaveableEntityInterface {
 
@@ -179,12 +175,11 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         return Uuid::createFromString($newUuid);
     }
 
-    public function createFolder(string $folderName, $type)
+    public function createFolder(CatalystEntity $project, string $folderName, $type)
     {
         // Early return if it exists
         $folder = $this->getByInternalPath($folderName);
         if ($folder !== false) {
-            //echo '--Full path exists: ' . $folderName . PHP_EOL;
             return $folder;
         }
 
@@ -194,16 +189,16 @@ class YoYoProjectEntity implements SaveableEntityInterface {
 
         foreach ($folderDirectory as $directory) {
             $realPath .= '/' . $directory;
-            //echo ' Checking for ' . $realPath . PHP_EOL;
             $folder = $this->getByInternalPath($realPath);
             if ($folder === false) {
                 //echo '   that does not exist, make it and add it to our parent: ' . $parent->folderName . PHP_EOL;
-
                 $folder = Resource\GM\GMFolder::createNew($this->getFreeUuid(), $realPath, $type);
 
                 $parent->addNewChildResource($folder);
                 $this->addResource($folder);
-                echo 'Adding ' . $folder->folderName . ' to ' . $parent->folderName . PHP_EOL;
+
+                // Add the generated view file to the gitignore list
+                $project->addIgnore($folder->getFilePath());
             }
             $parent = $folder;
         }
@@ -248,9 +243,9 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         return $resource;
     }
 
-    public function createFolderIfNotExists(string $folderName, $type)
+    public function createFolderIfNotExists(CatalystEntity $project, string $folderName, $type)
     {
-        return $this->createFolder($folderName, $type);
+        return $this->createFolder($project, $folderName, $type);
     }
 
     public function getFileContents(): string
@@ -281,21 +276,18 @@ class YoYoProjectEntity implements SaveableEntityInterface {
     public function getJson()
     {
         $newObject = $this->originalData;
-
         $resourcesClone = $this->resources;
-        array_pop($resourcesClone);
-        $newObject->resources = array_values($resourcesClone);
 
         // Remove Main Options that might have been added
-        $newObject->resources = array_filter($newObject->resources, function($value) {
+        $resourcesClone = array_filter($resourcesClone, function($value) {
             if ($value->gmResource()->getTypeName() == 'MainOptions') {
                 return false;
             }
             return true;
         });
 
-        $newObject->resources = array_values($newObject->resources);
-
+        // Cast to an array of objects
+        $newObject->resources = array_values($resourcesClone);
         $newObject->script_order = $this->script_order;
         return JsonService::encode($newObject);
     }

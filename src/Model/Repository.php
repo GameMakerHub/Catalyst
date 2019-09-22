@@ -1,11 +1,11 @@
 <?php
 namespace Catalyst\Model;
 
-use Composer\Semver\Semver;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Exception\PackageNotSatisfiableException;
 use Catalyst\Service\GithubService;
+use Composer\Semver\Semver;
 
 class Repository implements \JsonSerializable {
 

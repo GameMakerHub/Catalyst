@@ -2,10 +2,7 @@
 
 namespace Catalyst\Service;
 
-use Assert\Assertion;
-use Catalyst\Entity\OLDYoYoProjectEntity;
 use GuzzleHttp\Exception\ClientException;
-use Symfony\Component\Console\Output\Output;
 
 class GithubService
 {
@@ -115,12 +112,11 @@ class GithubService
         $location = $cacheFolder . $cacheKey;
 
         if (!file_exists($zipFile)) {
-            //echo 'Downloading: <fg=yellow>' . $zipballUrl . '</> to '.$zipFile.'...' . PHP_EOL;
+            echo '    Downloading: "' . $zipballUrl . '" ...' . PHP_EOL;
             $this->downloadZipball($zipballUrl, $zipFile);
         }
 
-        //echo 'Extracting ' . $zipFile . PHP_EOL;
-
+        echo '    Extracting ' . $zipFile . PHP_EOL;
         $this->delTree($location);
 
         $zip = new \ZipArchive();
@@ -148,6 +144,8 @@ class GithubService
         if (!is_dir($dir) && !is_file($dir)) {
             return false;
         }
+
+        // Since this is rather dangerous stuff... Add in some failsafes
         if (stripos($dir, sys_get_temp_dir()) === false) {
             throw new \Exception('Not deleting ' . $dir . ' because temp dir is not in it');
         }

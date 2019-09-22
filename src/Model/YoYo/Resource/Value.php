@@ -24,9 +24,9 @@ class Value {
     /** @var \Catalyst\Model\YoYo\Resource\GM\GMResource */
     private $resource;
 
-    public function unpack($originalData, CatalystEntity $depmanEntity)
+    public function unpack($originalData, CatalystEntity $catalystEntity)
     {
-        $this->traitUnpack($originalData, $depmanEntity);
+        $this->traitUnpack($originalData, $catalystEntity);
 
         if ($this->resourceType == 'GMResource') {
             return; //Ignore this layer
@@ -39,7 +39,7 @@ class Value {
         );
 
         $className = GMResourceService::TYPEMAP[$this->resourceType];
-        $this->resource = new $className($depmanEntity->getProjectPath() . '/' . $this->resourcePath, $depmanEntity);
+        $this->resource = new $className($catalystEntity->path()  . '/' . $this->resourcePath, $catalystEntity);
     }
 
     public function getGmResource():GMResource
