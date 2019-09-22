@@ -68,16 +68,23 @@ class GithubService
             mkdir(dirname($location), 0777, true);
         }
         $file_path = fopen($location,'w');
-        $response = $this->client->get($url, ['save_to' => $file_path]);
-        return ['response_code'=>$response->getStatusCode()];
+        try {
+            $response = $this->client->get($url, ['save_to' => $file_path]);
+        } catch (\Exception $e) {
+            unlink($location);
+            throw new \Exception('Error while downloading ' . $url);
+        }
+
+        return ['response_code' => $response->getStatusCode()];
     }
 
     public function getZipballUrl(string $gitUri, string $version) {
         return sprintf(
-            'https://api.github.com/repos/%s/zipball/%s',
+            'https://github.com/%s/archive/%s.zip',
             $this->getPackageNameFromUri($gitUri),
             $version
         );
+        // Old URL = https://api.github.com/repos/%s/zipball/%s
     }
 
     public function getPackageNameFromUri($uri) {
@@ -118,10 +125,13 @@ class GithubService
 
         $zip = new \ZipArchive();
         if (!$zip->open($zipFile) === TRUE) {
+            throw new \Exception('Error while opening ' . $zipFile . ' - try clearing cache.');
+        }
+
+        if (!$zip->extractTo($location)) {
             throw new \Exception('Error while extracting ' . $zipFile . ' - try clearing cache.');
         }
 
-        $zip->extractTo($location);
         $zip->close();
 
         $folders = glob($location . DIRECTORY_SEPARATOR . '*');
