@@ -65,7 +65,8 @@ class CatalystEntity implements SaveableEntityInterface {
         string $yyp,
         array $require,
         array $repositories,
-        array $ignored
+        array $ignored,
+        $ignoreMissing = false
     ) {
         $this->path = realpath($path);
         $this->name = $name;
@@ -77,7 +78,7 @@ class CatalystEntity implements SaveableEntityInterface {
         $this->require = $require;
         $this->repositories = $repositories;
 
-        $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->path . DIRECTORY_SEPARATOR . $this->yyp);
+        $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->path . DIRECTORY_SEPARATOR . $this->yyp, $ignoreMissing);
 
         $this->ignored = $ignored;
     }
@@ -90,10 +91,10 @@ class CatalystEntity implements SaveableEntityInterface {
         string $homepage,
         string $yyp
     ) {
-        return new self($path, $name, $description, $license, $homepage, $yyp, [], [], []);
+        return new self($path, $name, $description, $license, $homepage, $yyp, [], [], [], false);
     }
 
-    public static function createFromPath($path)
+    public static function createFromPath($path, $ignoreMissing = false)
     {
         try {
             $config = StorageService::getInstance()->getJson($path . '/catalyst.json');
@@ -135,7 +136,8 @@ class CatalystEntity implements SaveableEntityInterface {
             $config->yyp ?? null,
             (array) ($config->require ?? []),
             (array) ($config->repositories ?? []),
-            $ignored
+            $ignored,
+            $ignoreMissing
         );
     }
 

@@ -36,6 +36,9 @@ class CleanService
         $this->loop($this->project->YoYoProjectEntity()->getRoot()->gmResource());
 
         foreach ($this->project->ignored() as $leftOverFile) {
+            if (strlen($leftOverFile) <= 1) {
+                continue;
+            }
             if (!stripos($leftOverFile, 'datafile') === 0) {
                 throw new \Exception(
                     'Ignored path ' . $leftOverFile . ' in gitignore is not a datafile and was not removed.'

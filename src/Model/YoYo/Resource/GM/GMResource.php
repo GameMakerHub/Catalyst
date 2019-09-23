@@ -249,7 +249,7 @@ abstract class GMResource implements SaveableEntityInterface
             $newObject->modelName = $this->modelName;
             $newObject->mvc = $this->mvc;
             $newObject->name = $this->name;
-            $newObject->children = $this->children;
+            $newObject->children = array_values(array_unique($this->children));
             $newObject->filterType = $this->filterType;
             $newObject->folderName = $this->folderName;
             $newObject->isDefaultView = $this->isDefaultView;

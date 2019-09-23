@@ -61,7 +61,8 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         \stdClass $parentProject,
         array $resources,
         array $script_order,
-        string $tutorial
+        string $tutorial,
+        $ignoreMissing = false
     ) {
         Assertion::allIsInstanceOf($resources, Resource::class);
 
@@ -83,16 +84,21 @@ class YoYoProjectEntity implements SaveableEntityInterface {
             $gmResource = $resource->gmResource();
             if ($gmResource->isFolder()) {
                 foreach ($gmResource->children as $childId) {
-                    if (!isset($this->resources[$childId])) {
-                        throw new \Exception('Could not find child ID ' . $childId . ' in resource list;');
+                    try {
+                        if (!isset($this->resources[$childId])) {
+                            throw new \Exception('Could not find child ID ' . $childId . ' in resource list;');
+                        }
+                        $gmResource->linkChildResource($this->resources[$childId]->gmResource());
+                    } catch (\Exception $e) {
+                        if (!$ignoreMissing) throw $e;
                     }
-                    $gmResource->linkChildResource($this->resources[$childId]->gmResource());
+
                 }
             }
         }
     }
 
-    public static function createFromFile($filePath)
+    public static function createFromFile($filePath, $ignoreMissing = false)
     {
         try {
             Assertion::file($filePath);
@@ -105,14 +111,22 @@ class YoYoProjectEntity implements SaveableEntityInterface {
             // Load resources
             $resources = [];
             foreach ($originalData->resources as $resource) {
-                $resources[$resource->Key] = Resource::createFromObject($resource);
+                try {
+                    $resources[$resource->Key] = Resource::createFromObject($resource);
+                } catch (\Exception $e) {
+                    if (!$ignoreMissing) throw $e;
+                }
             }
 
             // Also create a reference for the parent project UUID's
             if (isset($originalData->parentProject)) {
                 if (isset($originalData->parentProject->alteredResources)) {
                     foreach ($originalData->parentProject->alteredResources as $resource) {
-                        $resources[$resource->Key] = Resource::createFromObject($resource);
+                        try {
+                            $resources[$resource->Key] = Resource::createFromObject($resource);
+                        } catch (\Exception $e) {
+                            if (!$ignoreMissing) throw $e;
+                        }
                     }
                 }
             }
@@ -131,7 +145,8 @@ class YoYoProjectEntity implements SaveableEntityInterface {
                 $originalData->parentProject,
                 $resources,
                 $originalData->script_order,
-                $originalData->tutorial
+                $originalData->tutorial,
+                $ignoreMissing
             );
         } catch (\Exception $e) {
             throw new MalformedProjectFileException(
@@ -192,7 +207,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
             $folder = $this->getByInternalPath($realPath);
             if ($folder === false) {
                 //echo '   that does not exist, make it and add it to our parent: ' . $parent->folderName . PHP_EOL;
-                $folder = Resource\GM\GMFolder::createNew($this->getFreeUuid(), $realPath, $type);
+                $folder = Resource\GM\GMFolder::createNew(Uuid::createFromString(md5($realPath)), $realPath, $type);
 
                 $parent->addNewChildResource($folder);
                 $this->addResource($folder);
@@ -306,7 +321,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
         });
 
         // Cast to an array of objects
-        $newObject->resources = array_values($resourcesClone);
+        $newObject->resources = array_values(array_unique($resourcesClone, SORT_REGULAR));
         $newObject->script_order = $this->script_order;
         return JsonService::encode($newObject);
     }

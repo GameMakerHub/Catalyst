@@ -26,12 +26,12 @@ class CatalystService
         return $entity;
     }
 
-    public function load(string $path = null) : CatalystEntity
+    public function load(string $path = null, $ignoreMissing = false) : CatalystEntity
     {
         if (null === $path) {
             $path = realpath('.');
         }
-        $entity = CatalystEntity::createFromPath($path);
+        $entity = CatalystEntity::createFromPath($path, $ignoreMissing);
         return $entity;
     }
 

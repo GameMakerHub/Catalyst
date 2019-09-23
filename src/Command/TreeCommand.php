@@ -64,7 +64,7 @@ class TreeCommand extends Command
                 }
                 $output->writeln(
                     sprintf(
-                        '%s─── <fg=%s>%s</> %s %s %s',
+                        '%s─── <fg=%s>%s</> %s %s',
                         str_repeat('│    ', $level) . $lineCharacter,
                         $resource->isFolder() ? 'yellow' : 'green',
                         $resource->getName(),

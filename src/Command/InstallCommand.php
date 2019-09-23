@@ -3,6 +3,7 @@
 namespace Catalyst\Command;
 
 use Catalyst\Service\CatalystService;
+use Catalyst\Service\CleanService;
 use Catalyst\Service\InstallService;
 use Catalyst\Service\PackageService;
 use Catalyst\Service\StorageService;
@@ -24,14 +25,19 @@ class InstallCommand extends Command
     /** @var InstallService */
     private $installService;
 
+    /** @var CleanService */
+    private $cleanService;
+
     public function __construct(
         PackageService $packageService,
         CatalystService $catalystService,
-        InstallService $installService
+        InstallService $installService,
+        CleanService $cleanService
     ) {
         $this->packageService = $packageService;
         $this->catalystService = $catalystService;
         $this->installService = $installService;
+        $this->cleanService = $cleanService;
 
         parent::__construct();
     }
@@ -46,12 +52,14 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<fg=green>Loading project...</>');
-        $thisProject = $this->catalystService->load();
-
-        
-
+        $this->cleanService->setOutput($output);
         $this->installService->setOutput($output);
+
+        $output->writeln('<fg=green>Loading project...</>');
+        $thisProject = $this->catalystService->load(null, true);
+
+        $this->cleanService->clean($thisProject);
+
         $this->installService->install($thisProject);
 
         $thisProject->save();

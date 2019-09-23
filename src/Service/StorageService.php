@@ -120,7 +120,7 @@ class StorageService
                 if (is_dir($filename)) {
                     $this->rrmdir($filename);
                 } else {
-                    unlink($filename);
+                    @unlink($filename); //@todo remove the error supression, just doing this for the initial "install"..
                 }
             }
         }
