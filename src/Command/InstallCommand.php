@@ -49,7 +49,7 @@ class InstallCommand extends Command
         $output->writeln('<fg=green>Loading project...</>');
         $thisProject = $this->catalystService->load();
 
-        // @todo first uninstall all vendored files and folders so we can install a clean version.
+        
 
         $this->installService->setOutput($output);
         $this->installService->install($thisProject);

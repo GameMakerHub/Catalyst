@@ -131,8 +131,8 @@ class InitCommand extends Command
             $yyp
         );
 
-        $this->catalystService->persist();
+        StorageService::getInstance()->persist();
 
-        $output->writeln('Catalyst file initialized!');
+        $output->writeln('<fg=green>Catalyst file initialized!</>');
     }
 }

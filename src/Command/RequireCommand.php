@@ -75,7 +75,7 @@ class RequireCommand extends Command
         $catalyst->addRequire($package, $version);
 
         StorageService::getInstance()->saveEntity($catalyst);
-        $this->catalystService->persist();
+        StorageService::getInstance()->persist();
 
         $output->writeln('<fg=green>catalyst.json has been updated</>');
 
