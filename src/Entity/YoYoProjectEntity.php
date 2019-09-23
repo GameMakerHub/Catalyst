@@ -210,7 +210,26 @@ class YoYoProjectEntity implements SaveableEntityInterface {
     {
         $resource = Resource::createFromGMResource($gmResource);
         $this->resources[(string) $resource->key()] = $resource;
-        StorageService::getInstance()->writeFile($resource->gmResource()->getFilePath(), $resource->gmResource()->getJson());
+        StorageService::getInstance()->saveEntity($resource->gmResource());
+    }
+
+    /**
+     * Removes a UUID from both the resource list, and from any view files that have this linked as a child
+     * @param Uuid $uuid
+     */
+    public function removeUuidReference(Uuid $uuid)
+    {
+        foreach ($this->resources as $resource) {
+            if ($resource->gmResource()->isFolder()) {
+                $resource->gmResource()->removeChildResourceByUuid($uuid);
+            }
+        }
+        unset($this->resources[(string) $uuid]);
+
+        // Remove from script order - GM auto generates this
+        if (($key = array_search((string) $uuid, $this->script_order)) !== false) {
+            unset($this->script_order[$key]);
+        }
     }
 
     /**

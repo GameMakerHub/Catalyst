@@ -20,6 +20,9 @@ class StorageService
         if (!array_key_exists('writes', $GLOBALS['storage'])) {
             $GLOBALS['storage']['writes'] = [];
         }
+        if (!array_key_exists('deletes', $GLOBALS['storage'])) {
+            $GLOBALS['storage']['deletes'] = [];
+        }
     }
 
     /**
@@ -52,6 +55,9 @@ class StorageService
         if (isset($GLOBALS['storage']['writes'][$filename])) {
             return true;
         }
+        if (isset($GLOBALS['storage']['deletes'][$filename])) {
+            return false;
+        }
         return file_exists($filename) && is_file($filename);
     }
 
@@ -64,6 +70,36 @@ class StorageService
     {
         $filename = $this->makeRealFilename($filename);
         $GLOBALS['storage']['writes'][$filename] = $contents;
+        if (isset($GLOBALS['storage']['deletes'][$filename])) {
+            unset($GLOBALS['storage']['deletes'][$filename]);
+        }
+    }
+
+    public function delete(string $pathOrFile)
+    {
+        $pathOrFile = $this->makeRealFilename($pathOrFile);
+        $files = [$pathOrFile];
+        if (is_dir($pathOrFile)) {
+            $files = [];
+            //We have multiple files in this directory!
+            foreach (glob($pathOrFile . '/**') as $globbed) {
+                $files[] = $globbed;
+            }
+        }
+
+        foreach ($files as $filename) {
+            $this->deleteFile($filename);
+        }
+
+        $this->deleteFile($pathOrFile);
+    }
+
+    public function deleteFile(string $filename)
+    {
+        if (isset($GLOBALS['storage']['writes'][$filename])) {
+            unset($GLOBALS['storage']['writes'][$filename]);
+        }
+        $GLOBALS['storage']['deletes'][$filename] = true;
     }
 
     public function saveEntity(SaveableEntityInterface $entity)
@@ -71,8 +107,25 @@ class StorageService
         self::getInstance()->writeFile($entity->getFilePath(), $entity->getFileContents());
     }
 
+    /**
+     * Persist all data on disk
+     * @param bool $dryRun
+     */
     public function persist($dryRun = false) {
-        //Should persist all changes on disk
+
+        foreach ($GLOBALS['storage']['deletes'] as $filename => $contents) {
+            if ($dryRun) {
+                echo 'Dry-run: not deleting ' . $filename . PHP_EOL;
+            } else {
+                if (is_dir($filename)) {
+                    $this->rrmdir($filename);
+                } else {
+                    unlink($filename);
+                }
+            }
+        }
+        $GLOBALS['storage']['deletes'] = [];
+
         foreach ($GLOBALS['storage']['writes'] as $filename => $contents) {
             if ($dryRun) {
                 echo 'Dry-run: not writing to ' . $filename . PHP_EOL;
@@ -144,6 +197,9 @@ class StorageService
         $from = $this->getAbsoluteFilename($from);
         $to = $this->makeRealFilename($to);
         $GLOBALS['storage']['writes'][$to] = file_get_contents($from);
+        if (isset($GLOBALS['storage']['deletes'][$to])) {
+            unset($GLOBALS['storage']['deletes'][$to]);
+        }
     }
 
     public function recursiveCopy($from, $to)
@@ -154,6 +210,9 @@ class StorageService
             //@todo check if this works with nested folders -- I dont think it does.
             $target = $this->makeRealFilename($to . '/' . basename($filename));
             $GLOBALS['storage']['writes'][$target] = file_get_contents($filename);
+            if (isset($GLOBALS['storage']['deletes'][$target])) {
+                unset($GLOBALS['storage']['deletes'][$target]);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Catalyst\Model\YoYo\Resource\GM;
 
+use Catalyst\Interfaces\SaveableEntityInterface;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMAmazonFireOptions;
 use Catalyst\Model\YoYo\Resource\GM\Options\GMAndroidOptions;
@@ -16,7 +17,7 @@ use Catalyst\Service\JsonService;
 use Catalyst\Service\StorageService;
 use Catalyst\Traits\JsonUnpacker;
 
-abstract class GMResource
+abstract class GMResource implements SaveableEntityInterface
 {
     use JsonUnpacker;
 
@@ -50,6 +51,7 @@ abstract class GMResource
     /** @var GMResource[] */
     private $_gmChildrenResources = [];
 
+    /** @var string */
     private $_originalContents = '';
 
     public function getTypeName(): string
@@ -167,13 +169,28 @@ abstract class GMResource
 
         $this->children[] = (string) $GMResource->id;
         $this->linkChildResource($GMResource);
-        $this->_originalContents = ''; //Reset so it gets overwritten / regenerated
+        $this->forceRegenerationOnSave(); //Reset so it gets overwritten / regenerated
         StorageService::getInstance()->writeFile($this->_filePath, $this->getJson());
     }
 
     public function linkChildResource(GMResource $GMResource)
     {
         $this->_gmChildrenResources[] = $GMResource;
+    }
+
+    public function removeChildResourceByUuid(Uuid $uuid)
+    {
+        $this->_gmChildrenResources = array_filter(
+            $this->_gmChildrenResources,
+            function($resource) use ($uuid) {
+                if ($resource->isOption()) { return true; }
+                return (!$uuid->equals(Uuid::createFromString($resource->id)));
+            }
+        );
+
+        if (($key = array_search((string) $uuid, $this->children)) !== false) {
+            unset($this->children[$key]);
+        }
     }
 
     /**
@@ -212,6 +229,11 @@ abstract class GMResource
     public function getFilePath(): string
     {
         return $this->_filePath;
+    }
+
+    public function forceRegenerationOnSave()
+    {
+        $this->_originalContents = '';
     }
 
     public function getJson()
@@ -255,5 +277,10 @@ abstract class GMResource
         }
 
         return JsonService::encode($newObject);
+    }
+
+    public function getFileContents(): string
+    {
+        return $this->getJson();
     }
 }

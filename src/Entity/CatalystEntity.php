@@ -14,22 +14,7 @@ class CatalystEntity implements SaveableEntityInterface {
 
     const UUID_NS = '00000000-1337-fafa-0000-dededededede';
 
-    private static $rootFolderCopyOnly = [
-        'sprites',
-        'tilesets',
-        'sounds',
-        'paths',
-        'scripts',
-        'shaders',
-        'fonts',
-        'timelines',
-        'objects',
-        'rooms',
-        'notes',
-        'datafiles'
-    ];
-
-    private static $vendorFolderName = 'vendor';
+    private static $vendorFolderName = 'vendor'; //@todo use this
 
     const ALLOWED_LICENSES = [
         'MIT',
@@ -43,9 +28,6 @@ class CatalystEntity implements SaveableEntityInterface {
         'LGPL-3.0-only', 'LGPL-3.0-or-later',
         'proprietary'
     ];
-
-    /** @var OLDYoYoProjectEntity */
-    private $projectEntity;
 
     /** @var string */
     private $name;
@@ -82,7 +64,8 @@ class CatalystEntity implements SaveableEntityInterface {
         string $homepage,
         string $yyp,
         array $require,
-        array $repositories
+        array $repositories,
+        array $ignored
     ) {
         $this->path = realpath($path);
         $this->name = $name;
@@ -95,6 +78,8 @@ class CatalystEntity implements SaveableEntityInterface {
         $this->repositories = $repositories;
 
         $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->path . DIRECTORY_SEPARATOR . $this->yyp);
+
+        $this->ignored = $ignored;
     }
 
     public static function createNew(
@@ -105,7 +90,7 @@ class CatalystEntity implements SaveableEntityInterface {
         string $homepage,
         string $yyp
     ) {
-        return new self($path, $name, $description, $license, $homepage, $yyp, [], []);
+        return new self($path, $name, $description, $license, $homepage, $yyp, [], [], []);
     }
 
     public static function createFromPath($path)
@@ -118,6 +103,29 @@ class CatalystEntity implements SaveableEntityInterface {
             throw new \RuntimeException('catalyst.json is malformed');
         }
 
+        $ignored = [];
+        try {
+            $ignoreData = StorageService::getInstance()->getContents($path . '/.gitignore');
+            $ignoreData = str_replace("\r\n", "\n", $ignoreData);
+            $openTag = strpos($ignoreData, self::IGNORE_TOKEN);
+            if ($openTag != false) {
+                $closeTag = strpos($ignoreData, self::IGNORE_TOKEN, $openTag+1);
+                if ($closeTag != false) {
+                    $tagLength = strlen(self::IGNORE_TOKEN);
+                    $ignored = explode(
+                        "\n",
+                        substr(
+                            $ignoreData,
+                            $openTag+$tagLength+1,
+                            $closeTag-$openTag-$tagLength-2
+                        )
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            //no ignore data - ok no problemo
+        }
+
         return new self(
             $path,
             $config->name ?? null,
@@ -126,7 +134,8 @@ class CatalystEntity implements SaveableEntityInterface {
             $config->homepage ?? null,
             $config->yyp ?? null,
             (array) ($config->require ?? []),
-            (array) ($config->repositories ?? [])
+            (array) ($config->repositories ?? []),
+            $ignored
         );
     }
 
@@ -208,6 +217,22 @@ class CatalystEntity implements SaveableEntityInterface {
     }
 
     private $ignored = [];
+
+    public function ignored()
+    {
+        return $this->ignored;
+    }
+
+    public function removeIgnore($value)
+    {
+        $value = str_replace('\\', '/', $value);
+        if (($key = array_search($value, $this->ignored)) !== false) {
+            unset($this->ignored[$key]);
+            //echo "UNSET " . $value . PHP_EOL;
+        } else {
+            echo "NOT FOUND " . $value . ' IN IGNORE' . PHP_EOL;
+        }
+    }
 
     public function addIgnore($path)
     {

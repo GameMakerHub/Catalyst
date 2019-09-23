@@ -1,6 +1,7 @@
 <?php
 namespace Catalyst\Model\YoYo;
 
+use Catalyst\Interfaces\SaveableEntityInterface;
 use Catalyst\Model\Uuid;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
 

@@ -46,6 +46,7 @@ class InstallCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln('<fg=green>Loading project...</>');
         $thisProject = $this->catalystService->load();
 
         // @todo first uninstall all vendored files and folders so we can install a clean version.
