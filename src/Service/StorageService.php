@@ -207,11 +207,15 @@ class StorageService
         $from = $this->getAbsoluteFilename($from);
         $to = $this->getAbsoluteFilename($to);
         foreach (glob($from . '/*') as $filename) {
-            //@todo check if this works with nested folders -- I dont think it does.
-            $target = $this->makeRealFilename($to . '/' . basename($filename));
-            $GLOBALS['storage']['writes'][$target] = file_get_contents($filename);
-            if (isset($GLOBALS['storage']['deletes'][$target])) {
-                unset($GLOBALS['storage']['deletes'][$target]);
+
+            if (is_dir($filename)) {
+                $this->recursiveCopy($filename, $to . '/' . basename($filename));
+            } else {
+                $target = $this->makeRealFilename($to . '/' . basename($filename));
+                $GLOBALS['storage']['writes'][$target] = file_get_contents($filename);
+                if (isset($GLOBALS['storage']['deletes'][$target])) {
+                    unset($GLOBALS['storage']['deletes'][$target]);
+                }
             }
         }
     }

@@ -14,7 +14,7 @@ class CatalystEntity implements SaveableEntityInterface {
 
     const UUID_NS = '00000000-1337-fafa-0000-dededededede';
 
-    private static $vendorFolderName = 'vendor'; //@todo use this
+    const VENDOR_FOLDER_NAME = 'vendor';
 
     const ALLOWED_LICENSES = [
         'MIT',
@@ -242,6 +242,11 @@ class CatalystEntity implements SaveableEntityInterface {
         if (!in_array($path, $this->ignored)) {
             $this->ignored[] = $path;
         }
+    }
+
+    public function hasIgnore($value)
+    {
+        return (($key = array_search($value, $this->ignored)) !== false);
     }
 
     /**

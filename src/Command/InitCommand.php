@@ -55,10 +55,10 @@ class InitCommand extends Command
         $question = new Question('Please enter the name of your package, in "vendor/package" format: ', '');
         $question->setValidator(function ($answer) {
             try {
-                Assertion::regex($answer, '~^[a-z0-9\-]+\/[a-z0-9\-]+$~');
+                Assertion::regex($answer, '~^[a-z0-9\-\_]+\/[a-z0-9\-\_]+$~');
             } catch (\InvalidArgumentException $e) {
                 throw new \RuntimeException(
-                    'Package name must be "vendor/package" in lowercase, and only allows a-z, 0-9 and -'
+                    'Package name must be "vendor/package" in lowercase, and only allows a-z, 0-9 and - _'
                 );
             }
             return $answer;

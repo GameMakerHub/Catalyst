@@ -47,7 +47,7 @@ class RequireCommand extends Command
         }
 
         $version = '*';
-        preg_match('~^([a-z0-9-]+\/[a-z0-9-]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
+        preg_match('~^([a-z0-9-_]+\/[a-z0-9-_]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
         if (!isset($matches[1])) {
             $output->writeln('<bg=red>Invalid or missing package name (format must be vendor/package or vendor/package@version)</>');
             return 1;

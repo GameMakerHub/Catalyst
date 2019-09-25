@@ -77,12 +77,12 @@ class Repository implements \JsonSerializable {
                 case self::REPO_VCS: //@todo replace zipball downloading with git clone
                     $zipBallUrl = $this->availablePackages[$packageName][$satisfieableVersions[0]];
                     $githubService = new GithubService();
-                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl), true);
                     break;
                 case self::REPO_CATALYST: //@todo replace zipball downloading with git clone
                     $githubService = new GithubService();
                     $zipBallUrl = $githubService->getZipballUrl($this->availablePackages[$packageName]['source'], $satisfieableVersions[0]);
-                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl));
+                    return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl), true);
                     break;
             }
         }

@@ -46,9 +46,13 @@ class InstallService
         foreach ($resource->getChildResources() as $resource) {
 
             if ($resource->isFolder()) {
+                if ($resource->getName() == CatalystEntity::VENDOR_FOLDER_NAME) {
+                    echo 'Skipping vendor folder ' . PHP_EOL;
+                    continue; //Skip vendor folders from copying
+                }
                 // Loop through if this is a folder
                 if ($level == 0) {
-                    $this->loop($resource, $packageToInstall, $level+1, $resource->getName() . '/vendor/' . $packageToInstall->name());
+                    $this->loop($resource, $packageToInstall, $level+1, $resource->getName() . '/'.CatalystEntity::VENDOR_FOLDER_NAME.'/' . $packageToInstall->name());
                 } else {
                     $this->loop($resource, $packageToInstall, $level+1, $targetDirectory . '/' . $resource->getName());
                 }
@@ -77,6 +81,10 @@ class InstallService
 
                 // Write the actual files
                 if ($resource->isIncludedFile()) {
+                    if ($packageToInstall->hasIgnore($resource->getFilePath())) {
+                        echo 'Skipping vendored included file ' . $resource->getName() . PHP_EOL;
+                        continue;
+                    }
                     $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($this->project, $resource->filePath, $resource->getTypeName());
 
                     // Copy the .yy file
