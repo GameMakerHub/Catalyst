@@ -2,7 +2,7 @@
 # Catalyst
 > A Game Maker Studio 2 dependency manager.
 
-#### PLEASE NOTE THAT THIS IS STILL IN DEVELOPMENT AND WILL BREAK YOUR PROJECT
+#### PLEASE NOTE THAT THIS IS STILL IN DEVELOPMENT AND MIGHT BREAK YOUR PROJECT - MAKE SURE YOU HAVE BACKUPS / VCS
 
 [![Build Status](https://travis-ci.org/GameMakerHub/Catalyst.svg?branch=master)](https://travis-ci.org/GameMakerHub/Catalyst)
 [![Coverage](https://codecov.io/gh/GameMakerHub/Catalyst/branch/master/graph/badge.svg)](https://codecov.io/gh/GameMakerHub/Catalyst)

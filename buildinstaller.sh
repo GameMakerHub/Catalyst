@@ -2,9 +2,9 @@
 
 mkdir dist/packed/windows/ -p
 
-cp -r src dist/packed/windows/
-cp -r bin dist/packed/windows/
-cp -r config dist/packed/windows/
+cp -rf src dist/packed/windows/
+cp -rf bin dist/packed/windows/
+cp -rf config dist/packed/windows/
 
 cp files/icon.ico dist/packed/windows/
 cp index.php dist/packed/windows/
