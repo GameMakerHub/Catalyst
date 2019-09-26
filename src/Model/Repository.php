@@ -75,11 +75,13 @@ class Repository implements \JsonSerializable {
                     return CatalystEntity::createFromPath($this->availablePackages[$packageName][$satisfieableVersions[0]]);
                     break;
                 case self::REPO_VCS: //@todo replace zipball downloading with git clone
+                    //@see https://github.com/GameMakerHub/Catalyst/issues/11
                     $zipBallUrl = $this->availablePackages[$packageName][$satisfieableVersions[0]];
                     $githubService = new GithubService();
                     return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl), true);
                     break;
                 case self::REPO_CATALYST: //@todo replace zipball downloading with git clone
+                    //@see https://github.com/GameMakerHub/Catalyst/issues/11
                     $githubService = new GithubService();
                     $zipBallUrl = $githubService->getZipballUrl($this->availablePackages[$packageName]['source'], $satisfieableVersions[0]);
                     return CatalystEntity::createFromPath($githubService->getDownloadedPackageFolder($zipBallUrl), true);
@@ -133,7 +135,7 @@ class Repository implements \JsonSerializable {
 
     private function scanPackagesForDirectory():void
     {
-        throw new \Exception('Redo in new structure');
+        throw new \Exception('Directory repositories are not yet supported.');
         $packagePaths = [];
         foreach (glob($this->uri . '/*/*', GLOB_ONLYDIR) as $projectPath) {
             if (file_exists($projectPath . '/catalyst.json')) {
@@ -159,7 +161,7 @@ class Repository implements \JsonSerializable {
 
     private function scanGithubForPackages(): void
     {
-        throw new \Exception('Redo in new structure');
+        throw new \Exception('Using github as a repository is not yet supported');
 
         $githubService = new GithubService();
 

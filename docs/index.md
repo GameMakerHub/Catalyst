@@ -27,6 +27,7 @@ They will first have to run `catalyst install` to download and install the depen
 
 This way we can make sure that vendored code is not included in version control.
 Stating the obvious: files inside of the `vendor` folders should never be edited, as your changes are not included in VCS.
+If you want to make changes to a vendored file, you will have to make a merge request for that package, and use that. This way, everybody can profit from the upgrades!
  
 ## Setup
 

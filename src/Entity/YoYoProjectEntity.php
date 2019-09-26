@@ -323,7 +323,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
 
         // Cast to an array of objects
         $newObject->resources = array_values($resourcesClone);
-        //@todo make sure this sorts the way GM does, prevent loads of changes
+        //@todo make sure this sorts the way GM does, prevent loads of changes @see
         $newObject->script_order = $this->script_order;
         return JsonService::encode($newObject);
     }

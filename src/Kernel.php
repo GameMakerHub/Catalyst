@@ -4,8 +4,8 @@ namespace Catalyst;
 
 use Catalyst\DependencyInjection\CompilerPass\CollectCommandsToApplicationCompilerPass;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
 final class Kernel extends BaseKernel
 {
@@ -23,7 +23,7 @@ final class Kernel extends BaseKernel
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__ . '/../config/services.yml');
-        //$loader->load(__DIR__ . '/../config/services.php'); //@todo, so we can remove YAML
+        //$loader->load(__DIR__ . '/../config/services.php'); //@todo, so we can remove YAML + yaml parser
     }
 
     public function getCacheDir()

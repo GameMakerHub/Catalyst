@@ -179,6 +179,10 @@ class StorageService
         }
     }
 
+    /**
+     * @deprecated WARNING: This actually RECURSIVELY REMOVES A DIRECTORY WITHOUT USING PERSIST.
+     * @param $path
+     */
     public function rrmdir($path) {
         // @todo make this work with persist as well
         $i = new \DirectoryIterator($path);

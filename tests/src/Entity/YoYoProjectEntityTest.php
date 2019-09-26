@@ -1,8 +1,6 @@
 <?php
 namespace Catalyst\Tests\Entity;
 
-use Catalyst\Entity\CatalystEntity;
-use Catalyst\Entity\OLDYoYoProjectEntity;
 use Catalyst\Entity\YoYoProjectEntity;
 
 class YoYoProjectEntityTest extends \PHPUnit\Framework\TestCase

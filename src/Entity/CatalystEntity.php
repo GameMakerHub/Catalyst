@@ -3,10 +3,7 @@ namespace Catalyst\Entity;
 
 use Catalyst\Exception\MalformedJsonException;
 use Catalyst\Interfaces\SaveableEntityInterface;
-use Catalyst\Model\YoYo\Resource\GM\GMFolder;
 use Catalyst\Service\StorageService;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class CatalystEntity implements SaveableEntityInterface {
 
@@ -53,7 +50,7 @@ class CatalystEntity implements SaveableEntityInterface {
     /** @var array */
     private $repositories = [];
 
-    /** @var OLDYoYoProjectEntity */
+    /** @var YoYoProjectEntity */
     private $YoYoProjectEntity;
 
     private function __construct(
@@ -225,15 +222,14 @@ class CatalystEntity implements SaveableEntityInterface {
         return $this->ignored;
     }
 
-    public function removeIgnore($value)
+    public function removeIgnore($value): bool
     {
         $value = str_replace('\\', '/', $value);
         if (($key = array_search($value, $this->ignored)) !== false) {
             unset($this->ignored[$key]);
-            //echo "UNSET " . $value . PHP_EOL;
-        } else {
-            echo "NOT FOUND " . $value . ' IN IGNORE' . PHP_EOL;
+            return true;
         }
+        return false;
     }
 
     public function addIgnore($path)
@@ -244,27 +240,9 @@ class CatalystEntity implements SaveableEntityInterface {
         }
     }
 
-    public function hasIgnore($value)
+    public function hasIgnore($value):bool
     {
         return (($key = array_search($value, $this->ignored)) !== false);
-    }
-
-    /**
-     * @deprecated
-     * @return string
-     */
-    public function getProjectPath() : string
-    {
-        return realpath($this->projectPath);
-    }
-
-    /**
-     * @deprecated
-     * @return string
-     */
-    public function getYypFilename() : string
-    {
-        return realpath($this->projectPath) . '/' . $this->yyp;
     }
 
     /**
@@ -302,6 +280,4 @@ class CatalystEntity implements SaveableEntityInterface {
 
         StorageService::getInstance()->writeFile($ignoreFile, $contents);
     }
-
-
 }
