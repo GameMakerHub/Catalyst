@@ -17,8 +17,5 @@ clover.xml
 # Packed data for installers (made on request)
 dist/packed
 
-
-
-### CATALYST ###
-
-### CATALYST ###
+# Also ignore the built files, will be uploaded manually through github
+dist

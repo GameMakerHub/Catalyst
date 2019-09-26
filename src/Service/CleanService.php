@@ -3,6 +3,8 @@
 namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Model\YoYo\Resource\GM\GMFolder;
+use Catalyst\Model\YoYo\Resource\GM\GMIncludedFile;
 use Catalyst\Model\YoYo\Resource\GM\GMResource;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -39,21 +41,37 @@ class CleanService
             if (strlen($leftOverFile) <= 1) {
                 continue;
             }
-            if (!stripos($leftOverFile, 'datafile') === 0) {
+            $resource = false;
+
+            // OK to delete datafiles
+            if (stripos($leftOverFile, 'datafiles/') === 0) {
+                // Just a datafile, delete it
+                StorageService::getInstance()->delete($leftOverFile);
+                $this->project->removeIgnore($leftOverFile);
+                continue;
+            }
+
+            // YY data file - contains UUID we need to remove
+            if (stripos($leftOverFile, 'datafiles_yy/') === 0) {
+                $resource = GMIncludedFile::createFromFile($leftOverFile);
+            }
+
+            // OK to delete folders (only the ones that contained data files)
+            if (stripos($leftOverFile, 'views/') === 0) {
+                $resource = GMFolder::createFromFile($leftOverFile);
+                if ($resource->filterType !== 'IncludedFile') {
+                    $resource = false;
+                }
+            }
+
+            if ($resource === false) {
                 throw new \Exception(
                     'Ignored path ' . $leftOverFile . ' in gitignore is not a datafile and was not removed.'
                     . ' This looks like the project / Catalyst is broken! Please report as a bug, or fix manually.'
                 );
             }
 
-            // Get the UUID so we can remove that one from the project
-            $resource = $this->project->YoYoProjectEntity()->getByInternalPath(
-                'datafiles/' . substr(basename($leftOverFile), 0, strlen(basename($leftOverFile))-3)
-            );
-            if ($resource) {
-                $this->project->YoYoProjectEntity()->removeUuidReference($resource->id);
-            }
-
+            $this->project->YoYoProjectEntity()->removeUuidReference($resource->id);
             StorageService::getInstance()->delete($leftOverFile);
             $this->project->removeIgnore($leftOverFile);
         }

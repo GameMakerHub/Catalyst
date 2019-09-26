@@ -179,8 +179,11 @@ class Repository implements \JsonSerializable {
 
         $packages = json_decode($httpClient->get('packages')->getBody()->getContents(), true)['packages'];
 
-        foreach ($packages as $package) {
+        if (!$packages) {
+            throw new \Exception('The repository "' . $this->uri . '" seems to be unavailable right now.');
+        }
 
+        foreach ($packages as $package) {
             $versions = [];
             foreach ($package['versions'] as $data) {
                 $versions[$data['version']] = $data['dependencies'];

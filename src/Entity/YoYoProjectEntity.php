@@ -192,6 +192,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
 
     public function createFolder(CatalystEntity $project, string $folderName, $type)
     {
+        $folderName = str_replace('\\', '/', $folderName);
         // Early return if it exists
         $folder = $this->getByInternalPath($folderName);
         if ($folder !== false) {

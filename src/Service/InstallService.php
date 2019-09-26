@@ -33,12 +33,30 @@ class InstallService
         $this->writeLine('Resolving dependencies and building installation list...');
         $packagesToInstall = $this->packageService->solveDependencies($project);
         $this->writeLine('Done!');
+
+        $packages = [];
+
         foreach ($packagesToInstall as $package => $version) {
+            $packages[] = $package;
             $this->writeLine('Installing <fg=green>' . $package . '</>@<fg=cyan>' . $version . '</>...');
             $package = $this->packageService->getPackage($package, $version);
 
             $this->loop($package->YoYoProjectEntity()->getRoot()->gmResource(), $package);
         }
+
+        try {
+            $httpClient = new \GuzzleHttp\Client([
+                'base_uri' => 'https://gamemakerhub.net/',
+                'headers' => [
+                    'User-Agent' => 'catalyst/1.0',
+                    'Accept'     => 'application/vnd.catalyst.v1+json',
+                ]
+            ]);
+            $httpClient->post('tag-install', ['form_params' => ['packages' => implode(',', $packages)]]);
+        } catch (\Throwable $e) {
+            //ignore
+        }
+
     }
 
     private function loop(GMResource $resource, CatalystEntity $packageToInstall, $level = 0, $targetDirectory = '')

@@ -8,8 +8,8 @@ cp -r config dist/packed/windows/
 
 cp files/icon.ico dist/packed/windows/
 cp index.php dist/packed/windows/
-cp LICENSE dist/packed/windows/
-cp README.md dist/packed/windows/
+cp LICENSE dist/packed/windows/LICENSE.txt
+cp README.md dist/packed/windows/README.txt
 cp composer.json dist/packed/windows/
 cp composer.lock dist/packed/windows/
 
