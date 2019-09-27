@@ -130,6 +130,10 @@ class StorageService
             if ($dryRun) {
                 echo 'Dry-run: not writing to ' . $filename . PHP_EOL;
             } else {
+                if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                    // Make windows style directories if we're on windows
+                    $filename = str_replace('/', '\\', $filename);
+                }
                 @mkdir(dirname($filename), 0777, true);
                 file_put_contents($filename, $contents);
             }
