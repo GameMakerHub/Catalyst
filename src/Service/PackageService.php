@@ -73,18 +73,27 @@ class PackageService
         $versions = [];
 
         foreach ($this->repositories as $repository) {
-            $versions += $repository->getSatisfiableVersions($package, $version);
+            try {
+                $versions += $repository->getSatisfiableVersions($package, $version);
+            } catch (PackageNotFoundException $e) {
+                // Ignore
+            }
         }
 
         return $versions;
     }
 
+    private function addRepositoriesFromCatalyst(CatalystEntity $project)
+    {
+        foreach ($project->repositories() as $type => $location) {
+            $this->addRepository(new Repository($type, $location));
+        }
+    }
+
     public function solveDependencies(CatalystEntity $project, $finalPackages = [])
     {
         $requirements = $project->require();
-        foreach ($project->repositories() as $repository) {
-            $this->addRepository($repository);
-        }
+        $this->addRepositoriesFromCatalyst($project);
 
         // First find all available versions of all required packages
         foreach ($requirements as $package => $version) {

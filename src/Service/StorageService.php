@@ -146,6 +146,12 @@ class StorageService
         throw new \Exception('File not written in storage: ' . $filename);
     }
 
+    public static function pathToAbsolute($pathOrFile)
+    {
+        $inst = self::getInstance();
+        return $inst->getAbsoluteFilename($inst->makeRealFilename($pathOrFile));
+    }
+
     private function makeRealFilename($filename)
     {
         if (!$this->pathIsAbsolute($filename)) {

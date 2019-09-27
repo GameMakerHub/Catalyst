@@ -4,5 +4,7 @@
     "license": "MIT",
     "homepage": "https://github.com/robquistnl/other",
     "yyp": "OtherProject.yyp",
-    "version": "1.2.1"
+    "require": {
+        "dukesoft/dscpu-mercy": ">=1.2"
+    }
 }
