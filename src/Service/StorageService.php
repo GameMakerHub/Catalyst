@@ -114,6 +114,11 @@ class StorageService
     public function persist($dryRun = false) {
 
         foreach ($GLOBALS['storage']['deletes'] as $filename => $contents) {
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                // Make windows style directories if we're on windows
+                $filename = str_replace('/', '\\', $filename);
+            }
+
             if ($dryRun) {
                 echo 'Dry-run: not deleting ' . $filename . PHP_EOL;
             } else {
