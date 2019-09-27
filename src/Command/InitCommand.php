@@ -106,7 +106,7 @@ class InitCommand extends Command
             return $answer;
         });
 
-        $homepage = $helper->ask($input, $output, $question);
+        $homepage = $helper->ask($input, $output, $question) ?? "";
 
         // YYP File
         try {
