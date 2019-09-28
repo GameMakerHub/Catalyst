@@ -82,7 +82,7 @@ class PackageService
 
     private function addRepositoriesFromCatalyst(CatalystEntity $project)
     {
-        foreach ($project->repositories() as $type => $location) {
+        foreach ($project->repositories() as $location => $type) {
             $this->addRepository(new Repository($type, $location));
         }
     }

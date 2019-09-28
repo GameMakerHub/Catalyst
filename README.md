@@ -81,6 +81,32 @@ The windows installer adds `catalyst` to the path by default. You can run `catal
 
 If you haven't got catalyst in your path (linux or OSX), you can execute the `index.php` file manually. 
 
+### Install requirements
+First initialize your project with Catalyst by writing a `catalyst.json` file, or using `catalyst init`.
+
+Write requirements into the file, or use `catalyst require <pacakgename>`.
+
+Run `catalyst install` to install all dependencies.
+
+### Local packages
+If you don't want to share packages, you can add a directory repository in your `catalyst.json` file;
+
+```json
+{
+    "name": "dukesoft/other-project",
+    "description": "Other project",
+    "license": "MIT",
+    "homepage": "https://github.com/robquistnl/other",
+    "yyp": "OtherProject.yyp",
+    "repositories": {
+      "../private-projects/": "directory"
+    }
+    "require": {
+        "dukesoft/dscpu-mercy": ">=1.2"
+    }
+}
+``` 
+
 `catalyst help` will display all commands and information
 
 ### Arguments
