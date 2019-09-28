@@ -18,6 +18,3 @@ after_success:
 cache:
   directories:
     - $HOME/.composer/cache/files
-
-env:
-  - CI=1

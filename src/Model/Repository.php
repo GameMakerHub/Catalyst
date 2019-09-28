@@ -138,9 +138,7 @@ class Repository implements \JsonSerializable {
     {
         $packagePaths = [];
 
-        var_dump('Original:' . $this->uri);
         $realLocation = StorageService::pathToAbsolute($this->uri);
-        var_dump('Real location: ', $realLocation);
         foreach (glob($realLocation . '/*', GLOB_ONLYDIR) as $projectPath) {
             if (file_exists($projectPath . '/catalyst.json')) {
                 $packagePaths[] = $projectPath;
