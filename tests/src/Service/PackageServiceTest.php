@@ -26,10 +26,19 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testGetPackage()
     {
-        $this->prepareRepository($this->getRealRepository());
+        // Clear
+        $this->subject->clearRepositories();
 
-        $package = $this->subject->getPackage('dukesoft/other-project', '1.0.0');
-        var_dump($package);
+        // Add testing one with missing packages to catch misses
+        $this->subject->addRepository($this->getSimpleRepository());
+
+        // Add a real one
+        $this->subject->addRepository($this->getRealRepository());
+
+        $package = $this->subject->getPackage('dukesoft/simple-project', '1.0.0');
+
+        $this->assertInstanceOf(CatalystEntity::class, $package);
+        $this->assertSame('dukesoft/simple-project', $package->name());
     }
 
     public function testGetPackageNotFound()
@@ -165,7 +174,7 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
 
     private function getRealRepository()
     {
-        return new Repository(Repository::REPO_DIRECTORY, __FILE__ . '/../../projects');
+        return new Repository(Repository::REPO_DIRECTORY, __FILE__ . '/../../../projects');
     }
 
     private function getSimpleRepository()
