@@ -119,7 +119,7 @@ class PackageService
                         //Apply constraint on current list
                         $finalPackages[$depPackage] = Semver::satisfiedBy($finalPackages[$depPackage], $depVersionConstraint);
                     } else {
-                        //Add new pacakge to list
+                        //Add new package to list
                         $finalPackages[$depPackage] = $this->getSatisfiableVersions($depPackage, $depVersionConstraint);
                         $addedNewPackage = true;
                     }

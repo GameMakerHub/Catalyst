@@ -49,6 +49,33 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         $this->subject->getPackage('dukesoft/test-package', '23.34.56');
     }
 
+    public function testGetDependenciesNotFound()
+    {
+        $this->expectException(PackageNotFoundException::class);
+        $this->prepareRepository($this->getRealRepository());
+
+        $this->subject->getPackageDependencies('dukesoft/test-package', '23.34.56');
+    }
+
+    /**
+     * @dataProvider provideSimpleResolveTestPackages
+     */
+    public function testSolveable($requirements, $expected)
+    {
+        $this->prepareRepository($this->getSimpleRepository());
+        $mockProject = \Mockery::mock(CatalystEntity::class);
+
+        $mockProject->shouldReceive('require')
+            ->once()
+            ->andReturn($requirements);
+
+        $mockProject->shouldReceive('repositories')
+            ->once()
+            ->andReturn([]);
+
+        $this->assertEquals($expected, $this->subject->solveDependencies($mockProject));
+    }
+
     public static function provideSimpleResolveTestPackages()
     {
         return [
@@ -129,9 +156,10 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider provideNotSolveable
      */
-    public function testNotSolveable($requirements, $expectedException)
+    public function testNotSolveable($requirements, $expectedException, $expectedMessage)
     {
         $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedMessage);
         $this->prepareRepository($this->getSimpleRepository());
         $mockProject = \Mockery::mock(CatalystEntity::class);
 
@@ -151,14 +179,16 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         return [
             'Package that doesnt exist' => [
                 '$requirements' => ['othervendor/weird-package' => '*'],
-                '$expectedException' => UnresolveableDependenciesException::class
+                '$expectedException' => UnresolveableDependenciesException::class,
+                '$expectedMessage' => 'can be found',
             ],
             'Impossible constraints' => [
                 '$requirements' => [
                     'othervendor/package-requiring-latest-test' => '*',
                     'othervendor/package-requiring-early-test' => '*',
                 ],
-                '$expectedException' => UnresolveableDependenciesException::class
+                '$expectedException' => UnresolveableDependenciesException::class,
+                '$expectedMessage' => 'due to a dependency constraint',
             ],
         ];
     }
