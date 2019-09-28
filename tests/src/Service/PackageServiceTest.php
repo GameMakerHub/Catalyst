@@ -3,6 +3,7 @@
 namespace Catalyst\Tests\Service;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Model\Repository;
 use Catalyst\Service\PackageService;
@@ -23,23 +24,20 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         $this->subject->addRepository($repository);
     }
 
-    /**
-     * @dataProvider provideSimpleResolveTestPackages
-     */
-    public function testDependencyResolvingSimple($requirements, $expected)
+    public function testGetPackage()
     {
-        $this->prepareRepository($this->getSimpleRepository());
-        $mockProject = \Mockery::mock(CatalystEntity::class);
+        $this->prepareRepository($this->getRealRepository());
 
-        $mockProject->shouldReceive('require')
-            ->once()
-            ->andReturn($requirements);
+        $package = $this->subject->getPackage('dukesoft/other-project', '1.0.0');
+        var_dump($package);
+    }
 
-        $mockProject->shouldReceive('repositories')
-            ->once()
-            ->andReturn([]);
+    public function testGetPackageNotFound()
+    {
+        $this->expectException(PackageNotFoundException::class);
+        $this->prepareRepository($this->getRealRepository());
 
-        $this->assertSame($expected, $this->subject->solveDependencies($mockProject));
+        $this->subject->getPackage('dukesoft/test-package', '23.34.56');
     }
 
     public static function provideSimpleResolveTestPackages()
@@ -165,9 +163,14 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->subject->packageExists('dukesoft/test-package', '1.0.1243'));
     }
 
+    private function getRealRepository()
+    {
+        return new Repository(Repository::REPO_DIRECTORY, __FILE__ . '/../../projects');
+    }
+
     private function getSimpleRepository()
     {
-        $repository = new Repository(Repository::REPO_CATALYST, 'test');
+        $repository = new Repository(Repository::REPO_CATALYST, 'not-really');
         $repository->setAvailablePackages([
             'dukesoft/test-package' => [
                 'source' => '',
