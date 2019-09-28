@@ -4,9 +4,9 @@ namespace Catalyst\Service;
 
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
+use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Model\Repository;
 use Composer\Semver\Semver;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageService
 {
@@ -16,9 +16,6 @@ class PackageService
     public function __construct()
     {
         // Add default repositories
-        //new Repository(Repository::REPO_DIRECTORY, 'C:\Users\PC\Documents\GameMakerStudio2\Catalyst\tests')
-        //new Repository(Repository::REPO_catalyst, 'https://raw.githubusercontent.com/GameMakerHub/packages/master/packages.json')
-        //new Repository(Repository::REPO_VCS, 'git@github.com:DukeSoft/extended-functions.git')
         $this->addRepository(new Repository(Repository::REPO_CATALYST, 'http://repo.gamemakerhub.net'));
     }
 
@@ -53,7 +50,7 @@ class PackageService
             }
         }
 
-        throw new PackageNotFoundException($package, $version);
+        return false;
     }
 
     public function getPackageDependencies(string $package, string $version): array
@@ -99,7 +96,7 @@ class PackageService
         foreach ($requirements as $package => $version) {
             $finalPackages[$package] = $this->getSatisfiableVersions($package, $version);
             if (count($finalPackages[$package]) == 0) {
-                throw new UnsatisfiedDependencyException(
+                throw new UnresolveableDependenciesException(
                     sprintf('No version for constraint "%s" for package "%s" can be found', $version, $package)
                 );
             }
@@ -111,7 +108,7 @@ class PackageService
             $addedNewPackage = false;
             foreach ($finalPackages as $package => $versions) {
                 if (count($versions) == 0) {
-                    throw new UnsatisfiedDependencyException(
+                    throw new UnresolveableDependenciesException(
                         $package . ' cant be satisfied, due to a dependency constraint'
                     );
                 }
@@ -134,7 +131,7 @@ class PackageService
         $result = [];
         foreach ($finalPackages as $package => $versions) {
             if (count($versions) == 0) {
-                throw new UnsatisfiedDependencyException(
+                throw new UnresolveableDependenciesException(
                     $package . ' cant be satisfied, due to a dependency constraint'
                 );
             }

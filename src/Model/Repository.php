@@ -67,7 +67,7 @@ class Repository implements \JsonSerializable {
             return true;
         }
 
-        throw new PackageNotSatisfiableException($packageName, $version);
+        return false;
     }
 
     public function findPackage(string $packageName, string $version): CatalystEntity

@@ -3,6 +3,7 @@
 namespace Catalyst\Command;
 
 use Catalyst\Entity\CatalystEntity;
+use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Service\CatalystService;
 use Catalyst\Service\PackageService;
 use Catalyst\Service\StorageService;
@@ -70,7 +71,9 @@ class RequireCommand extends Command
             return 1;
         }
 
-        $this->packageService->packageExists($package, $version);
+        if (!$this->packageService->packageExists($package, $version)) {
+            throw new PackageNotFoundException($package, $version);
+        }
 
         $catalyst->addRequire($package, $version);
 

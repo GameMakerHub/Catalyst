@@ -3,10 +3,9 @@
 namespace Catalyst\Tests\Service;
 
 use Catalyst\Entity\CatalystEntity;
-use Catalyst\Exception\PackageNotFoundException;
+use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Model\Repository;
 use Catalyst\Service\PackageService;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -145,16 +144,25 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         return [
             'Package that doesnt exist' => [
                 '$requirements' => ['othervendor/weird-package' => '*'],
-                '$expectedException' => PackageNotFoundException::class
+                '$expectedException' => UnresolveableDependenciesException::class
             ],
             'Impossible constraints' => [
                 '$requirements' => [
                     'othervendor/package-requiring-latest-test' => '*',
                     'othervendor/package-requiring-early-test' => '*',
                 ],
-                '$expectedException' => UnsatisfiedDependencyException::class
+                '$expectedException' => UnresolveableDependenciesException::class
             ],
         ];
+    }
+
+    public function testPackageExists()
+    {
+        $this->prepareRepository($this->getSimpleRepository());
+
+        $this->assertTrue($this->subject->packageExists('dukesoft/test-package', '1.0.1'));
+        $this->assertFalse($this->subject->packageExists('dukesoft/nope-package', '1.0.1'));
+        $this->assertFalse($this->subject->packageExists('dukesoft/test-package', '1.0.1243'));
     }
 
     private function getSimpleRepository()
