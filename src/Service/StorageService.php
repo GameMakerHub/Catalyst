@@ -58,6 +58,12 @@ class StorageService
         if (isset($GLOBALS['storage']['deletes'][$filename])) {
             return false;
         }
+
+        if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+            // Make windows style directories if we're on windows
+            $filename = str_replace('/', '\\', $filename);
+        }
+
         return file_exists($filename) && is_file($filename);
     }
 
@@ -174,6 +180,10 @@ class StorageService
         try {
             return $this->getFromWriteStorage($path);
         } catch (\Exception $e) {
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                // Make windows style directories if we're on windows
+                $path = str_replace('/', '\\', $path);
+            }
             self::assertFileExists($path);
             return file_get_contents($path);
         }
