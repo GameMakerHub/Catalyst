@@ -174,6 +174,7 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
 
     private function getRealRepository()
     {
+        echo  PHP_EOL . PHP_EOL . 'REAL DIR: ' . __FILE__ . '/../../../projects' . PHP_EOL . PHP_EOL;
         return new Repository(Repository::REPO_DIRECTORY, __FILE__ . '/../../../projects');
     }
 
