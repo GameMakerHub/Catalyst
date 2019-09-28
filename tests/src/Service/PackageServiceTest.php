@@ -174,7 +174,13 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
 
     private function getRealRepository()
     {
-        return new Repository(Repository::REPO_DIRECTORY, __DIR__ . '/../../projects');
+        //That first slash is a dumb ass fix for travis
+        $dir = __DIR__ . '/../../projects';
+        if (getenv('CI')) {
+            $dir = '/' . $dir;
+            echo'TRAVIS ';
+        }
+        return new Repository(Repository::REPO_DIRECTORY, $dir);
     }
 
     private function getSimpleRepository()
