@@ -58,6 +58,12 @@ class StorageService
         if (isset($GLOBALS['storage']['deletes'][$filename])) {
             return false;
         }
+
+        if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+            // Make windows style directories if we're on windows
+            $filename = str_replace('/', '\\', $filename);
+        }
+
         return file_exists($filename) && is_file($filename);
     }
 
@@ -114,6 +120,11 @@ class StorageService
     public function persist($dryRun = false) {
 
         foreach ($GLOBALS['storage']['deletes'] as $filename => $contents) {
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                // Make windows style directories if we're on windows
+                $filename = str_replace('/', '\\', $filename);
+            }
+
             if ($dryRun) {
                 echo 'Dry-run: not deleting ' . $filename . PHP_EOL;
             } else {
@@ -130,6 +141,10 @@ class StorageService
             if ($dryRun) {
                 echo 'Dry-run: not writing to ' . $filename . PHP_EOL;
             } else {
+                if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                    // Make windows style directories if we're on windows
+                    $filename = str_replace('/', '\\', $filename);
+                }
                 @mkdir(dirname($filename), 0777, true);
                 file_put_contents($filename, $contents);
             }
@@ -171,6 +186,10 @@ class StorageService
         try {
             return $this->getFromWriteStorage($path);
         } catch (\Exception $e) {
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                // Make windows style directories if we're on windows
+                $path = str_replace('/', '\\', $path);
+            }
             self::assertFileExists($path);
             return file_get_contents($path);
         }
