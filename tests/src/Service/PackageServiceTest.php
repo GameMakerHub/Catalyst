@@ -176,7 +176,7 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
     {
         //That first slash is a dumb ass fix for travis
         $dir = __DIR__ . '/../../projects';
-        if (getenv('CI')) {
+        if (getenv('CODECOV_TOKEN')) {
             $dir = '/' . $dir;
             echo'TRAVIS ';
         }
