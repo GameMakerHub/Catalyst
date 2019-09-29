@@ -94,7 +94,7 @@ Make sure that the project folders inside of the given folder contain a `catalys
 Since there is no version information available through this setup, the system assumes "1.0.0". So if you want to 
 require the package `../private-projects/My Tools/My Tools.yyp` you'll have create a `catalyst.json` with 
 `"name": "private/my-tools"` and then run `catalyst require private/my-tools` in your main project, using a constraint that 
-satisfies `1.0.0`; for example `*` or `>=1.0`.
+satisfies `1.0.0`; for example `*` or `>=1.0`. You can mix multiple repositories.
 
 ```json
 {
@@ -107,6 +107,7 @@ satisfies `1.0.0`; for example `*` or `>=1.0`.
       "../private-projects": "directory"
     },
     "require": {
+        "private/my-tools": "*",
         "dukesoft/dscpu-mercy": ">=1.2"
     }
 }
