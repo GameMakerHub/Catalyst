@@ -30,7 +30,7 @@ class InstallService
     public function install(CatalystEntity &$project)
     {
         $this->project = $project;
-        $this->writeLine('Resolving dependencies and building installation list...');
+        $this->write('Resolving dependencies and building installation list...');
         $packagesToInstall = $this->packageService->solveDependencies($project);
         $this->writeLine('Done!');
 
@@ -142,6 +142,13 @@ class InstallService
     {
         if (null !== $this->output) {
             $this->output->writeln($string);
+        }
+    }
+
+    private function write($string)
+    {
+        if (null !== $this->output) {
+            $this->output->write($string);
         }
     }
 }

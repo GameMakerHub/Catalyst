@@ -4,9 +4,9 @@ namespace Catalyst\Tests\Service;
 
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
+use Catalyst\Exception\UnresolveableDependenciesException;
 use Catalyst\Model\Repository;
 use Catalyst\Service\PackageService;
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class PackageServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,10 +24,43 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         $this->subject->addRepository($repository);
     }
 
+    public function testGetPackage()
+    {
+        // Clear
+        $this->subject->clearRepositories();
+
+        // Add testing one with missing packages to catch misses
+        $this->subject->addRepository($this->getSimpleRepository());
+
+        // Add a real one
+        $this->subject->addRepository($this->getRealRepository());
+
+        $package = $this->subject->getPackage('dukesoft/simple-project', '1.0.0');
+
+        $this->assertInstanceOf(CatalystEntity::class, $package);
+        $this->assertSame('dukesoft/simple-project', $package->name());
+    }
+
+    public function testGetPackageNotFound()
+    {
+        $this->expectException(PackageNotFoundException::class);
+        $this->prepareRepository($this->getRealRepository());
+
+        $this->subject->getPackage('dukesoft/test-package', '23.34.56');
+    }
+
+    public function testGetDependenciesNotFound()
+    {
+        $this->expectException(PackageNotFoundException::class);
+        $this->prepareRepository($this->getRealRepository());
+
+        $this->subject->getPackageDependencies('dukesoft/test-package', '23.34.56');
+    }
+
     /**
      * @dataProvider provideSimpleResolveTestPackages
      */
-    public function testDependencyResolvingSimple($requirements, $expected)
+    public function testSolveable($requirements, $expected)
     {
         $this->prepareRepository($this->getSimpleRepository());
         $mockProject = \Mockery::mock(CatalystEntity::class);
@@ -40,7 +73,7 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
             ->once()
             ->andReturn([]);
 
-        $this->assertSame($expected, $this->subject->solveDependencies($mockProject));
+        $this->assertEquals($expected, $this->subject->solveDependencies($mockProject));
     }
 
     public static function provideSimpleResolveTestPackages()
@@ -123,9 +156,10 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider provideNotSolveable
      */
-    public function testNotSolveable($requirements, $expectedException)
+    public function testNotSolveable($requirements, $expectedException, $expectedMessage)
     {
         $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedMessage);
         $this->prepareRepository($this->getSimpleRepository());
         $mockProject = \Mockery::mock(CatalystEntity::class);
 
@@ -145,21 +179,37 @@ class PackageServiceTest extends \PHPUnit\Framework\TestCase
         return [
             'Package that doesnt exist' => [
                 '$requirements' => ['othervendor/weird-package' => '*'],
-                '$expectedException' => PackageNotFoundException::class
+                '$expectedException' => UnresolveableDependenciesException::class,
+                '$expectedMessage' => 'can be found',
             ],
             'Impossible constraints' => [
                 '$requirements' => [
                     'othervendor/package-requiring-latest-test' => '*',
                     'othervendor/package-requiring-early-test' => '*',
                 ],
-                '$expectedException' => UnsatisfiedDependencyException::class
+                '$expectedException' => UnresolveableDependenciesException::class,
+                '$expectedMessage' => 'due to a dependency constraint',
             ],
         ];
     }
 
+    public function testPackageExists()
+    {
+        $this->prepareRepository($this->getSimpleRepository());
+
+        $this->assertTrue($this->subject->packageExists('dukesoft/test-package', '1.0.1'));
+        $this->assertFalse($this->subject->packageExists('dukesoft/nope-package', '1.0.1'));
+        $this->assertFalse($this->subject->packageExists('dukesoft/test-package', '1.0.1243'));
+    }
+
+    private function getRealRepository()
+    {
+        return new Repository(Repository::REPO_DIRECTORY, __DIR__ . '/../../projects');
+    }
+
     private function getSimpleRepository()
     {
-        $repository = new Repository(Repository::REPO_CATALYST, 'test');
+        $repository = new Repository(Repository::REPO_CATALYST, 'not-really');
         $repository->setAvailablePackages([
             'dukesoft/test-package' => [
                 'source' => '',

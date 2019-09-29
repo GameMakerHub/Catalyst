@@ -161,6 +161,12 @@ class StorageService
         throw new \Exception('File not written in storage: ' . $filename);
     }
 
+    public static function pathToAbsolute($pathOrFile)
+    {
+        $inst = self::getInstance();
+        return $inst->getAbsoluteFilename($inst->makeRealFilename($pathOrFile));
+    }
+
     private function makeRealFilename($filename)
     {
         if (!$this->pathIsAbsolute($filename)) {
@@ -263,6 +269,11 @@ class StorageService
             }
         }
 
-        return join('/', $path);
+        if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+            // Make windows style directories if we're on windows
+            return join('/', $path);
+        }
+
+        return '/' . join('/', $path);
     }
 }

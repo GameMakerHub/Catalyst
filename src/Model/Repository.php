@@ -1,10 +1,13 @@
 <?php
 namespace Catalyst\Model;
 
+use Assert\Assert;
+use Assert\Assertion;
 use Catalyst\Entity\CatalystEntity;
 use Catalyst\Exception\PackageNotFoundException;
 use Catalyst\Exception\PackageNotSatisfiableException;
 use Catalyst\Service\GithubService;
+use Catalyst\Service\StorageService;
 use Composer\Semver\Semver;
 
 class Repository implements \JsonSerializable {
@@ -27,6 +30,7 @@ class Repository implements \JsonSerializable {
 
     public function __construct(string $type, string $uri)
     {
+        Assertion::inArray($type, $this->getRepositoryTypes());
         $this->type = $type;
         $this->uri = $uri;
     }
@@ -63,7 +67,7 @@ class Repository implements \JsonSerializable {
             return true;
         }
 
-        throw new PackageNotSatisfiableException($packageName, $version);
+        return false;
     }
 
     public function findPackage(string $packageName, string $version): CatalystEntity
@@ -72,7 +76,7 @@ class Repository implements \JsonSerializable {
         if (count($satisfieableVersions)) {
             switch ($this->type) {
                 case self::REPO_DIRECTORY:
-                    return CatalystEntity::createFromPath($this->availablePackages[$packageName][$satisfieableVersions[0]]);
+                    return CatalystEntity::createFromPath($this->availablePackages[$packageName]['source'], true);
                     break;
                 case self::REPO_VCS: //@todo replace zipball downloading with git clone
                     //@see https://github.com/GameMakerHub/Catalyst/issues/11
@@ -97,15 +101,12 @@ class Repository implements \JsonSerializable {
         $satisfieableVersions = $this->getSatisfiableVersions($packageName, $version);
         if (count($satisfieableVersions)) {
             switch ($this->type) {
-                case self::REPO_DIRECTORY:
-                    $catalystFile = CatalystEntity::createFromPath($this->availablePackages[$packageName][$satisfieableVersions[0]]);
-                    return $catalystFile->require();
-                    break;
                 case self::REPO_VCS:
                     $githubService = new GithubService();
                     return $githubService->getDependenciesFor($packageName, $satisfieableVersions[0]);
                     break;
                 case self::REPO_CATALYST:
+                case self::REPO_DIRECTORY:
                     return $this->availablePackages[$packageName]['versions'][$version];
                     break;
             }
@@ -135,9 +136,10 @@ class Repository implements \JsonSerializable {
 
     private function scanPackagesForDirectory():void
     {
-        throw new \Exception('Directory repositories are not yet supported.');
         $packagePaths = [];
-        foreach (glob($this->uri . '/*/*', GLOB_ONLYDIR) as $projectPath) {
+
+        $realLocation = StorageService::pathToAbsolute($this->uri);
+        foreach (glob($realLocation . '/*', GLOB_ONLYDIR) as $projectPath) {
             if (file_exists($projectPath . '/catalyst.json')) {
                 $packagePaths[] = $projectPath;
             }
@@ -146,12 +148,18 @@ class Repository implements \JsonSerializable {
         foreach ($packagePaths as $packagePath) {
             try {
                 $jsonData = json_decode(file_get_contents($packagePath . '/catalyst.json'));
-                if ($jsonData->name && $jsonData->version) {
+                if ($jsonData->name) {
                     if (!array_key_exists($jsonData->name, $this->availablePackages)) {
                         $this->availablePackages[$jsonData->name] = [];
                     }
-
-                    $this->availablePackages[$jsonData->name][$jsonData->version] = $packagePath;
+                    $this->availablePackages[$jsonData->name]['source'] = $packagePath;
+                    $versions = [];
+                    if (isset($jsonData->require)) {
+                        $versions = (array) $jsonData->require;
+                    }
+                    $this->availablePackages[$jsonData->name]['versions'] = [
+                        '1.0.0' => $versions //Default version, 1.0.0 ?
+                    ];
                 }
             } catch (\Exception $e) {
                 // ignore
@@ -196,5 +204,14 @@ class Repository implements \JsonSerializable {
                 'versions' => $versions
             ];
         }
+    }
+
+    private function getRepositoryTypes(): array
+    {
+        return [
+            self::REPO_CATALYST,
+            self::REPO_DIRECTORY,
+            self::REPO_VCS,
+        ];
     }
 }

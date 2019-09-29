@@ -81,6 +81,38 @@ The windows installer adds `catalyst` to the path by default. You can run `catal
 
 If you haven't got catalyst in your path (linux or OSX), you can execute the `index.php` file manually. 
 
+### Install requirements
+First initialize your project with Catalyst by writing a `catalyst.json` file, or using `catalyst init`.
+
+Write requirements into the file, or use `catalyst require <pacakgename>`.
+
+Run `catalyst install` to install all dependencies.
+
+### Local directories as packages
+If you don't want to share packages, you can add a directory repository in your `catalyst.json` file. 
+Make sure that the project folders inside of the given folder contain a `catalyst.json` file!
+Since there is no version information available through this setup, the system assumes "1.0.0". So if you want to 
+require the package `../private-projects/My Tools/My Tools.yyp` you'll have create a `catalyst.json` with 
+`"name": "private/my-tools"` and then run `catalyst require private/my-tools` in your main project, using a constraint that 
+satisfies `1.0.0`; for example `*` or `>=1.0`. You can mix multiple repositories.
+
+```json
+{
+    "name": "dukesoft/other-project",
+    "description": "Other project",
+    "license": "MIT",
+    "homepage": "https://github.com/robquistnl/other",
+    "yyp": "OtherProject.yyp",
+    "repositories": {
+      "../private-projects": "directory"
+    },
+    "require": {
+        "private/my-tools": "*",
+        "dukesoft/dscpu-mercy": ">=1.2"
+    }
+}
+``` 
+
 `catalyst help` will display all commands and information
 
 ### Arguments
