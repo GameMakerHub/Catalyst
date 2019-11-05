@@ -38,7 +38,7 @@ class CleanService
         $this->loop($this->project->YoYoProjectEntity()->getRoot()->gmResource());
 
         foreach ($this->project->ignored() as $leftOverFile) {
-            if (!file_exists($leftOverFile)) {
+            if (!StorageService::getInstance()->fileExists($leftOverFile)) {
                 // Already gone, skip it
                 continue;
             }
