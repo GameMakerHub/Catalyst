@@ -36,7 +36,7 @@ class CleanServiceTest extends \PHPUnit\Framework\TestCase
 
         // Actual testing
         $this->subject->clean($catalystProject);
-
+        var_dump($GLOBALS['storage']['deletes']);
         $this->assertCount(15, $GLOBALS['storage']['writes']);
         $this->assertCount(106, $GLOBALS['storage']['deletes']);
         $this->assertCount(0, $catalystProject->ignored());
