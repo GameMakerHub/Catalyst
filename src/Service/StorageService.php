@@ -279,11 +279,6 @@ class StorageService
             }
         }
 
-        if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
-            // Make windows style directories if we're on windows
-            return join('/', $path);
-        }
-
-        return '/' . join('/', $path);
+        return join('/', $path);
     }
 }
