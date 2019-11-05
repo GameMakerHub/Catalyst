@@ -318,11 +318,12 @@ class StorageService
         }
 
         if ($this->pathIsAbsolute($filename)) {
-            return join('/', $path);
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                return join('/', $path); // Root is included in file on windows
+            }
+            return '/' . join('/', $path); // Root when running on linux
         } else {
             return str_replace('\\', '/', getcwd() . '/') . join('/', $path);
         }
-
-
     }
 }
