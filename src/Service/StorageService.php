@@ -11,7 +11,7 @@ class StorageService
     /** @var StorageService */
     private static $instance = null;
 
-    private function __construct()
+    public function __construct()
     {
         //@todo remove GLOBALS usage because we're in a singleton anyway
         if (!array_key_exists('storage', $GLOBALS)) {
@@ -31,6 +31,14 @@ class StorageService
     public static function setInstance($instance)
     {
         self::$instance = $instance;
+    }
+
+    /**
+     * @deprecated ONLY FOR TEST USAGE
+     */
+    public static function reset()
+    {
+        self::$instance = null;
     }
 
     public static function getInstance(): StorageService
@@ -208,7 +216,7 @@ class StorageService
      * @deprecated WARNING: This actually RECURSIVELY REMOVES A DIRECTORY WITHOUT USING PERSIST.
      * @param $path
      */
-    public function rrmdir($path) {
+    private function rrmdir($path) {
         // @todo make this work with persist as well
         $i = new \DirectoryIterator($path);
         foreach($i as $f) {
