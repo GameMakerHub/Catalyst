@@ -38,6 +38,7 @@ class CleanService
         $this->loop($this->project->YoYoProjectEntity()->getRoot()->gmResource());
 
         foreach ($this->project->ignored() as $leftOverFile) {
+            echo 'Ignore file contained: ' . $leftOverFile . PHP_EOL;
             if (!StorageService::getInstance()->fileExists($leftOverFile)) {
                 // Already gone, skip it
                 continue;

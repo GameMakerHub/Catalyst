@@ -105,6 +105,7 @@ class CatalystEntity implements SaveableEntityInterface {
         try {
             $ignoreData = StorageService::getInstance()->getContents($path . '/.gitignore');
             $ignoreData = str_replace("\r\n", "\n", $ignoreData);
+            var_dump($ignoreData);
             $openTag = strpos($ignoreData, self::IGNORE_TOKEN);
             if ($openTag != false) {
                 $closeTag = strpos($ignoreData, self::IGNORE_TOKEN, $openTag+1);
