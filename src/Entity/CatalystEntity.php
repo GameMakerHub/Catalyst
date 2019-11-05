@@ -105,7 +105,6 @@ class CatalystEntity implements SaveableEntityInterface {
         try {
             $ignoreData = StorageService::getInstance()->getContents($path . '/.gitignore');
             $ignoreData = str_replace("\r\n", "\n", $ignoreData);
-            var_dump($ignoreData);
             $openTag = strpos($ignoreData, self::IGNORE_TOKEN);
             if ($openTag != false) {
                 $closeTag = strpos($ignoreData, self::IGNORE_TOKEN, $openTag+1);
@@ -124,9 +123,6 @@ class CatalystEntity implements SaveableEntityInterface {
         } catch (\Exception $e) {
             //no ignore data - ok no problemo
         }
-
-        echo 'Data in array format:' . PHP_EOL;
-        var_dump($ignored);
 
         return new self(
             $path,
