@@ -16,5 +16,5 @@ $GLOBALS['SYMFONY_KERNEL'] = $kernel;
 /** @var Application $application */
 $application = $container->get(Application::class);
 $application->setName('GameMakerHub Catalyst');
-$application->setVersion('0.2.0');
+$application->setVersion('0.2.1-alpha');
 $application->run();
