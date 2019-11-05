@@ -11,7 +11,7 @@ class StorageService
     /** @var StorageService */
     private static $instance = null;
 
-    private function __construct()
+    public function __construct()
     {
         //@todo remove GLOBALS usage because we're in a singleton anyway
         if (!array_key_exists('storage', $GLOBALS)) {
@@ -31,6 +31,14 @@ class StorageService
     public static function setInstance($instance)
     {
         self::$instance = $instance;
+    }
+
+    /**
+     * @deprecated ONLY FOR TEST USAGE
+     */
+    public static function reset()
+    {
+        self::$instance = null;
     }
 
     public static function getInstance(): StorageService
@@ -208,7 +216,7 @@ class StorageService
      * @deprecated WARNING: This actually RECURSIVELY REMOVES A DIRECTORY WITHOUT USING PERSIST.
      * @param $path
      */
-    public function rrmdir($path) {
+    private function rrmdir($path) {
         // @todo make this work with persist as well
         $i = new \DirectoryIterator($path);
         foreach($i as $f) {
@@ -249,6 +257,46 @@ class StorageService
         }
     }
 
+    public function resolvePath($filename)
+    {
+        $winRoot = false;
+        $linuxRoot = false;
+        $path = [];
+        $filename = str_replace('\\', '/', $filename);
+
+        if (substr($filename, 0, 1) === '/') {
+            $linuxRoot = true;
+        }
+        if (substr($filename, 1, 1) === ':') {
+            $winRoot = true;
+        }
+
+
+        foreach(explode('/', $filename) as $part) {
+            // ignore parts that have no value
+            if (empty($part) || $part === '.') continue;
+
+            if ($part !== '..') {
+                // cool, we found a new part
+                array_push($path, $part);
+            }
+            else if (count($path) > 0) {
+                // going back up? sure
+                array_pop($path);
+            } else {
+                // now, here we don't like
+                throw new \Exception('Climbing above the root is not permitted.');
+            }
+        }
+        if ($linuxRoot) {
+            return '/' . join('/', $path);
+        }
+        if ($winRoot) {
+            return join('/', $path);
+        }
+        return join('/', $path);
+    }
+
     public function getAbsoluteFilename($filename) {
         $path = [];
         $filename = str_replace('\\', '/', $filename);
@@ -269,11 +317,13 @@ class StorageService
             }
         }
 
-        if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
-            // Make windows style directories if we're on windows
-            return join('/', $path);
+        if ($this->pathIsAbsolute($filename)) {
+            if (strcasecmp(substr(PHP_OS, 0, 3), 'WIN') === 0) {
+                return join('/', $path); // Root is included in file on windows
+            }
+            return '/' . join('/', $path); // Root when running on linux
+        } else {
+            return str_replace('\\', '/', getcwd() . '/') . join('/', $path);
         }
-
-        return '/' . join('/', $path);
     }
 }

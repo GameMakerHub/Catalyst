@@ -5,6 +5,7 @@ namespace Catalyst\Tests\Service;
 use Catalyst\Exception\MalformedJsonException;
 use Catalyst\Service\StorageService;
 use Catalyst\Tests\TestHelper;
+use Mockery\Exception;
 
 class StorageServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,6 +22,77 @@ class StorageServiceTest extends \PHPUnit\Framework\TestCase
         if (!array_key_exists('writes', $GLOBALS['storage'])) {
             $GLOBALS['storage']['writes'] = [];
         }
+    }
+
+    /**
+     * @dataProvider provideResolvePaths
+     */
+    public function testResolvePaths($expected, $given)
+    {
+        $this->assertSame($expected, $this->subject->resolvePath($given));
+    }
+
+    public static function provideResolvePaths()
+    {
+        return [
+            ['localfile.txt', 'localfile.txt'],
+            ['local/file.txt', 'local/file.txt'],
+            ['local/file.txt', 'local\\file.txt'],
+            ['file.txt', 'local/../file.txt'],
+            ['file.txt', 'local\\..\\file.txt'],
+            ['C:/dir/file.txt', 'C:/dir/anotherdir/../file.txt'],
+            ['C:/dir/file.txt', 'C:\\dir/anotherdir\\..\\file.txt'],
+            ['/dir/file.txt', '/dir/anotherdir/../file.txt'],
+            ['/dir/file.txt', '\\dir\\anotherdir\\..\\file.txt'],
+            ['local/path/file.txt', 'local/path/path2/../file.txt'],
+            ['local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+            ['local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+            ['local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideResolvePathsException
+     */
+    public function testResolvePathsException($given)
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Climbing above the root is not permitted.');
+        $this->subject->resolvePath($given);
+    }
+
+    public static function provideResolvePathsException()
+    {
+        return [
+            ['localfile.txt/../../'],
+            ['local/../../'],
+            ['local\\..\\..\\file.txt'],
+        ];
+    }
+
+    /**
+     * @dataProvider proviceAbsoluteFilenames
+     */
+    public function testAbsoluteFilenames($expected, $given)
+    {
+        $this->assertSame($expected, $this->subject->getAbsoluteFilename($given));
+    }
+
+    public static function proviceAbsoluteFilenames()
+    {
+        $expectedRoot = str_replace('\\', '/', getcwd() . '/');
+        return [
+            [$expectedRoot . 'localfile.txt', 'localfile.txt'],
+            [$expectedRoot . 'local/file.txt', 'local/file.txt'],
+            [$expectedRoot . 'local/file.txt', 'local\\file.txt'],
+            [$expectedRoot . 'file.txt', 'local/../file.txt'],
+            [$expectedRoot . 'file.txt', 'local\\..\\file.txt'],
+            [$expectedRoot . 'local/path/file.txt', 'local/path/path2/../file.txt'],
+            [$expectedRoot . 'local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+            [$expectedRoot . 'local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+            [$expectedRoot . 'local/path/file.txt', 'local/path\\path2\\..\\file.txt'],
+            [$expectedRoot . 'file.txt', 'local/path\\path2\\..\\..\\..\\file.txt'],
+        ];
     }
 
     public function testGlobals()

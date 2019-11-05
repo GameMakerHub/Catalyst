@@ -1,0 +1,10 @@
+{
+    "name": "gmh/test",
+    "description": "",
+    "license": "BSD-4-Clause",
+    "homepage": "",
+    "yyp": "21_UninstalledNewFiles.yyp",
+    "require": {
+        "gamemakerhub/extended-functions": "*"
+    }
+}

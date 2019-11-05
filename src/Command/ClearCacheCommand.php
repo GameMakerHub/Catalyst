@@ -22,7 +22,20 @@ class ClearCacheCommand extends Command
     {
         //@todo do a double check with the user?
         $output->writeln('Clearing cache at <fg=green>' . $GLOBALS['SYMFONY_KERNEL']->getCacheDir() . '</>');
-        StorageService::getInstance()->rrmdir($GLOBALS['SYMFONY_KERNEL']->getCacheDir());
+        $this->rrmdir($GLOBALS['SYMFONY_KERNEL']->getCacheDir());
+    }
+
+    private function rrmdir($path) {
+        // @todo make this work with persist as well
+        $i = new \DirectoryIterator($path);
+        foreach($i as $f) {
+            if($f->isFile()) {
+                unlink($f->getRealPath());
+            } else if(!$f->isDot() && $f->isDir()) {
+                $this->rrmdir($f->getRealPath());
+            }
+        }
+        rmdir($path);
     }
 
 }
