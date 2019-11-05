@@ -125,6 +125,9 @@ class CatalystEntity implements SaveableEntityInterface {
             //no ignore data - ok no problemo
         }
 
+        echo 'Data in array format:' . PHP_EOL;
+        var_dump($ignored);
+
         return new self(
             $path,
             $config->name ?? null,
