@@ -36,7 +36,7 @@ class CleanServiceTest extends \PHPUnit\Framework\TestCase
 
         // Actual testing
         $this->subject->clean($catalystProject);
-        var_dump($GLOBALS['storage']['deletes']);
+
         $this->assertCount(15, $GLOBALS['storage']['writes']);
         $this->assertCount(106, $GLOBALS['storage']['deletes']);
         $this->assertCount(0, $catalystProject->ignored());
@@ -68,14 +68,14 @@ class CleanServiceTest extends \PHPUnit\Framework\TestCase
 
         foreach ($filesThatShouldBeDeleted as $file) {
             $this->assertArrayHasKey(
-                StorageService::pathToAbsolute($projectPath . '/' . $file),
+                StorageService::pathToAbsolute($file),
                 $GLOBALS['storage']['deletes']
             );
         }
 
         foreach ($filesThatShouldNotBeDeleted as $file) {
             $this->assertArrayNotHasKey(
-                StorageService::pathToAbsolute($projectPath . '/' . $file),
+                StorageService::pathToAbsolute($file),
                 $GLOBALS['storage']['deletes']
             );
         }

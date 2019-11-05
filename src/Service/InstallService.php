@@ -125,7 +125,7 @@ class InstallService
                     StorageService::getInstance()->recursiveCopy($packageToInstall->path() . '/' . $localizedPath, $localizedPath);
 
                     // Add the file to the ignore list
-                    $fullPath = StorageService::getInstance()->getAbsoluteFilename($localizedPath);
+                    $fullPath = StorageService::getInstance()->resolvePath($localizedPath);
                     $this->project->addIgnore($fullPath);
                 }
 

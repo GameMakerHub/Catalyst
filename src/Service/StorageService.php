@@ -91,9 +91,7 @@ class StorageService
 
     public function delete(string $pathOrFile)
     {
-        echo 'Delete: ' . $pathOrFile . PHP_EOL;
         $pathOrFile = $this->makeRealFilename($pathOrFile);
-        echo '    real: ' . $pathOrFile . PHP_EOL;
         $files = [$pathOrFile];
         if (is_dir($pathOrFile)) {
             $files = [];
@@ -259,6 +257,46 @@ class StorageService
         }
     }
 
+    public function resolvePath($filename)
+    {
+        $winRoot = false;
+        $linuxRoot = false;
+        $path = [];
+        $filename = str_replace('\\', '/', $filename);
+
+        if (substr($filename, 0, 1) === '/') {
+            $linuxRoot = true;
+        }
+        if (substr($filename, 1, 1) === ':') {
+            $winRoot = true;
+        }
+
+
+        foreach(explode('/', $filename) as $part) {
+            // ignore parts that have no value
+            if (empty($part) || $part === '.') continue;
+
+            if ($part !== '..') {
+                // cool, we found a new part
+                array_push($path, $part);
+            }
+            else if (count($path) > 0) {
+                // going back up? sure
+                array_pop($path);
+            } else {
+                // now, here we don't like
+                throw new \Exception('Climbing above the root is not permitted.');
+            }
+        }
+        if ($linuxRoot) {
+            return '/' . join('/', $path);
+        }
+        if ($winRoot) {
+            return join('/', $path);
+        }
+        return join('/', $path);
+    }
+
     public function getAbsoluteFilename($filename) {
         $path = [];
         $filename = str_replace('\\', '/', $filename);
@@ -279,6 +317,12 @@ class StorageService
             }
         }
 
-        return join('/', $path);
+        if ($this->pathIsAbsolute($filename)) {
+            return join('/', $path);
+        } else {
+            return str_replace('\\', '/', getcwd() . '/') . join('/', $path);
+        }
+
+
     }
 }

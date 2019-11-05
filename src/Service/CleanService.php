@@ -98,10 +98,8 @@ class CleanService
                 // Loop through if this is a folder - delete if this name is vendor or delete flag is already on
                 $this->loop($resource, $level+1, ($resource->getName() == 'vendor' || $delete));
                 $thisPath = $resource->getFilePath();
-                echo 'ThisPath(folder) = ' . $thisPath . PHP_EOL;
             } else {
-                $thisPath = StorageService::getInstance()->getAbsoluteFilename($resource->getFilePath() . '/../');
-                echo 'ThisPath(absolute not folder) = ' . $thisPath . PHP_EOL;
+                $thisPath = StorageService::getInstance()->resolvePath($resource->getFilePath() . '/../');
             }
 
             // Remove the resource from the entire project, or the ROOT vendor folder
