@@ -89,17 +89,15 @@ class CleanService
     {
         foreach ($resource->getChildResources() as $resource) {
             if ($resource->isFolder()) {
-                $delete = ($resource->getName() == 'vendor' || $delete); //$todo replace with constant
                 // Loop through if this is a folder - delete if this name is vendor or delete flag is already on
-                $this->loop($resource, $level+1, $delete);
-
+                $this->loop($resource, $level+1, ($resource->getName() == 'vendor' || $delete));
                 $thisPath = $resource->getFilePath();
             } else {
                 $thisPath = StorageService::getInstance()->getAbsoluteFilename($resource->getFilePath() . '/../');
             }
 
-            // Remove the resource from the entire project
-            if ($delete) {
+            // Remove the resource from the entire project, or the ROOT vendor folder
+            if ($delete || ($resource->isFolder() && $resource->getName() == 'vendor' && $level == 1)) {
                 // Remove from gitignore
                 $this->project->removeIgnore($thisPath);
 
