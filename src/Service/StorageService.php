@@ -91,7 +91,9 @@ class StorageService
 
     public function delete(string $pathOrFile)
     {
+        echo 'Delete: ' . $pathOrFile . PHP_EOL;
         $pathOrFile = $this->makeRealFilename($pathOrFile);
+        echo '    real: ' . $pathOrFile . PHP_EOL;
         $files = [$pathOrFile];
         if (is_dir($pathOrFile)) {
             $files = [];
