@@ -38,9 +38,15 @@ class CleanService
         $this->loop($this->project->YoYoProjectEntity()->getRoot()->gmResource());
 
         foreach ($this->project->ignored() as $leftOverFile) {
+            if (!file_exists($leftOverFile)) {
+                // Already gone, skip it
+                continue;
+            }
+
             if (strlen($leftOverFile) <= 1) {
                 continue;
             }
+
             $resource = false;
 
             // OK to delete datafiles
