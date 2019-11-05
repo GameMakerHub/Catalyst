@@ -1,8 +1,8 @@
 {
-    "id": "5cfbf928-abf8-46d6-9f0b-09d46d6ce387",
+    "id": "75b7ff54-9869-4609-b472-4097ae69b2ac",
     "modelName": "GMScript",
     "mvc": "1.0",
-    "name": "myNewScript",
+    "name": "newScript",
     "IsCompatibility": false,
     "IsDnD": false
 }
