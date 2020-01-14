@@ -28,13 +28,13 @@ class ResourcesCommand extends Command
             ->setHelp('List all project resources');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $catalyst = $this->catalystService->load(realpath('.'));
         } catch (\Exception $e) {
             $output->writeLn('<fg=red>ERROR LOADING CATALYST PROJECT FILE: </>' . $e->getMessage());
-            return 127;
+            return 126;
         }
 
         foreach ($catalyst->YoYoProjectEntity()->resources as $resource) {
@@ -48,5 +48,7 @@ class ResourcesCommand extends Command
                 )
             );
         }
+
+        return 0;
     }
 }

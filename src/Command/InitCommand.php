@@ -34,11 +34,11 @@ class InitCommand extends Command
             ->setHelp('Interactive wizard to setup a project');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($this->catalystService->existsHere()) {
             $output->writeln('<info>A Catalyst file is already present in this directory.</info>');
-            return;
+            return 126;
         }
 
         if (count(glob("*.yyp")) == 0) {
@@ -46,7 +46,7 @@ class InitCommand extends Command
                 '<info>No .yyp project file was found in this directory. '
                 . 'Please initialize in the root of your project!</info>'
             );
-            return;
+            return 126;
         }
 
         // Ask for package name
@@ -134,5 +134,6 @@ class InitCommand extends Command
         StorageService::getInstance()->persist();
 
         $output->writeln('<fg=green>Catalyst file initialized!</>');
+        return 0;
     }
 }

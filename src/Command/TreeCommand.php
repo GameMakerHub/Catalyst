@@ -41,13 +41,13 @@ class TreeCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $catalyst = $this->catalystService->load(realpath('.'));
         } catch (\Exception $e) {
             $output->writeLn('<fg=red>ERROR LOADING CATALYST PROJECT FILE: </>' . $e->getMessage());
-            return 127;
+            return 126;
         }
 
         $showId = $input->getOption('id');
@@ -80,5 +80,6 @@ class TreeCommand extends Command
         };
 
         $loop($catalyst->YoYoProjectEntity()->getRoot()->gmResource(), 0);
+        return 0;
     }
 }

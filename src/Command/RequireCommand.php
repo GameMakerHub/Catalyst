@@ -44,14 +44,14 @@ class RequireCommand extends Command
             $catalyst = $this->catalystService->load(realpath('.'));
         } catch (\Exception $e) {
             $output->writeLn('<fg=red>ERROR LOADING CATALYST PROJECT FILE: </>' . $e->getMessage());
-            return 127;
+            return 126;
         }
 
         $version = '*';
         preg_match('~^([a-z0-9-_]+\/[a-z0-9-_]+)(\@[a-z0-9.\-\*\^\>\=\<]+)?$~', $input->getArgument('package'), $matches);
         if (!isset($matches[1])) {
             $output->writeln('<bg=red>Invalid or missing package name (format must be vendor/package or vendor/package@version)</>');
-            return 1;
+            return 126;
         }
 
         $package = $matches[1];
@@ -61,14 +61,14 @@ class RequireCommand extends Command
 
         if ($package == $catalyst->name()) {
             $output->writeln('<bg=red>Package can not require itself</>');
-            return 1;
+            return 126;
         }
 
         $output->writeln('Require version <fg=green>' . $version . '</> for <fg=green>' . $package . '</>');
 
         if ($catalyst->hasPackage($package)) {
             $output->writeln('<bg=red>' . $package . ' is already required</>');
-            return 1;
+            return 126;
         }
 
         if (!$this->packageService->packageExists($package, $version)) {

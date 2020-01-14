@@ -18,11 +18,13 @@ class ClearCacheCommand extends Command
             ->setHelp('Clear all cache files that Catalyst generated. This includes cached and downloaded packages!');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         //@todo do a double check with the user?
         $output->writeln('Clearing cache at <fg=green>' . $GLOBALS['SYMFONY_KERNEL']->getCacheDir() . '</>');
         $this->rrmdir($GLOBALS['SYMFONY_KERNEL']->getCacheDir());
+
+        return 0;
     }
 
     private function rrmdir($path) {

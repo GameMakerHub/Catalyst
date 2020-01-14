@@ -37,7 +37,7 @@ class CleanCommand extends Command
             ->addOption('dry-run', 'd', InputOption::VALUE_NONE, 'Don\'t touch any files');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('<fg=green>Loading project...</>');
         $thisProject = $this->catalystService->load();
@@ -48,6 +48,8 @@ class CleanCommand extends Command
         $thisProject->save();
 
         StorageService::getInstance()->persist($input->getOption('dry-run'));
+
+        return 0;
     }
 
 }

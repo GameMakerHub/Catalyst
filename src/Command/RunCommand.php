@@ -25,7 +25,7 @@ class RunCommand extends Command
             ->setHelp('run');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         shell_exec('subst Z: "%APPDATA%\GameMakerStudio2\Cache\GMS2CACHE"');
         shell_exec('subst Y: "%LOCALAPPDATA%\GameMakerStudio2\GMS2TEMP"');
@@ -49,5 +49,7 @@ class RunCommand extends Command
         shell_exec('subst Z: /D');
         shell_exec('subst Y: /D');
         shell_exec('subst X: /D');
+
+        return 0;
     }
 }

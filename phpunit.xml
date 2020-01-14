@@ -10,7 +10,7 @@
     </php>
 
     <testsuites>
-        <testsuite name="GMModular testsuite">
+        <testsuite name="GameMakerHub Catalyst">
             <directory suffix=".php">tests</directory>
         </testsuite>
     </testsuites>
