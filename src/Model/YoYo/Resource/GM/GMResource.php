@@ -45,8 +45,8 @@ abstract class GMResource implements SaveableEntityInterface
     /** @var string */
     public $folderName;
 
-    /** @var bool */
-    private $_ignored;
+    /** @var GMFolder */
+    private $_parentFolder;
 
     /** @var string */
     private $_filePath;
@@ -60,6 +60,11 @@ abstract class GMResource implements SaveableEntityInterface
     public function getTypeName(): string
     {
         return substr(get_class($this), strrpos(get_class($this), '\GM', 0)+3, strlen(get_class($this)));
+    }
+
+    public function setParentFolder(GMFolder $folder): void
+    {
+        $this->_parentFolder = $folder;
     }
 
     public static function createFromObject(string $_filePath, \stdClass $object, string $originalContents): GMResource
@@ -151,6 +156,35 @@ abstract class GMResource implements SaveableEntityInterface
         return ($this instanceof GMIncludedFile);
     }
 
+    public function getParentFolder(): ?GMFolder
+    {
+        return $this->_parentFolder;
+    }
+
+    public function getFullGmName(): string
+    {
+        //var_dump($this->getParentFolder());
+        $parentFolderArray = [];
+        $parent = $this->getParentFolder();
+        while ($parent != null) {
+            if (!$parent->isDefaultView) {
+                $parentFolderArray[] = $parent;
+            }
+            $parent = $parent->getParentFolder();
+        }
+
+        $parentFolderArray = array_reverse($parentFolderArray);
+
+        $string = "";
+        array_map(function(GMFolder $folder) use(&$string) {
+            $string .= '/' . $folder->getName();
+        }, $parentFolderArray);
+
+        $string .= '/' . $this->getName();
+
+        return $string;
+    }
+
     public function getName(): string
     {
         if ($this->isFolder()) {
@@ -178,7 +212,12 @@ abstract class GMResource implements SaveableEntityInterface
 
     public function linkChildResource(GMResource $GMResource)
     {
+        if (!$this->isFolder()) {
+            throw new \Exception('BIG EXCEPTION: a child resource was linked, but this should be a folder only?');
+        }
+
         $this->_gmChildrenResources[] = $GMResource;
+        $GMResource->setParentFolder($this);
     }
 
     public function removeChildResourceByUuid(Uuid $uuid)

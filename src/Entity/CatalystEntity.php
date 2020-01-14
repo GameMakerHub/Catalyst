@@ -3,6 +3,7 @@ namespace Catalyst\Entity;
 
 use Catalyst\Exception\MalformedJsonException;
 use Catalyst\Interfaces\SaveableEntityInterface;
+use Catalyst\Model\YoYo\Resource;
 use Catalyst\Service\StorageService;
 
 class CatalystEntity implements SaveableEntityInterface {
@@ -142,7 +143,7 @@ class CatalystEntity implements SaveableEntityInterface {
             (array) ($config->require ?? []),
             (array) ($config->repositories ?? []),
             $gitIgnored,
-            $config->ignore ?? [],
+            (array) $config->ignore ?? [],
             $ignoreMissing
         );
     }
@@ -251,6 +252,40 @@ class CatalystEntity implements SaveableEntityInterface {
     public function hasGitIgnore($value):bool
     {
         return (($key = array_search($value, $this->gitIgnore)) !== false);
+    }
+
+    public function getIgnoredResources(): array
+    {
+        return $this->ignoredResources;
+    }
+
+    public function isIgnoredResource(Resource\GM\GMResource $resource): bool
+    {
+        foreach ($this->getIgnoredResources() as $expression => $type) {
+            /// Direct match on group
+            if (
+                $resource instanceof Resource\GM\GMFolder
+                && ($type == 'group' || $type == 'all')
+                && $resource->getName() === $expression
+            ) {
+                return true;
+            }
+
+            /// Direct match on resources
+            if (
+                !$resource instanceof Resource\GM\GMFolder
+                && ($type == 'resource' || $type == 'all')
+                && $resource->getName() === $expression
+            ) {
+                return true;
+            }
+
+            /// Anything inside matched group
+            if (($type == 'all' || $type == 'group') && stripos($resource->getFullGmName(), $expression . '/') !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

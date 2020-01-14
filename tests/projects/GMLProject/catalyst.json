@@ -11,10 +11,11 @@
     "repositories": {
         "../projects": "directory"
     },
-    "ignore": [
-        "spr_to_ignore",
-        "group_to_ignore",
-        "test_*",
-        "*_test2"
-    ]
+    "ignore": {
+        "spr_to_ignore": "resource",
+        "group_to_ignore": "group",
+        "test_*": "all",
+        "*_test2": "resource",
+        "*_test3": "group"
+    }
 }

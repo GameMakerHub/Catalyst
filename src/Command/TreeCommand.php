@@ -52,9 +52,10 @@ class TreeCommand extends Command
 
         $showId = $input->getOption('id');
         $showType = $input->getOption('type');
+        $showIgnored = true;
 
         $output->writeln(sprintf('┌ <fg=magenta>%s</>', $catalyst->name()));
-        $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId, $showType) {
+        $loop = function (GMResource $resource, $level) use ($output, &$loop, $showId, $showType, $showIgnored, $catalyst) {
             $number = 1;
             $parentCount = count($resource->getChildResources());
             foreach ($resource->getChildResources() as $resource) {
@@ -64,14 +65,16 @@ class TreeCommand extends Command
                 }
                 $output->writeln(
                     sprintf(
-                        '%s─── <fg=%s>%s</> %s %s',
+                        '%s─── <fg=%s>%s</>%s%s%s',
                         str_repeat('│    ', $level) . $lineCharacter,
                         $resource->isFolder() ? 'yellow' : 'green',
                         $resource->getName(),
-                        $showId ? '[<fg=cyan>'.$resource->id.'</>]' : '',
-                        $showType ? '[<fg=magenta>'.$resource->getTypeName().'</>]' : ''
+                        $showId ? ' [<fg=cyan>'.$resource->id.'</>]' : '',
+                        $showType ? ' [<fg=magenta>'.$resource->getTypeName().'</>]' : '',
+                        ($showIgnored && $catalyst->isIgnoredResource($resource)) ? ' [<fg=red>ignored</>]' : ''
                     )
                 );
+                //echo $resource->getFullGmName() . PHP_EOL;
                 if ($resource->isFolder()) {
                     $loop($resource, $level+1);
                 }
