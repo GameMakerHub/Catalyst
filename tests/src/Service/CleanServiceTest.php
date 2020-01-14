@@ -39,7 +39,7 @@ class CleanServiceTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(15, $GLOBALS['storage']['writes']);
         $this->assertCount(106, $GLOBALS['storage']['deletes']);
-        $this->assertCount(0, $catalystProject->ignored());
+        $this->assertCount(0, $catalystProject->gitIgnore());
 
         $filesThatShouldNotBeDeleted = [
             'objects/obj_test',

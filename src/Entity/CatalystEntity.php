@@ -53,6 +53,12 @@ class CatalystEntity implements SaveableEntityInterface {
     /** @var YoYoProjectEntity */
     private $YoYoProjectEntity;
 
+    /** @var array */
+    private $gitIgnore = [];
+
+    /** @var array */
+    private $ignoredResources = [];
+
     private function __construct(
         string $path,
         string $name,
@@ -62,7 +68,8 @@ class CatalystEntity implements SaveableEntityInterface {
         string $yyp,
         array $require,
         array $repositories,
-        array $ignored,
+        array $gitIgnore,
+        array $ignoredResources,
         $ignoreMissing = false
     ) {
         $this->path = realpath($path);
@@ -77,7 +84,8 @@ class CatalystEntity implements SaveableEntityInterface {
 
         $this->YoYoProjectEntity = YoYoProjectEntity::createFromFile($this->path . DIRECTORY_SEPARATOR . $this->yyp, $ignoreMissing);
 
-        $this->ignored = $ignored;
+        $this->gitIgnore = $gitIgnore;
+        $this->ignoredResources = $ignoredResources;
     }
 
     public static function createNew(
@@ -88,7 +96,7 @@ class CatalystEntity implements SaveableEntityInterface {
         string $homepage,
         string $yyp
     ) {
-        return new self($path, $name, $description, $license, $homepage, $yyp, [], [], [], false);
+        return new self($path, $name, $description, $license, $homepage, $yyp, [], [], [], [], false);
     }
 
     public static function createFromPath($path, $ignoreMissing = false)
@@ -101,7 +109,7 @@ class CatalystEntity implements SaveableEntityInterface {
             throw new \RuntimeException('catalyst.json is malformed');
         }
 
-        $ignored = [];
+        $gitIgnored = [];
         try {
             $ignoreData = StorageService::getInstance()->getContents($path . '/.gitignore');
             $ignoreData = str_replace("\r\n", "\n", $ignoreData);
@@ -110,7 +118,7 @@ class CatalystEntity implements SaveableEntityInterface {
                 $closeTag = strpos($ignoreData, self::IGNORE_TOKEN, $openTag+1);
                 if ($closeTag != false) {
                     $tagLength = strlen(self::IGNORE_TOKEN);
-                    $ignored = explode(
+                    $gitIgnored = explode(
                         "\n",
                         substr(
                             $ignoreData,
@@ -133,7 +141,8 @@ class CatalystEntity implements SaveableEntityInterface {
             $config->yyp ?? null,
             (array) ($config->require ?? []),
             (array) ($config->repositories ?? []),
-            $ignored,
+            $gitIgnored,
+            $config->ignore ?? [],
             $ignoreMissing
         );
     }
@@ -211,38 +220,37 @@ class CatalystEntity implements SaveableEntityInterface {
         $jsonObj->yyp = $this->yyp;
         if (count($this->require)) { $jsonObj->require = $this->require; }
         if (count($this->repositories)) { $jsonObj->repositories = $this->repositories; }
+        if (count($this->ignoredResources)) { $jsonObj->ignore = $this->ignoredResources; }
 
         return json_encode($jsonObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
-    private $ignored = [];
-
-    public function ignored()
+    public function gitIgnore()
     {
-        return $this->ignored;
+        return $this->gitIgnore;
     }
 
-    public function removeIgnore($value): bool
+    public function removeGitIgnore($value): bool
     {
         $value = str_replace('\\', '/', $value);
-        if (($key = array_search($value, $this->ignored)) !== false) {
-            unset($this->ignored[$key]);
+        if (($key = array_search($value, $this->gitIgnore)) !== false) {
+            unset($this->gitIgnore[$key]);
             return true;
         }
         return false;
     }
 
-    public function addIgnore($path)
+    public function addGitIgnore($path)
     {
         $path = str_replace('\\', '/', $path);
-        if (!in_array($path, $this->ignored)) {
-            $this->ignored[] = $path;
+        if (!in_array($path, $this->gitIgnore)) {
+            $this->gitIgnore[] = $path;
         }
     }
 
-    public function hasIgnore($value):bool
+    public function hasGitIgnore($value):bool
     {
-        return (($key = array_search($value, $this->ignored)) !== false);
+        return (($key = array_search($value, $this->gitIgnore)) !== false);
     }
 
     /**
@@ -254,15 +262,15 @@ class CatalystEntity implements SaveableEntityInterface {
         StorageService::getInstance()->saveEntity($this->YoYoProjectEntity());
 
         // Write the ignore file
-        $this->saveIgnoreFile();
+        $this->saveGitIgnoreFile();
     }
 
     /**
      * @todo this is horrible and slow, but does the trick for now.
      */
-    private function saveIgnoreFile()
+    private function saveGitIgnoreFile()
     {
-        $newContent = self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->ignored) . PHP_EOL . self::IGNORE_TOKEN;
+        $newContent = self::IGNORE_TOKEN . PHP_EOL . implode(PHP_EOL, $this->gitIgnore) . PHP_EOL . self::IGNORE_TOKEN;
 
         $ignoreFile = $this->path() . '/.gitignore';
         $contents = '';

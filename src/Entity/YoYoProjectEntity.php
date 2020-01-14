@@ -214,7 +214,7 @@ class YoYoProjectEntity implements SaveableEntityInterface {
                 $this->addResource($folder);
 
                 // Add the generated view file to the gitignore list
-                $project->addIgnore($folder->getFilePath());
+                $project->addGitIgnore($folder->getFilePath());
             }
             $parent = $folder;
         }

@@ -99,7 +99,7 @@ class InstallService
 
                 // Write the actual files
                 if ($resource->isIncludedFile()) {
-                    if ($packageToInstall->hasIgnore($resource->getFilePath())) {
+                    if ($packageToInstall->hasGitIgnore($resource->getFilePath())) {
                         echo 'Skipping vendored included file ' . $resource->getName() . PHP_EOL;
                         continue;
                     }
@@ -107,7 +107,7 @@ class InstallService
 
                     // Copy the .yy file
                     StorageService::getInstance()->copy($packageToInstall->path() . '/' . $resource->getFilePath(), $resource->getFilePath());
-                    $this->project->addIgnore($resource->getFilePath());
+                    $this->project->addGitIgnore($resource->getFilePath());
 
                     // Copy the datafile
                     $dataFilePath = $resource->filePath . '/' .$resource->fileName;
@@ -115,7 +115,7 @@ class InstallService
                         $packageToInstall->path() . '/' . $dataFilePath,
                         $dataFilePath
                     );
-                    $this->project->addIgnore($dataFilePath);
+                    $this->project->addGitIgnore($dataFilePath);
                 } else {
                     // Add it into the vendor folder
                     $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($this->project, $targetDirectory, $resource->getTypeName());
@@ -126,7 +126,7 @@ class InstallService
 
                     // Add the file to the ignore list
                     $fullPath = StorageService::getInstance()->resolvePath($localizedPath);
-                    $this->project->addIgnore($fullPath);
+                    $this->project->addGitIgnore($fullPath);
                 }
 
                 // Link the resource to the folder

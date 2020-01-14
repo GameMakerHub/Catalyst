@@ -37,7 +37,7 @@ class CleanService
         // Remove everything thats in the vendored folders
         $this->loop($this->project->YoYoProjectEntity()->getRoot()->gmResource());
 
-        foreach ($this->project->ignored() as $leftOverFile) {
+        foreach ($this->project->gitIgnore() as $leftOverFile) {
             if (!StorageService::getInstance()->fileExists($leftOverFile)) {
                 // Already gone, skip it
                 continue;
@@ -53,7 +53,7 @@ class CleanService
             if (stripos($leftOverFile, 'datafiles/') === 0) {
                 // Just a datafile, delete it
                 StorageService::getInstance()->delete($leftOverFile);
-                $this->project->removeIgnore($leftOverFile);
+                $this->project->removeGitIgnore($leftOverFile);
                 continue;
             }
 
@@ -79,7 +79,7 @@ class CleanService
 
             $this->project->YoYoProjectEntity()->removeUuidReference($resource->id);
             StorageService::getInstance()->delete($leftOverFile);
-            $this->project->removeIgnore($leftOverFile);
+            $this->project->removeGitIgnore($leftOverFile);
         }
 
         // Now loop through the current 1st level resources and save those (they might have contained the vendor folder)
@@ -105,7 +105,7 @@ class CleanService
             // Remove the resource from the entire project, or the ROOT vendor folder
             if ($delete || ($resource->isFolder() && $resource->getName() == 'vendor' && $level == 1)) {
                 // Remove from gitignore
-                $this->project->removeIgnore($thisPath);
+                $this->project->removeGitIgnore($thisPath);
 
                 // Remove the files
                 StorageService::getInstance()->delete($thisPath);

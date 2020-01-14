@@ -45,6 +45,9 @@ abstract class GMResource implements SaveableEntityInterface
     /** @var string */
     public $folderName;
 
+    /** @var bool */
+    private $_ignored;
+
     /** @var string */
     private $_filePath;
 

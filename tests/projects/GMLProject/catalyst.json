@@ -10,5 +10,11 @@
     },
     "repositories": {
         "../projects": "directory"
-    }
+    },
+    "ignore": [
+        "spr_to_ignore",
+        "group_to_ignore",
+        "test_*",
+        "*_test2"
+    ]
 }
