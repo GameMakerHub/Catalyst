@@ -4,7 +4,7 @@ namespace Catalyst\Tests\Command;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
-class CommandTestCase extends \PHPUnit\Framework\TestCase
+abstract class CommandTestCase extends \PHPUnit\Framework\TestCase
 {
     /** @var Application */
     protected $application;

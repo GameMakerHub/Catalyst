@@ -21,7 +21,8 @@ class InitCommandTest extends \PHPUnit\Framework\TestCase
 
     public function testExecute()
     {
-        $this->markAsRisky();
+        $this->assertTrue(true);
+        $this->markTestIncomplete('Todo');
         return true;
         $command = $this->application->find('init');
         $commandTester = new CommandTester($command);

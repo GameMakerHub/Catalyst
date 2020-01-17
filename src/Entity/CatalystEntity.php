@@ -143,7 +143,7 @@ class CatalystEntity implements SaveableEntityInterface {
             (array) ($config->require ?? []),
             (array) ($config->repositories ?? []),
             $gitIgnored,
-            (array) $config->ignore ?? [],
+            property_exists($config, "ignore") ? (array) $config->ignore : [],
             $ignoreMissing
         );
     }
