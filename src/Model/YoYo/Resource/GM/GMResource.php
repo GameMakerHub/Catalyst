@@ -15,12 +15,9 @@ use Catalyst\Model\YoYo\Resource\GM\Options\GMWindowsOptions;
 use Catalyst\Service\GMResourceService;
 use Catalyst\Service\JsonService;
 use Catalyst\Service\StorageService;
-use Catalyst\Traits\JsonUnpacker;
 
 abstract class GMResource implements SaveableEntityInterface
 {
-    use JsonUnpacker;
-
     /** @var \Catalyst\Model\Uuid */
     public $id;
 
