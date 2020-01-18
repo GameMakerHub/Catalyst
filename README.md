@@ -129,14 +129,14 @@ file in your private project.
 Sometimes you can have a package that contains some non-related files for distribution. Testcases, test sprites, 
 example rooms and whatnot can be resources that the users of a package do not need.
 
-There are 3 types of "ignorable" resources. `resource`, `folder` and `all`. 
+There are 3 types of "ignorable" resources. `resource`, `group` and `all`. 
 
 You can use the `shell wildcard pattern` to mark resources from being installed into projects;
 
 | wildcard | Explaination | Example | Matches |
 |----------|--------------|---------|---------|
 | `*` | Matches any, zero or more characters | `test_*` | `test_initialize` |
-| `?` | Matches any one characters | `???_test` | `obj_test`, `spr_test` |
+| `?` | Matches any single character | `???_test` | `obj_test`, `spr_test` |
 | `[string]` | Matches exactly one character that is a member of the string string. This is called a character class. As a shorthand, string may contain ranges, which consist of two characters with a dash between them. For example, the class `[a-z0-9_]` matches a lowercase letter, a number, or an underscore. You can negate a class by placing a `!` or `^` immediately after the opening bracket. Thus, `[^A-Z@]` matches any character except an uppercase letter or an at sign. | `obj_gr[ae]y` | `obj_grey`, `obj_gray` |
 | `\` | Escape character. Removes the special meaning of the character following it | `group name\?` | `group name?` |
 
