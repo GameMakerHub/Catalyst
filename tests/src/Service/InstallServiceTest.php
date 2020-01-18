@@ -38,6 +38,8 @@ class InstallServiceTest extends \PHPUnit\Framework\TestCase
         // Actual testing
         $this->subject->install($catalystProject);
 
+        var_dump(array_keys($GLOBALS['storage']['writes']));
+
         $this->assertCount(95, $GLOBALS['storage']['writes']);
         $this->assertCount(0, $GLOBALS['storage']['deletes']);
         $this->assertCount(58, $catalystProject->gitIgnore());

@@ -265,6 +265,8 @@ class CatalystEntity implements SaveableEntityInterface {
             return true;
         }
 
+        echo 'TEST FNMATCH: ' . $expression . ' VS ' . $name . PHP_EOL;
+
         return fnmatch($expression, $name, FNM_CASEFOLD | FNM_NOESCAPE);
     }
 
