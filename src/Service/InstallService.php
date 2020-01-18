@@ -62,10 +62,12 @@ class InstallService
     private function loop(GMResource $resource, CatalystEntity $packageToInstall, $level = 0, $targetDirectory = '')
     {
         foreach ($resource->getChildResources() as $resource) {
-
+            if ($packageToInstall->isIgnoredResource($resource)) {
+                continue; //Skip ignored files from copying over into target project
+            }
             if ($resource->isFolder()) {
                 if ($resource->getName() == CatalystEntity::VENDOR_FOLDER_NAME) {
-                    echo 'Skipping vendor folder ' . PHP_EOL;
+                    $this->writeLine('Skipping vendor folder');
                     continue; //Skip vendor folders from copying
                 }
                 // Loop through if this is a folder
@@ -100,7 +102,7 @@ class InstallService
                 // Write the actual files
                 if ($resource->isIncludedFile()) {
                     if ($packageToInstall->hasGitIgnore($resource->getFilePath())) {
-                        echo 'Skipping vendored included file ' . $resource->getName() . PHP_EOL;
+                        $this->writeLine('Skipping vendored included file ' . $resource->getName());
                         continue;
                     }
                     $folder = $this->project->YoYoProjectEntity()->createFolderIfNotExists($this->project, $resource->filePath, $resource->getTypeName());

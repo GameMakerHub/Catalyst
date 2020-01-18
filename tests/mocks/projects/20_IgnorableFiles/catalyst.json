@@ -5,7 +5,7 @@
   "homepage": "",
   "yyp": "20_IgnorableFiles.yyp",
   "repositories": {
-    "../../projects": "directory"
+    "../../../projects": "directory"
   },
   "require": {
     "dukesoft/gml-project": "*"
