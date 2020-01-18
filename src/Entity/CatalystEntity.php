@@ -265,7 +265,7 @@ class CatalystEntity implements SaveableEntityInterface {
             return true;
         }
 
-        return fnmatch($expression, $name, FNM_CASEFOLD);
+        return fnmatch($expression, $name, FNM_CASEFOLD | FNM_NOESCAPE);
     }
 
     public function isIgnoredResource(Resource\GM\GMResource $resource): bool
