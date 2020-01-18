@@ -9,5 +9,5 @@
   },
   "require": {
     "dukesoft/gml-project": "*"
-  },
+  }
 }
