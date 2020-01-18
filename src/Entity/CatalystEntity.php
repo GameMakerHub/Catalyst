@@ -259,31 +259,59 @@ class CatalystEntity implements SaveableEntityInterface {
         return $this->ignoredResources;
     }
 
+    private function nameMatchesExpression(string $name, string $expression): bool
+    {
+        if ($name == $expression) {
+            return true;
+        }
+
+        return fnmatch($expression, $name, FNM_CASEFOLD);
+    }
+
     public function isIgnoredResource(Resource\GM\GMResource $resource): bool
     {
         foreach ($this->getIgnoredResources() as $expression => $type) {
-            /// Direct match on group
-            if (
-                $resource instanceof Resource\GM\GMFolder
-                && ($type == 'group' || $type == 'all')
-                && $resource->getName() === $expression
-            ) {
-                return true;
+            // Direct matches
+            if ($this->nameMatchesExpression($resource->getName(), $expression)) {
+                if ($type == 'all') {
+                    return true;
+                }
+                if ($resource instanceof Resource\GM\GMFolder && $type == 'group') {
+                    return true;
+                }
+                if (!$resource instanceof Resource\GM\GMFolder && $type == 'resource') {
+                    return true;
+                }
             }
 
-            /// Direct match on resources
-            if (
-                !$resource instanceof Resource\GM\GMFolder
-                && ($type == 'resource' || $type == 'all')
-                && $resource->getName() === $expression
-            ) {
-                return true;
+            if ($type == 'group' && !$resource instanceof Resource\GM\GMFolder) {
+                if ($this->nameMatchesExpression($resource->getName(), '*' . $expression . '/*')) {
+                    return true;
+                }
+                if ($this->nameMatchesExpression($resource->getFullGmName(), '*' . $expression . '/*')) {
+                    return true;
+                }
             }
 
-            /// Anything inside matched group
-            if (($type == 'all' || $type == 'group') && stripos($resource->getFullGmName(), $expression . '/') !== false) {
-                return true;
+            // Check if name matches
+            if ($this->nameMatchesExpression($resource->getFullGmName(), $expression)) {
+                if ($type == 'all') {
+                    return true;
+                }
+                if ($resource instanceof Resource\GM\GMFolder && $type == 'group') {
+                    return true;
+                }
+                if (!$resource instanceof Resource\GM\GMFolder && $type == 'resource') {
+                    return true;
+                }
             }
+
+            if ($type == 'group') {
+                if ($this->nameMatchesExpression($resource->getFullGmName(), $expression . '/*')) {
+                    return true;
+                }
+            }
+
         }
         return false;
     }
