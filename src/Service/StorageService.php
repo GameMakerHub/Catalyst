@@ -38,6 +38,7 @@ class StorageService
      */
     public static function reset()
     {
+        unset($GLOBALS['storage']);
         self::$instance = null;
     }
 
