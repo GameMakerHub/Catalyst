@@ -1,0 +1,13 @@
+{
+  "name": "gmh/test",
+  "description": "",
+  "license": "BSD-4-Clause",
+  "homepage": "",
+  "yyp": "20_IgnorableFiles.yyp",
+  "repositories": {
+    "../../projects": "directory"
+  },
+  "require": {
+    "dukesoft/gml-project": "*"
+  },
+}
