@@ -4,10 +4,6 @@
     "license": "MIT",
     "homepage": "http://www.dukesoft.nl",
     "yyp": "GMLProject.yyp",
-    "require": {
-        "gamemakerhub/extended-functions": "*",
-        "dukesoft/dscpu-mercy": ">=1.2"
-    },
     "repositories": {
         "../projects": "directory"
     },
