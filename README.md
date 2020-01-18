@@ -127,11 +127,11 @@ file in your private project.
 
 ### Ignore files to be installed
 Sometimes you can have a package that contains some non-related files for distribution. Testcases, test sprites, 
-example rooms and whatnot can be resources that the users of a package.
+example rooms and whatnot can be resources that the users of a package do not need.
 
 There are 3 types of "ignorable" resources. `resource`, `folder` and `all`. 
 
-You can use the `shell wildcard pattern` exclude resources from being installed into projects;
+You can use the `shell wildcard pattern` to mark resources from being installed into projects;
 
 | wildcard | Explaination | Example | Matches |
 |----------|--------------|---------|---------|
