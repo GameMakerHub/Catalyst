@@ -96,6 +96,14 @@ require the package `../private-projects/My Tools/My Tools.yyp` you'll have crea
 `"name": "private/my-tools"` and then run `catalyst require private/my-tools` in your main project, using a constraint that 
 satisfies `1.0.0`; for example `*` or `>=1.0`. You can mix multiple repositories.
 
+We now only support 1 extra type of repository, which is `directory`. So the format here is;
+```json
+"repositories": {
+    "<relative file path>": "directory"
+},
+```
+
+Example `catalyst.json` file:
 ```json
 {
     "name": "dukesoft/other-project",
@@ -113,9 +121,48 @@ satisfies `1.0.0`; for example `*` or `>=1.0`. You can mix multiple repositories
 }
 ``` 
 
-`catalyst help` will display all commands and information
+The `private/my-tools` is just an arbitrary name for your private package. It can be anything you want, but must
+conform the Catalyst package name format. `floop/doople` would work too - as long as it matches the `catalyst.json` 
+file in your private project.
+
+### Ignore files to be installed
+Sometimes you can have a package that contains some non-related files for distribution. Testcases, test sprites, 
+example rooms and whatnot can be resources that the users of a package.
+
+There are 3 types of "ignorable" resources. `resource`, `folder` and `all`. 
+
+You can use the `shell wildcard pattern` exclude resources from being installed into projects;
+
+| wildcard | Explaination | Example | Matches |
+|----------|--------------|---------|---------|
+| `*` | Matches any, zero or more characters | `test_*` | `test_initialize` |
+| `?` | Matches any one characters | `???_test` | `obj_test`, `spr_test` |
+| `[string]` | Matches exactly one character that is a member of the string string. This is called a character class. As a shorthand, string may contain ranges, which consist of two characters with a dash between them. For example, the class `[a-z0-9_]` matches a lowercase letter, a number, or an underscore. You can negate a class by placing a `!` or `^` immediately after the opening bracket. Thus, `[^A-Z@]` matches any character except an uppercase letter or an at sign. | `obj_gr[ae]y` | `obj_grey`, `obj_gray` |
+| `\` | Escape character. Removes the special meaning of the character following it | `group name\?` | `group name?` |
+
+Example:
+```json
+{
+    "name": "dukesoft/other-project",
+    "description": "Other project",
+    "license": "MIT",
+    "homepage": "https://github.com/robquistnl/other",
+    "yyp": "OtherProject.yyp",
+    "ignore": {
+        "spr_to_ignore": "resource",
+        "group_to_ignore": "group",
+        "test_*": "all",
+        "*_test2": "resource",
+        "*_test3": "group"
+    }
+}
+``` 
+
+When installing this package, everything matching the rules in the `ignore` part, will not be installed into the package.
 
 ### Arguments
+
+`catalyst help` will display all commands and information
 
 | Argument | Options | Explaination | Example |
 |----------|---------|--------------|---------|
