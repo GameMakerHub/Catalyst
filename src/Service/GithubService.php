@@ -69,7 +69,7 @@ class GithubService
             $response = $this->client->get($url, ['save_to' => $file_path]);
         } catch (\Exception $e) {
             unlink($location);
-            throw new \Exception('Error while downloading ' . $url);
+            throw new \Exception('Error while downloading "' . $url. '" ' . $e->getMessage());
         }
 
         return ['response_code' => $response->getStatusCode()];

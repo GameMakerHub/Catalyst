@@ -179,21 +179,30 @@ class Repository implements \JsonSerializable {
 
     private function scanCatalystForPackages(): void
     {
-        $httpClient = new \GuzzleHttp\Client([
-            'base_uri' => $this->uri . '/',
-            'headers' => [
-                'User-Agent' => 'catalyst/1.0',
-                'Accept'     => 'application/vnd.catalyst.v1+json',
-            ]
-        ]);
+        if (($GLOBALS['repocache'][$this->uri] ?? null) == null) {
+            $httpClient = new \GuzzleHttp\Client([
+                'base_uri' => $this->uri . '/',
+                'headers' => [
+                    'User-Agent' => 'catalyst/1.0',
+                    'Accept'     => 'application/vnd.catalyst.v1+json',
+                ]
+            ]);
 
-        $packages = json_decode($httpClient->get('packages')->getBody()->getContents(), true)['packages'];
+            try {
+                $fetched = $httpClient->get('packages');
+                $packages = json_decode($fetched->getBody()->getContents(), true)['packages'];
+            } catch (\Exception $e) {
+                throw new \Exception('The repository "' . $this->uri . '" seems to be unavailable right now: ' . $e->getMessage());
+            }
 
-        if (!$packages) {
-            throw new \Exception('The repository "' . $this->uri . '" seems to be unavailable right now.');
+            if (!$packages) {
+                throw new \Exception('The repository "' . $this->uri . '" seems to be unavailable right now.');
+            }
+
+            $GLOBALS['repocache'][$this->uri] = $packages;
         }
 
-        foreach ($packages as $package) {
+        foreach ($GLOBALS['repocache'][$this->uri] as $package) {
             $versions = [];
             foreach ($package['versions'] as $data) {
                 $versions[$data['version']] = $data['dependencies'];

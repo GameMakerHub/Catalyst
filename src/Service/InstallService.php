@@ -54,9 +54,8 @@ class InstallService
             ]);
             $httpClient->post('tag-install', ['form_params' => ['packages' => implode(',', $packages)]]);
         } catch (\Throwable $e) {
-            //ignore
+            // Ignore install counter
         }
-
     }
 
     private function loop(GMResource $resource, CatalystEntity $packageToInstall, $level = 0, $targetDirectory = '')
