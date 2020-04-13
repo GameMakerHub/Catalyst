@@ -8,7 +8,7 @@
   ;Properly display all languages
   Unicode true
 
-  !define VERSION "0.2.1-alpha"
+  !define VERSION "0.2.2-alpha"
 
   ;Define name of the product
   !define PRODUCT "Game Maker Hub Catalyst ${VERSION}"
