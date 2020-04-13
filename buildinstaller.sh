@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Built with NSIS Version 3.05 using EnVar Plugin"
+
 mkdir dist/packed/windows/ -p
 
 cp -rf src dist/packed/windows/
