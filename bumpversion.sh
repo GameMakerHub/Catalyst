@@ -1,6 +1,7 @@
 #!/bin/bash
   if [ ! $# -eq 1 ]; then
     echo "Error: missing version parameter"
+    exit 1
   else
     if [[ $1 =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       echo "Bumping version to $1"
